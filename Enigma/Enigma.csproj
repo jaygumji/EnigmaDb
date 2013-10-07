@@ -1,0 +1,222 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{00C48BA2-32F9-45B2-9FA0-B689A4944954}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Enigma</RootNamespace>
+    <AssemblyName>Enigma</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="protobuf-net">
+      <HintPath>..\packages\protobuf-net.2.0.0.612\lib\net40\protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="Remotion.Linq">
+      <HintPath>..\packages\Remotion.Linq.1.13.182.0\lib\net35\Remotion.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Binary\Algorithm\BinarySearch.cs" />
+    <Compile Include="Binary\BinaryInformation.cs" />
+    <Compile Include="Binary\BufferOverflowException.cs" />
+    <Compile Include="Binary\Converters\BinaryConverterInt16.cs" />
+    <Compile Include="Binary\Converters\BinaryConverterInt32.cs" />
+    <Compile Include="Binary\Converters\BinaryConverterInt64.cs" />
+    <Compile Include="Binary\Converters\BinaryConverterUInt16.cs" />
+    <Compile Include="Binary\Converters\BinaryConverterUInt32.cs" />
+    <Compile Include="Binary\Converters\BinaryConverterUInt64.cs" />
+    <Compile Include="Binary\Converters\BinaryConverterByte.cs" />
+    <Compile Include="Binary\Converters\BinaryConverterSingle.cs" />
+    <Compile Include="Binary\Converters\BinaryConverterDouble.cs" />
+    <Compile Include="Binary\Converters\BinaryConverterDateTime.cs" />
+    <Compile Include="Binary\Converters\BinaryConverterString.cs" />
+    <Compile Include="Binary\Converters\BinaryConverterGuid.cs" />
+    <Compile Include="Binary\Converters\BinaryConverterSByte.cs" />
+    <Compile Include="Binary\Converters\BinaryConverterDecimal.cs" />
+    <Compile Include="Binary\Converters\BinaryConverterTimeSpan.cs" />
+    <Compile Include="Binary\Converters\BinaryConverterBoolean.cs" />
+    <Compile Include="Binary\IBinaryConverter.cs" />
+    <Compile Include="Binary\Information\BinaryInformationInt16.cs" />
+    <Compile Include="Binary\IBinaryInformation.cs" />
+    <Compile Include="Binary\Information\BinaryInformationInt32.cs" />
+    <Compile Include="Binary\Information\BinaryInformationInt64.cs" />
+    <Compile Include="Binary\Information\BinaryInformationUInt16.cs" />
+    <Compile Include="Binary\Information\BinaryInformationUInt32.cs" />
+    <Compile Include="Binary\Information\BinaryInformationUInt64.cs" />
+    <Compile Include="Binary\Information\BinaryInformationSingle.cs" />
+    <Compile Include="Binary\Information\BinaryInformationDouble.cs" />
+    <Compile Include="Binary\Information\BinaryInformationDateTime.cs" />
+    <Compile Include="Binary\Information\BinaryInformationString.cs" />
+    <Compile Include="Binary\Information\BinaryInformationGuid.cs" />
+    <Compile Include="Binary\Information\BinaryInformationByte.cs" />
+    <Compile Include="Binary\Information\BinaryInformationSByte.cs" />
+    <Compile Include="Binary\Information\BinaryInformationTimeSpan.cs" />
+    <Compile Include="Binary\Information\BinaryInformationDecimal.cs" />
+    <Compile Include="Binary\Information\BinaryInformationBoolean.cs" />
+    <Compile Include="DataSize.cs" />
+    <Compile Include="Db\Engine\ChangeEntry.cs" />
+    <Compile Include="Db\Engine\ChangeManager.cs" />
+    <Compile Include="Db\Engine\ContextReflectionDetails.cs" />
+    <Compile Include="Db\Engine\ContextReflectionManager.cs" />
+    <Compile Include="Db\Engine\EnigmaContext.cs" />
+    <Compile Include="Db\Engine\EnigmaSet.cs" />
+    <Compile Include="Db\Engine\EntityTable.cs" />
+    <Compile Include="Db\Engine\EntityNotFoundException.cs" />
+    <Compile Include="Db\Engine\IChangeEntry.cs" />
+    <Compile Include="Db\Engine\IChangeManager.cs" />
+    <Compile Include="Db\Engine\IChangeTracker.cs" />
+    <Compile Include="Db\Engine\IEnigmaConnection.cs" />
+    <Compile Include="Db\Engine\IEnigmaEngine.cs" />
+    <Compile Include="Db\Engine\IEnigmaEntityEngine.cs" />
+    <Compile Include="Db\Engine\ITriggerManager.cs" />
+    <Compile Include="Db\Engine\Linq\EnigmaCriteria.cs" />
+    <Compile Include="Db\Engine\Linq\EnigmaExpressionTreeVisitor.cs" />
+    <Compile Include="Db\Engine\Linq\EnigmaIndexOperation.cs" />
+    <Compile Include="Db\Engine\Linq\EnigmaQueryable.cs" />
+    <Compile Include="Db\Engine\Linq\EnigmaQueryExecutor.cs" />
+    <Compile Include="Db\Engine\Linq\EnigmaQueryModelVisitor.cs" />
+    <Compile Include="Db\Engine\Linq\ExpressionBreakdown.cs" />
+    <Compile Include="Db\Engine\Linq\ExpressionBreakdownType.cs" />
+    <Compile Include="Db\Engine\Linq\ObjectExpressionBuilder.cs" />
+    <Compile Include="Db\Engine\Linq\PropertyPath.cs" />
+    <Compile Include="Db\Engine\TriggerManager.cs" />
+    <Compile Include="Entities\ISet.cs" />
+    <Compile Include="Expressions\PropertySelector.cs" />
+    <Compile Include="IO\IReadStream.cs" />
+    <Compile Include="IO\IStream.cs" />
+    <Compile Include="IO\IStreamProvider.cs" />
+    <Compile Include="IO\IWriteStream.cs" />
+    <Compile Include="IO\MemoryStreamProvider.cs" />
+    <Compile Include="IO\PooledMemoryStream.cs" />
+    <Compile Include="Reflection\PropertyExtractor.cs" />
+    <Compile Include="Store\FileSystem\FileSystemCompositeStorageConfigurator.cs" />
+    <Compile Include="Store\FileSystem\FileSystemIndexConfigurator.cs" />
+    <Compile Include="Store\FileSystem\FileSystemStorageFactoryService.cs" />
+    <Compile Include="IO\FileSystemStreamProvider.cs" />
+    <Compile Include="Store\IBasicStorage.cs" />
+    <Compile Include="Store\Indexes\ComparableIndex.cs" />
+    <Compile Include="Store\Indexes\CompareOperation.cs" />
+    <Compile Include="Store\Indexes\IIndexCollection.cs" />
+    <Compile Include="Store\Indexes\IIndexConfigurator.cs" />
+    <Compile Include="Store\Indexes\IIndexStorage.cs" />
+    <Compile Include="Store\Indexes\IndexCollection.cs" />
+    <Compile Include="Store\Indexes\IndexConfiguration.cs" />
+    <Compile Include="Store\Indexes\IndexConfigurationConverter.cs" />
+    <Compile Include="Store\Indexes\IndexEntry.cs" />
+    <Compile Include="Store\Indexes\IndexStorage.cs" />
+    <Compile Include="Store\Indexes\ImmutableSortedCollection.cs" />
+    <Compile Include="Store\Int32KeyGenerator.cs" />
+    <Compile Include="Modelling\EntityBuilder.cs" />
+    <Compile Include="Modelling\EntityMap.cs" />
+    <Compile Include="Modelling\IEntityMap.cs" />
+    <Compile Include="Modelling\IIndex.cs" />
+    <Compile Include="Modelling\Index.cs" />
+    <Compile Include="Modelling\IPropertyMap.cs" />
+    <Compile Include="Modelling\Model.cs" />
+    <Compile Include="Modelling\ModelBuilder.cs" />
+    <Compile Include="Modelling\ModelSerializer.cs" />
+    <Compile Include="Modelling\PropertyBuilder.cs" />
+    <Compile Include="Modelling\PropertyMap.cs" />
+    <Compile Include="Modelling\RegistrationAlreadyExistsException.cs" />
+    <Compile Include="Modelling\XmlVisitor.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProtocolBuffer\ProtocolBufferBinaryConverter.cs" />
+    <Compile Include="Store\Binary\BinaryKey.cs" />
+    <Compile Include="Store\Binary\EntryBinaryConverter.cs" />
+    <Compile Include="Store\Binary\IBinaryStore.cs" />
+    <Compile Include="Store\Binary\IDualBinaryStore.cs" />
+    <Compile Include="Store\CompositeStorage.cs" />
+    <Compile Include="Store\CompositeStorageConfiguration.cs" />
+    <Compile Include="Store\CompositeTableOfContent.cs" />
+    <Compile Include="Store\EnigmaUpdateException.cs" />
+    <Compile Include="Store\Entry.cs" />
+    <Compile Include="Store\EntryNotFoundException.cs" />
+    <Compile Include="Store\EntryReader.cs" />
+    <Compile Include="Store\EntryWriter.cs" />
+    <Compile Include="Store\Binary\BinaryStore.cs" />
+    <Compile Include="Store\Binary\DualBinaryStore.cs" />
+    <Compile Include="Store\Binary\LeftBinaryStoreSegment.cs" />
+    <Compile Include="Store\Binary\RightBinaryStoreSegment.cs" />
+    <Compile Include="Store\IEntry.cs" />
+    <Compile Include="Store\IKey.cs" />
+    <Compile Include="Store\Indexes\IComparableIndex.cs" />
+    <Compile Include="Store\Indexes\IIndex.cs" />
+    <Compile Include="Store\IStorage.cs" />
+    <Compile Include="Store\IStorageFactoryService.cs" />
+    <Compile Include="Store\IStorageFragment.cs" />
+    <Compile Include="Store\IStorageFragmentFactory.cs" />
+    <Compile Include="Store\IStorageManagerService.cs" />
+    <Compile Include="Store\ITableOfContent.cs" />
+    <Compile Include="Store\ITableOfContentManager.cs" />
+    <Compile Include="Store\Keys\DoubleKey.cs" />
+    <Compile Include="Store\Keys\GuidKey.cs" />
+    <Compile Include="Store\Keys\Int16Key.cs" />
+    <Compile Include="Store\Keys\Int32Key.cs" />
+    <Compile Include="Store\Keys\Int64Key.cs" />
+    <Compile Include="Store\Keys\Key.cs" />
+    <Compile Include="Store\Keys\SingleKey.cs" />
+    <Compile Include="Store\Keys\StringKey.cs" />
+    <Compile Include="Store\Keys\UInt16Key.cs" />
+    <Compile Include="Store\Keys\UInt32Key.cs" />
+    <Compile Include="Store\Keys\UInt64Key.cs" />
+    <Compile Include="Store\Maintenance\CompositeStorageMaintenance.cs" />
+    <Compile Include="Store\Maintenance\IStorageMaintenance.cs" />
+    <Compile Include="Store\Maintenance\MaintenanceException.cs" />
+    <Compile Include="Store\Maintenance\MaintenanceMode.cs" />
+    <Compile Include="Store\Maintenance\StorageMaintenance.cs" />
+    <Compile Include="Store\Memory\MemoryBinaryStore.cs" />
+    <Compile Include="Store\Memory\MemoryCompositeStorageConfigurator.cs" />
+    <Compile Include="Store\Memory\MemoryIndexConfigurator.cs" />
+    <Compile Include="Store\Memory\MemoryStorageFactoryService.cs" />
+    <Compile Include="Store\OutOfSpaceException.cs" />
+    <Compile Include="Store\StorageFragment.cs" />
+    <Compile Include="Store\StorageFragmentCollection.cs" />
+    <Compile Include="Store\TableOfContent.cs" />
+    <Compile Include="Threading\ExclusiveLock.cs" />
+    <Compile Include="Threading\ExclusiveLockHandle.cs" />
+    <Compile Include="Threading\ILock.cs" />
+    <Compile Include="Threading\ILockHandle.cs" />
+    <Compile Include="Threading\Lock.cs" />
+    <Compile Include="Threading\LockHandle.cs" />
+    <Compile Include="Threading\LockObject.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

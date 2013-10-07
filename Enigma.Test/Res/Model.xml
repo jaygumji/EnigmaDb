@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Model>
+  <Entities>
+    <Entity>
+      <Type>Enigma.Test.Fakes.MyEntity, Enigma.Test, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</Type>
+      <Name>MyEntity</Name>
+      <KeyName>Id</KeyName>
+      <PropertyIndexLength>3</PropertyIndexLength>
+      <Properties>
+        <Property>
+          <Name>Id</Name>
+          <Index>1</Index>
+        </Property>
+        <Property>
+          <Name>Message</Name>
+          <Index>2</Index>
+        </Property>
+        <Property>
+          <Name>Value</Name>
+          <Index>3</Index>
+        </Property>
+      </Properties>
+      <Indexes>
+        <Index>
+          <PropertyName>Value</PropertyName>
+        </Index>
+      </Indexes>
+    </Entity>
+  </Entities>
+</Model>

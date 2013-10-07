@@ -1,0 +1,37 @@
+﻿-----------------------------------------
+-- Work in progress
+-----------------------------------------
+Handle Lists and dictionaries in Model.ByConvention
+Indexes
+	Must treat every item in a list or dictionary as an index to the root object
+
+Allow linq to use indexes
+Standalone service
+	Includes generation of proxy classes at runtime using the Castle project
+
+Ability to add jobs that runs at a scheduled time
+Predefined jobs
+	Maintainance job that truncates database at night and rebuilds indexes
+
+Acknowledge EnigmaDbSet at model building
+Enable modelbuilding when the connection changes
+
+Indexes
+	Add index when model updates with new indexes
+
+-----------------------------------------
+-- Implemented features
+-----------------------------------------
+Truncating files
+Readonly/maintainance mode
+Linq
+Using ISet
+Embedded Memory Db
+
+-----------------------------------------
+-- Features to consider (NOT on road map)
+-----------------------------------------
+Replication
+Triggers
+Treat sub class as an entity and create a relation instead
+Consider forking Protobuf.NET and change it to suit this model better to enhance performance
