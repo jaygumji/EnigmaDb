@@ -43,9 +43,8 @@ In the example below we're storing the database in the CommunityDb folder just u
         static CommunityContext()
         {
             var directory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "CommunityDb");
-            if (Directory.Exists(directory)) Directory.Delete(directory, true);
 
-            Service = EmbeddedEnigmaService.CreateFileSystem(directory, new Store.CompositeStorageConfiguration { FragmentSize = DataSize.FromKB(5) });
+            Service = EmbeddedEnigmaService.CreateFileSystem(directory);
         }
 
         public CommunityContext()
