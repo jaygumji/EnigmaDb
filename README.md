@@ -28,7 +28,7 @@ What's on the roadmap?
 - Ability to add jobs that runs at a scheduled time
 - Maintainance job that truncates database at night and rebuilds indexes
 - Better lock management to improve write performance
-
+- Change tracking needs some improvements, it's very basic right now
 
 Example
 To start with EnigmaDb you need to first create a context. This is done by creating a class that inherits EnigmaContext.
