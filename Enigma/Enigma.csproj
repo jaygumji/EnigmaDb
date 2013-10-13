@@ -30,11 +30,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="protobuf-net">
-      <HintPath>..\packages\protobuf-net.2.0.0.612\lib\net40\protobuf-net.dll</HintPath>
+    <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
     </Reference>
-    <Reference Include="Remotion.Linq">
-      <HintPath>..\packages\Remotion.Linq.1.13.182.0\lib\net35\Remotion.Linq.dll</HintPath>
+    <Reference Include="Remotion.Linq, Version=1.15.2.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Remotion.Linq.1.15.2.0\lib\net45\Remotion.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

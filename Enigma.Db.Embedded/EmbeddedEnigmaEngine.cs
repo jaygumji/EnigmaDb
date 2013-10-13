@@ -18,6 +18,8 @@ namespace Enigma.Db.Embedded
             _service = service;
         }
 
+        public Model Model { get { return _model; } }
+
         public IEnigmaEntityEngine<T> GetEntityEngine<T>()
         {
             Type entityType = typeof(T);
@@ -31,9 +33,9 @@ namespace Enigma.Db.Embedded
             return newEntityEngine;
         }
 
-        public void Synchronize(Model model)
+        public void Synchronize()
         {
-            _service.Synchronize(model);
+            _service.Synchronize(_model);
         }
     }
 }

@@ -3,7 +3,9 @@ namespace Enigma.Db
 {
     public interface IEnigmaEngine
     {
-        void Synchronize(Model model);
+        Model Model { get; }
+
+        void Synchronize();
         IEnigmaEntityEngine<T> GetEntityEngine<T>();
     }
 }
