@@ -30,30 +30,39 @@ What's on the roadmap?
 - Better lock management to improve write performance
 - Change tracking needs some improvements, it's very basic right now
 
+Installation
+============
+Get the nuget package at the following location.
+https://www.nuget.org/packages/EnigmaDb/0.1.0
+
+Or simply add it via the package manager.
+> Install-Package EnigmaDb
+
 Example
+=======
 To start with EnigmaDb you need to first create a context. This is done by creating a class that inherits EnigmaContext.
 
 In the example below we're storing the database in the CommunityDb folder just under the application root directory.
 
     public class CommunityContext : EnigmaContext
     {
-
+    
         public static readonly EmbeddedEnigmaService Service;
-
+    
         static CommunityContext()
         {
             var directory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "CommunityDb");
-
+    
             Service = EmbeddedEnigmaService.CreateFileSystem(directory);
         }
-
+    
         public CommunityContext()
             : base(new EmbeddedEnigmaConnection(Service))
         {
         }
-
+    
         public ISet<Article> Articles { get; set; }
-
+    
     }
 
 We have only one entity here, Article.
