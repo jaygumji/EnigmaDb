@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Reflection;
+using Enigma.Reflection;
+
 namespace Enigma.Modelling
 {
     public class Index<T> : Index, IIndex<T>
@@ -16,21 +18,36 @@ namespace Enigma.Modelling
     public abstract class Index : IIndex
     {
         private readonly string _propertyName;
-        private readonly Type _propertyType;
+        private readonly Type _valueType;
 
         protected Index(PropertyInfo propertyInfo)
             : this(propertyInfo.Name, propertyInfo.PropertyType)
         {
         }
 
-        protected Index(string propertyName, Type propertyType)
+        protected Index(string propertyName, Type valueType)
         {
             _propertyName = propertyName;
-            _propertyType = propertyType;
+
+            var extendedValueType = new ExtendedType(valueType);
+            switch (extendedValueType.Class) {
+                case TypeClass.Complex:
+                    throw new ArgumentException("Only values is accepted as an index");
+                case TypeClass.Dictionary:
+                    throw new NotSupportedException("Indexed dictionaries are currently not supported");
+                case TypeClass.Nullable:
+                    valueType = extendedValueType.Container.AsNullable().ElementType;
+                    break;
+                case TypeClass.Collection:
+                    valueType = extendedValueType.Container.AsCollection().ElementType;
+                    break;
+            }
+
+            _valueType = valueType;
         }
 
         public string PropertyName { get { return _propertyName; } }
-        public Type PropertyType { get { return _propertyType; } }
+        public Type ValueType { get { return _valueType; } }
 
         public static Index Create(Type entityType, string propertyName)
         {

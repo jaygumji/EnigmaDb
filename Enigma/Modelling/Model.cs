@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.Linq;
 using System;
 using System.Reflection;
+using Enigma.Reflection;
 
 namespace Enigma.Modelling
 {
@@ -79,7 +80,7 @@ namespace Enigma.Modelling
             var propertyMapType = typeof(PropertyMap<>);
 
             var relationTypes = new List<Type>();
-            foreach (var property in properties.Where(p => p.CanRead && p.CanWrite))
+            foreach (var property in properties.Where(p => p.CanRead && p.CanWrite).OrderBy(p => p.Name))
             {
                 if (!propertyMappings.ContainsKey(property.Name))
                 {
@@ -88,19 +89,15 @@ namespace Enigma.Modelling
                     var propertyMap = (IPropertyMap)Activator.CreateInstance(genericPropertyMapType, property, propertyIndex);
                     propertyMappings.Add(property.Name, propertyMap);
 
-                    if (IsComplexType(property.PropertyType))
-                    {
-                        Type collectionType;
-                        if (property.PropertyType.IsGenericType && property.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>))
-                            collectionType = property.PropertyType;
-                        else
-                            collectionType = property.PropertyType.GetInterfaces().FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICollection<>));
-                        
-                        if (collectionType != null)
-                            relationTypes.Add(collectionType.GetGenericArguments()[0]);
-                        else
-                            relationTypes.Add(property.PropertyType);
+                    var extended = new ExtendedType(property.PropertyType);
+                    if (extended.Class == TypeClass.Collection) {
+                        var collectionInfo = extended.Container.AsCollection();
+                        var extendedElementType = new ExtendedType(collectionInfo.ElementType);
+                        if (extendedElementType.Class == TypeClass.Complex)
+                            relationTypes.Add(collectionInfo.ElementType);
                     }
+                    else if (extended.Class == TypeClass.Complex)
+                        relationTypes.Add(property.PropertyType);
                 }
             }
 
@@ -123,11 +120,6 @@ namespace Enigma.Modelling
 
             foreach (var relationType in relationTypes)
                 RegisterHierarchy(relationType);
-        }
-
-        private bool IsComplexType(Type type)
-        {
-            return type.IsInterface || (type.IsClass && type != typeof(string) && type != typeof(byte[]));
         }
 
         public IEntityMap GetEntity(string name)

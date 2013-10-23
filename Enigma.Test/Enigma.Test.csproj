@@ -55,6 +55,7 @@
     <Compile Include="Fakes\MyEntity.cs" />
     <Compile Include="Index\ComparableIndexTests.cs" />
     <Compile Include="Index\IndexStorageTests.cs" />
+    <Compile Include="Store\StorageTests.cs" />
     <Compile Include="TestDb\Scenario.cs" />
     <Compile Include="ProtoBuf\ProtoBufBinaryConverterTest.cs" />
     <Compile Include="TestDb\CarModel.cs" />

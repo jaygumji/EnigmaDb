@@ -20,8 +20,6 @@ namespace Enigma.Db
         private readonly IChangeManager _changeManager;
         private IEnigmaEngine _engine;
 
-
-
         public EnigmaContext(IEnigmaConnection engineConnection) : this(engineConnection, false)
         {
         }

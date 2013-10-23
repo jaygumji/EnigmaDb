@@ -28,7 +28,7 @@ namespace Enigma.Store.Indexes
             foreach (var index in entityMap.Indexes) {
                 list.Add(new IndexConfiguration {
                     UniqueName = CreatePath(left, index.PropertyName),
-                    Type = index.PropertyType,
+                    Type = index.ValueType,
                     EntityType = entityMap.EntityType
                 });
             }

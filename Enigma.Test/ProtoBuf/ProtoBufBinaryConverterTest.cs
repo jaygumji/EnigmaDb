@@ -18,7 +18,8 @@ namespace Enigma.Test.ProtoBuf
 
             Assert.IsNotNull(bytes);
             Assert.IsTrue(bytes.Length > 0);
-            Assert.AreEqual(10, bytes[0]);
+
+
         }
     }
 }

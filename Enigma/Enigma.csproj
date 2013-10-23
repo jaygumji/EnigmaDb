@@ -117,6 +117,17 @@
     <Compile Include="IO\IWriteStream.cs" />
     <Compile Include="IO\MemoryStreamProvider.cs" />
     <Compile Include="IO\PooledMemoryStream.cs" />
+    <Compile Include="Reflection\CollectionContainerTypeInfo.cs" />
+    <Compile Include="Reflection\ContainerTypeInfoExtensions.cs" />
+    <Compile Include="Reflection\IPropertyAccessor.cs" />
+    <Compile Include="Reflection\ListPropertyAccessor.cs" />
+    <Compile Include="Reflection\NullableContainerTypeInfo.cs" />
+    <Compile Include="Reflection\PropertyAccessor.cs" />
+    <Compile Include="Reflection\TypeClass.cs" />
+    <Compile Include="Reflection\TypeExtensions.cs" />
+    <Compile Include="Reflection\DictionaryContainerTypeInfo.cs" />
+    <Compile Include="Reflection\ExtendedType.cs" />
+    <Compile Include="Reflection\IContainerTypeInfo.cs" />
     <Compile Include="Reflection\PropertyExtractor.cs" />
     <Compile Include="Store\FileSystem\FileSystemCompositeStorageConfigurator.cs" />
     <Compile Include="Store\FileSystem\FileSystemIndexConfigurator.cs" />

@@ -113,7 +113,7 @@ namespace Enigma.Store
                     if (!TryReserve(size))
                         return false;
 
-                    if (!TryRemove(key))
+                    if (!TryRemoveInToc(key))
                     {
                         ReleaseReservation(size);
                         return false;
@@ -150,14 +150,15 @@ namespace Enigma.Store
                     return false;
 
             using (_maintenance.Lock.Enter())
-            {
-                if (_tableOfContent.TryRemove(key))
-                {
-                    _maintenance.IsFragmented = true;
-                    return true;
-                }
-                return false;
-            }
+                return TryRemoveInToc(key);
+        }
+
+        private bool TryRemoveInToc(IKey key)
+        {
+            if (!_tableOfContent.TryRemove(key)) return false;
+
+            _maintenance.IsFragmented = true;
+            return true;
         }
 
         public bool TryGet(IKey key, out byte[] content)
