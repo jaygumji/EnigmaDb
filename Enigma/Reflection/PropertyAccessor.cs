@@ -18,6 +18,7 @@ namespace Enigma.Reflection
 
             foreach (var value in values) {
                 var nextValue = _propertyInfo.GetValue(value);
+                if (nextValue == null) continue;
                 next.Add(nextValue);
             }
 

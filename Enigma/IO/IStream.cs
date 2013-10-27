@@ -6,6 +6,7 @@ namespace Enigma.IO
     {
         long Length { get; }
 
-        void Flush(bool force);
+        void Flush();
+        void FlushForced();
     }
 }

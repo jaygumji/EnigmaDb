@@ -1,4 +1,5 @@
 ﻿using Enigma.Binary;
+using Enigma.Modelling;
 using Enigma.Reflection;
 using Enigma.Store.Binary;
 using Enigma.Store.Keys;
@@ -8,10 +9,8 @@ using System.Collections.Generic;
 namespace Enigma.Store.Indexes
 {
     public class IndexStorage<T> : IIndexStorage
-        where T : IComparable<T>
     {
         private readonly IBinaryStore _store;
-        private readonly ComparableIndex<T> _index;
         private readonly Dictionary<IKey, IDictionary<T, IndexEntry<T>>> _entries; 
         private SortedDictionary<T, IList<IKey>> _values;
         private readonly IBinaryInformation<T> _information;
@@ -20,11 +19,11 @@ namespace Enigma.Store.Indexes
         private readonly PropertyExtractor<T> _extractor;
 
         private bool _isModified = false;
+        private ImmutableSortedCollection<T, IList<IKey>> _sortedValues;
 
         public IndexStorage(IBinaryStore store, IndexConfiguration configuration)
         {
             _store = store;
-            _index = new ComparableIndex<T>(configuration.UniqueName);
             _information = BinaryInformation.Of<T>();
             _lengthInformation = BinaryInformation.Of<Int32>();
             _isActiveInformation = BinaryInformation.Of<Boolean>();
@@ -38,7 +37,20 @@ namespace Enigma.Store.Indexes
             var values = new Dictionary<T, IList<IKey>>();
             LoadFromStore(_entries, values);
             _values = new SortedDictionary<T, IList<IKey>>(values);
-            _index.Update(new ImmutableSortedCollection<T, IList<IKey>>(_values));
+            _sortedValues = new ImmutableSortedCollection<T, IList<IKey>>(_values);
+        }
+
+        private void ReevaluateIndex()
+        {
+            if (!_isModified) return;
+            _isModified = false;
+            _sortedValues = new ImmutableSortedCollection<T, IList<IKey>>(_values);
+        }
+
+        public void CommitTo(IIndexAlgorithm<T> indexAlgorithm)
+        {
+            ReevaluateIndex();
+            indexAlgorithm.Update(_sortedValues);
         }
 
         private void LoadFromStore(IDictionary<IKey, IDictionary<T, IndexEntry<T>>> entriesLookup, IDictionary<T, IList<IKey>> values)
@@ -90,8 +102,8 @@ namespace Enigma.Store.Indexes
             }
         }
 
-        public IComparableIndex Index { get { return _index; } }
         public bool IsModified { get { return _isModified; } }
+        public bool IsEmpty { get { return _entries.Count == 0; } }
 
         public void Add(IKey key, object entity)
         {
@@ -145,36 +157,6 @@ namespace Enigma.Store.Indexes
                 RemoveValues(entityId, entries.Values);
                 _entries.Remove(entityId);
                 _isModified = true;
-            }
-        }
-
-        public void CommitModifications()
-        {
-            if (!_isModified) return;
-
-            _isModified = false;
-            _index.Update(new ImmutableSortedCollection<T, IList<IKey>>(_values));
-        }
-
-        public IEnumerable<IKey> Match(CompareOperation operation, object value)
-        {
-            switch (operation) {
-                case CompareOperation.Equal:
-                    return _index.Equal((T)value);
-                case CompareOperation.NotEqual:
-                    return _index.NotEqual((T)value);
-                case CompareOperation.GreaterThan:
-                    return _index.GreaterThan((T)value);
-                case CompareOperation.GreaterThanOrEqual:
-                    return _index.GreaterThanOrEqual((T)value);
-                case CompareOperation.LessThan:
-                    return _index.LessThan((T)value);
-                case CompareOperation.LessThanOrEqual:
-                    return _index.LessThanOrEqual((T)value);
-                case CompareOperation.Contains:
-                    return _index.Contains((IEnumerable<T>)value);
-                default:
-                    throw new System.InvalidOperationException("Comparable index does not have the operation " + operation.ToString());
             }
         }
 

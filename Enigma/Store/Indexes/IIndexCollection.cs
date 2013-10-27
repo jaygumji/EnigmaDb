@@ -6,6 +6,10 @@ namespace Enigma.Store.Indexes
     {
         bool IsModified { get; }
 
+        bool NeedsRepair();
+        void MarkAsRepaired();
+
+        void Repair(IKey key, object entity);
         void Add(IKey key, object entity);
         void Update(IKey key, object entity);
         void Remove(IKey entityId);

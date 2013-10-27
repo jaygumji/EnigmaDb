@@ -116,7 +116,10 @@
     <Compile Include="IO\IStreamProvider.cs" />
     <Compile Include="IO\IWriteStream.cs" />
     <Compile Include="IO\MemoryStreamProvider.cs" />
+    <Compile Include="IO\PooledFileSystemStream.cs" />
     <Compile Include="IO\PooledMemoryStream.cs" />
+    <Compile Include="IO\StreamProviderSourceState.cs" />
+    <Compile Include="Modelling\IIndexAlgorithm.cs" />
     <Compile Include="Reflection\CollectionContainerTypeInfo.cs" />
     <Compile Include="Reflection\ContainerTypeInfoExtensions.cs" />
     <Compile Include="Reflection\IPropertyAccessor.cs" />
@@ -134,7 +137,7 @@
     <Compile Include="Store\FileSystem\FileSystemStorageFactoryService.cs" />
     <Compile Include="IO\FileSystemStreamProvider.cs" />
     <Compile Include="Store\IBasicStorage.cs" />
-    <Compile Include="Store\Indexes\ComparableIndex.cs" />
+    <Compile Include="Store\Indexes\ComparableIndexAlgorithm.cs" />
     <Compile Include="Store\Indexes\CompareOperation.cs" />
     <Compile Include="Store\Indexes\IIndexCollection.cs" />
     <Compile Include="Store\Indexes\IIndexConfigurator.cs" />
@@ -145,6 +148,8 @@
     <Compile Include="Store\Indexes\IndexEntry.cs" />
     <Compile Include="Store\Indexes\IndexStorage.cs" />
     <Compile Include="Store\Indexes\ImmutableSortedCollection.cs" />
+    <Compile Include="Store\Indexes\TableIndex.cs" />
+    <Compile Include="Store\Indexes\TableIndexFactory.cs" />
     <Compile Include="Store\Int32KeyGenerator.cs" />
     <Compile Include="Modelling\EntityBuilder.cs" />
     <Compile Include="Modelling\EntityMap.cs" />
@@ -179,8 +184,8 @@
     <Compile Include="Store\Binary\RightBinaryStoreSegment.cs" />
     <Compile Include="Store\IEntry.cs" />
     <Compile Include="Store\IKey.cs" />
-    <Compile Include="Store\Indexes\IComparableIndex.cs" />
-    <Compile Include="Store\Indexes\IIndex.cs" />
+    <Compile Include="Store\Indexes\IComparableIndexAlgorithm.cs" />
+    <Compile Include="Store\Indexes\ITableIndex.cs" />
     <Compile Include="Store\IStorage.cs" />
     <Compile Include="Store\IStorageFactoryService.cs" />
     <Compile Include="Store\IStorageFragment.cs" />

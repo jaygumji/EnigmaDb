@@ -1,4 +1,5 @@
 ﻿using Enigma.Binary;
+using Enigma.Db.Engine;
 using Enigma.Modelling;
 using Enigma.Store;
 using Enigma.Store.Keys;
@@ -15,6 +16,7 @@ namespace Enigma.Db.Embedded
         private readonly EmbeddedEnigmaService _service;
         private readonly IBinaryConverter<T> _converter;
         private readonly PropertyInfo _keyProperty;
+        private readonly EntityTable _table;
 
         public EmbeddedEnigmaEntityEngine(EntityMap<T> entityMap, EmbeddedEnigmaService service, IBinaryConverter<T> converter)
         {
@@ -23,6 +25,24 @@ namespace Enigma.Db.Embedded
             _converter = converter;
 
             _keyProperty = _entityMap.GetKeyProperty();
+            _table = service.Table(entityMap.Name);
+            RepairIndexesIfNeeded();
+        }
+
+        private void RepairIndexesIfNeeded()
+        {
+            if (_table.Indexes.NeedsRepair())
+                RepairIndexes();
+        }
+
+        private void RepairIndexes()
+        {
+            var entities = All();
+            foreach (var entity in entities) {
+                var key = CreateKey(entity);
+                _table.Indexes.Repair(key, entity);
+            }
+            _table.Indexes.MarkAsRepaired();
         }
 
         private IKey CreateKey(T entity)
@@ -36,11 +56,10 @@ namespace Enigma.Db.Embedded
             var key = CreateKey(entity);
             var content = _converter.Convert(entity);
 
-            var table = _service.Table(_entityMap.Name);
-            if (!table.Storage.TryAdd(key, content))
+            if (!_table.Storage.TryAdd(key, content))
                 return false;
 
-            table.Indexes.Add(key, entity);
+            _table.Indexes.Add(key, entity);
             return true;
         }
 
@@ -49,11 +68,10 @@ namespace Enigma.Db.Embedded
             var key = CreateKey(entity);
             var data = _converter.Convert(entity);
 
-            var table = _service.Table(_entityMap.Name);
-            if (!table.Storage.TryUpdate(key, data))
+            if (!_table.Storage.TryUpdate(key, data))
                 return false;
 
-            table.Indexes.Update(key, entity);
+            _table.Indexes.Update(key, entity);
             return true;
         }
 
@@ -61,18 +79,16 @@ namespace Enigma.Db.Embedded
         {
             var key = CreateKey(entity);
 
-            var table = _service.Table(_entityMap.Name);
-            if (!table.Storage.TryRemove(key))
+            if (!_table.Storage.TryRemove(key))
                 return false;
 
-            table.Indexes.Remove(key);
+            _table.Indexes.Remove(key);
             return true;
         }
 
         public void CommitModifications()
         {
-            var table = _service.Table(_entityMap.Name);
-            table.Indexes.CommitModifications();
+            _table.Indexes.CommitModifications();
         }
 
         public bool TryGet(object id, out T entity)

@@ -1,7 +1,7 @@
 ﻿using Enigma.IO;
-using Enigma.Store.Binary;
 using System;
 using System.IO;
+using Enigma.Threading;
 
 namespace Enigma.Store.Binary
 {
@@ -16,6 +16,7 @@ namespace Enigma.Store.Binary
         private readonly long _length;
         private readonly bool _canGrow;
         private readonly object _writeLock = new object();
+        private readonly ILock<long> _writeOffsetLock = new Lock<long>();
 
         public BinaryStore(IStreamProvider provider)
             : this(provider, 0, 0, true)
@@ -86,11 +87,14 @@ namespace Enigma.Store.Binary
 
         public void Write(long storeOffset, byte[] data)
         {
-            lock (_writeLock)
+            using (_writeOffsetLock.Enter(storeOffset))
             {
-                _writeStream.Seek(storeOffset, SeekOrigin.Begin);
-                _writeStream.Write(data, 0, data.Length);
-                _writeStream.Seek(0, SeekOrigin.End);
+                using (var offsetWriteStream = _provider.AcquireWriteStream()) {
+                    offsetWriteStream.Seek(storeOffset, SeekOrigin.Begin);
+                    offsetWriteStream.Write(data, 0, data.Length);
+                    if (_lastFlushOffset > storeOffset)
+                        _lastFlushOffset = storeOffset - 1;
+                }
             }
         }
 
@@ -106,6 +110,7 @@ namespace Enigma.Store.Binary
 
                 storeOffset = _currentOffset;
                 _writeStream.Write(data, 0, data.Length);
+                _writeStream.Flush();
                 _currentOffset += data.Length;
                 UpdateOffset();
                 return true;
@@ -120,7 +125,7 @@ namespace Enigma.Store.Binary
             {
                 if (offset < _lastFlushOffset) return;
 
-                _writeStream.Flush(true);
+                _writeStream.FlushForced();
                 _lastFlushOffset = _currentOffset;
             }
         }

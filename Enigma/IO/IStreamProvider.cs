@@ -5,6 +5,7 @@ namespace Enigma.IO
 {
     public interface IStreamProvider : IDisposable
     {
+        StreamProviderSourceState SourceState { get; }
 
         IWriteStream AcquireWriteStream();
         IReadStream AcquireReadStream();

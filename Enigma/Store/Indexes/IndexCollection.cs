@@ -1,5 +1,6 @@
 ﻿using System;
 using Enigma.Db.Linq;
+using Enigma.IO;
 using Enigma.Store.Binary;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,69 +8,84 @@ using Enigma.Store.Keys;
 
 namespace Enigma.Store.Indexes
 {
+
     public class IndexCollection : IIndexCollection
     {
 
         private readonly IIndexConfigurator _configurator;
-        private readonly Dictionary<string, IIndexStorage> _storages;
+        private readonly Dictionary<string, ITableIndex> _indexes;
+        private readonly List<ITableIndex> _indexesRequireRepairs; 
 
         public IndexCollection(IIndexConfigurator configurator)
         {
             _configurator = configurator;
-            _storages = new Dictionary<string, IIndexStorage>();
+            _indexes = new Dictionary<string, ITableIndex>();
+            _indexesRequireRepairs = new List<ITableIndex>();
 
-            var indexStorageType = typeof(IndexStorage<>);
+            var tableIndexFactory = new TableIndexFactory();
             foreach (var details in _configurator.Indexes) {
                 var streamProvider = _configurator.GetStreamProvider(details.UniqueName);
-                var store = new BinaryStore(streamProvider);
 
-                var indexType = details.Type.IsEnum
-                    ? Enum.GetUnderlyingType(details.Type)
-                    : details.Type;
+                var tableIndex = tableIndexFactory.AsComparable(streamProvider, details);
+                _indexes.Add(details.UniqueName, tableIndex);
 
-                var type = indexStorageType.MakeGenericType(indexType);
-                var indexStorage = (IIndexStorage) Activator.CreateInstance(type, store, details);
-                indexStorage.Initialize();
-                _storages.Add(details.UniqueName, indexStorage);
+                if (streamProvider.SourceState == StreamProviderSourceState.Created)
+                    _indexesRequireRepairs.Add(tableIndex);
             }
         }
 
-        public bool IsModified { get { return _storages.Any(s => s.Value.IsModified); } }
+        public bool IsModified { get { return _indexes.Any(s => s.Value.Storage.IsModified); } }
+
+        public bool NeedsRepair()
+        {
+            return _indexesRequireRepairs.Count > 0;
+        }
+
+        public void MarkAsRepaired()
+        {
+            _indexesRequireRepairs.Clear();
+        }
+
+        public void Repair(IKey key, object entity)
+        {
+            foreach (var index in _indexesRequireRepairs)
+                index.Storage.Add(key, entity);
+        }
 
         public void Add(IKey key, object entity)
         {
-            foreach (var storage in _storages.Values)
-                storage.Add(key, entity);
+            foreach (var index in _indexes.Values)
+                index.Storage.Add(key, entity);
         }
 
         public void Update(IKey key, object entity)
         {
-            foreach (var storage in _storages.Values)
-                storage.Update(key, entity);
+            foreach (var index in _indexes.Values)
+                index.Storage.Update(key, entity);
         }
 
         public void Remove(IKey entityId)
         {
-            foreach (var storage in _storages.Values)
-                storage.Remove(entityId);
+            foreach (var index in _indexes.Values)
+                index.Storage.Remove(entityId);
         }
 
         public void CommitModifications()
         {
-            foreach (var storage in _storages.Values)
-                storage.CommitModifications();
+            foreach (var index in _indexes.Values)
+                index.CommitModifications();
         }
 
         public IEnumerable<IKey> Match(IEnumerable<EnigmaIndexOperation> indexOperations)
         {
             var keys = new List<IEnumerable<IKey>>();
             foreach (var indexOperation in indexOperations) {
-                IIndexStorage storage;
-                if (_storages.TryGetValue(indexOperation.UniqueName, out storage))
+                ITableIndex storage;
+                if (_indexes.TryGetValue(indexOperation.UniqueName, out storage))
                     keys.Add(storage.Match(indexOperation.Operation, indexOperation.Value));
             }
 
-            if (keys.Count == 0) return new IKey[] {};
+            if (keys.Count == 0) return Key.EmptyKeys;
             if (keys.Count == 1) return keys[0];
 
             // TODO: This might need to be rewritten to improve performance

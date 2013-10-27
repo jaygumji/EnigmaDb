@@ -1,6 +1,4 @@
-﻿using Enigma.IO;
-using Enigma.Store.Binary;
-using System;
+﻿using System;
 using System.IO;
 
 namespace Enigma.IO
@@ -9,11 +7,17 @@ namespace Enigma.IO
     {
 
         private readonly string _path;
+        private readonly StreamProviderSourceState _sourceState;
 
         public FileSystemStreamProvider(string path)
         {
             _path = path;
+            _sourceState = File.Exists(path)
+                ? StreamProviderSourceState.Reconnected
+                : StreamProviderSourceState.Created;
         }
+
+        public StreamProviderSourceState SourceState { get { return _sourceState; } }
 
         public IWriteStream AcquireWriteStream()
         {
@@ -38,53 +42,15 @@ namespace Enigma.IO
 
         public void ClearReadBuffers()
         {
+            // If we're going with a set amount of readers later on,
+            // this should clear the read buffer of all the readers
         }
 
         public void Dispose()
         {
+            // If we're going with a set amount of readers/writers,
+            // this should dispose of all the readers/writers
         }
 
     }
-
-    internal class PooledFileSystemStream : IWriteStream
-    {
-
-        private IStreamProvider _provider;
-        private FileStream _stream;
-
-        public PooledFileSystemStream(IStreamProvider provider, FileStream stream)
-        {
-            _provider = provider;
-            _stream = stream;
-        }
-
-        public Stream Stream { get { return _stream; } }
-        public long Length { get { return _stream.Length; } }
-
-        public long Seek(long offset, SeekOrigin origin)
-        {
-            return _stream.Seek(offset, origin);
-        }
-
-        public int Read(byte[] buffer, int offset, int count)
-        {
-            return _stream.Read(buffer, offset, count);
-        }
-
-        public void Dispose()
-        {
-            _provider.Return(this);
-        }
-
-        public void Write(byte[] buffer, int offset, int count)
-        {
-            _stream.Write(buffer, offset, count);
-        }
-
-        public void Flush(bool force)
-        {
-            _stream.Flush(force);
-        }
-    }
-
 }

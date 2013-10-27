@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Enigma.Threading;
 
 namespace Enigma.Store.Binary
 {
@@ -29,6 +30,8 @@ namespace Enigma.Store.Binary
         private readonly object _writeHeaderLock = new object();
         private readonly object _writeLeftLock = new object();
         private readonly object _writeRightLock = new object();
+        private readonly ILock<long> _writeLeftOffsetLock = new Lock<long>();
+        private readonly ILock<long> _writeRightOffsetLock = new Lock<long>();
 
         private readonly IBinaryStore _left;
         private readonly IBinaryStore _right;
@@ -119,7 +122,7 @@ namespace Enigma.Store.Binary
             {
                 if (offset >= _lastFlushedRightOffset) return;
 
-                _writeRightStream.Flush(true);
+                _writeRightStream.FlushForced();
                 // We must also make sure to clear the read buffer so it reads the new data
                 _provider.ClearReadBuffers();
                 _lastFlushedRightOffset = _rightOffset;
@@ -134,7 +137,7 @@ namespace Enigma.Store.Binary
             {
                 if (offset < _lastFlushedLeftOffset) return;
 
-                _writeLeftStream.Flush(true);
+                _writeLeftStream.FlushForced();
                 // We must also make sure to clear the read buffer so it reads the new data
                 _provider.ClearReadBuffers();
                 _lastFlushedLeftOffset = _leftOffset;
@@ -157,21 +160,25 @@ namespace Enigma.Store.Binary
 
         public void WriteLeft(long storeOffset, byte[] data)
         {
-            lock (_writeLeftLock)
-            {
-                _writeLeftStream.Seek(_start + storeOffset, SeekOrigin.Begin);
-                _writeLeftStream.Write(data, 0, data.Length);
-                _writeLeftStream.Seek(_start + _leftOffset, SeekOrigin.Begin);
+            using (_writeLeftOffsetLock.Enter(storeOffset)) {
+                using (var writeStream = _provider.AcquireWriteStream()) {
+                    writeStream.Seek(_start + storeOffset, SeekOrigin.Begin);
+                    writeStream.Write(data, 0, data.Length);
+                    if (_lastFlushedLeftOffset > storeOffset)
+                        _lastFlushedLeftOffset = storeOffset - 1;
+                }
             }
         }
 
         public void WriteRight(long storeOffset, byte[] data)
         {
-            lock (_writeRightLock)
-            {
-                _writeRightStream.Seek(_start + storeOffset, SeekOrigin.Begin);
-                _writeRightStream.Write(data, 0, data.Length);
-                _writeRightStream.Seek(_start + _rightOffset, SeekOrigin.Begin);
+            using (_writeRightOffsetLock.Enter(storeOffset)) {
+                using (var writeStream = _provider.AcquireWriteStream()) {
+                    writeStream.Seek(_start + storeOffset, SeekOrigin.Begin);
+                    writeStream.Write(data, 0, data.Length);
+                    if (_lastFlushedRightOffset > storeOffset)
+                        _lastFlushedRightOffset = storeOffset - 1;
+                }
             }
         }
 
@@ -187,6 +194,7 @@ namespace Enigma.Store.Binary
 
                 storeOffset = _leftOffset;
                 _writeLeftStream.Write(data, 0, data.Length);
+                _writeLeftStream.Flush();
                 _leftOffset += data.Length;
                 UpdateLeftOffset();
                 return true;
@@ -205,6 +213,7 @@ namespace Enigma.Store.Binary
 
                 _writeRightStream.Seek(-data.Length, SeekOrigin.Current);
                 _writeRightStream.Write(data, 0, data.Length);
+                _writeRightStream.Flush();
                 _rightOffset -= data.Length;
                 _writeRightStream.Seek(-data.Length, SeekOrigin.Current);
                 storeOffset = _rightOffset;

@@ -7,21 +7,17 @@ using Enigma.Store.Keys;
 
 namespace Enigma.Store.Indexes
 {
-    public class ComparableIndex<T> : IComparableIndex<T>
+    public class ComparableIndexAlgorithm<T> : IComparableIndexAlgorithm<T>
         where T : IComparable<T>
     {
-        private readonly string _uniqueName;
         private readonly IBinaryConverter<T> _converter;
         private ImmutableSortedCollection<T, IList<IKey>> _indexedValues;
 
-        public ComparableIndex(string uniqueName)
+        public ComparableIndexAlgorithm()
         {
-            _uniqueName = uniqueName;
             var information = BinaryInformation.Of<T>();
             _converter = information.Converter;
         }
-
-        public string UniqueName { get { return _uniqueName; } }
 
         public void Update(ImmutableSortedCollection<T, IList<IKey>> indexedValues)
         {
@@ -136,37 +132,37 @@ namespace Enigma.Store.Indexes
             }).Distinct().ToList();
         }
 
-        IEnumerable<IKey> IComparableIndex.Equal(byte[] value)
+        IEnumerable<IKey> IComparableIndexAlgorithm.Equal(byte[] value)
         {
             return Equal(_converter.Convert(value));
         }
 
-        IEnumerable<IKey> IComparableIndex.NotEqual(byte[] value)
+        IEnumerable<IKey> IComparableIndexAlgorithm.NotEqual(byte[] value)
         {
             return NotEqual(_converter.Convert(value));
         }
 
-        IEnumerable<IKey> IComparableIndex.GreaterThan(byte[] value)
+        IEnumerable<IKey> IComparableIndexAlgorithm.GreaterThan(byte[] value)
         {
             return GreaterThan(_converter.Convert(value));
         }
 
-        IEnumerable<IKey> IComparableIndex.GreaterThanOrEqual(byte[] value)
+        IEnumerable<IKey> IComparableIndexAlgorithm.GreaterThanOrEqual(byte[] value)
         {
             return GreaterThanOrEqual(_converter.Convert(value));
         }
 
-        IEnumerable<IKey> IComparableIndex.LessThan(byte[] value)
+        IEnumerable<IKey> IComparableIndexAlgorithm.LessThan(byte[] value)
         {
             return LessThan(_converter.Convert(value));
         }
 
-        IEnumerable<IKey> IComparableIndex.LessThanOrEqual(byte[] value)
+        IEnumerable<IKey> IComparableIndexAlgorithm.LessThanOrEqual(byte[] value)
         {
             return LessThanOrEqual(_converter.Convert(value));
         }
 
-        IEnumerable<IKey> IComparableIndex.Contains(IEnumerable<byte[]> values)
+        IEnumerable<IKey> IComparableIndexAlgorithm.Contains(IEnumerable<byte[]> values)
         {
             return Contains(values.Select(value => _converter.Convert(value)));
         }

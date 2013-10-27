@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Enigma.IO;
 using Enigma.Store.Indexes;
 using Enigma.Store.Keys;
 using Enigma.Store.Memory;
@@ -14,7 +15,7 @@ namespace Enigma.Test.Index
         private class TestContext
         {
             public MemoryBinaryStore Store { get; set; }
-            public IndexStorage<int> Storage { get; set; } 
+            public TableIndex<int> Index { get; set; } 
         }
 
         private TestContext CreateTarget()
@@ -32,7 +33,8 @@ namespace Enigma.Test.Index
             };
             var storage = new IndexStorage<int>(store, configuration);
             storage.Initialize();
-            return new TestContext {Store = store, Storage = storage};
+            var index = new TableIndex<int>(storage, new ComparableIndexAlgorithm<int>());
+            return new TestContext {Store = store, Index = index};
         }
 
         [TestMethod]
@@ -45,17 +47,17 @@ namespace Enigma.Test.Index
                 Nationality = Nationality.Sweden
             };
 
-            context.Storage.Add(new StringKey(car.RegistrationNumber), car);
-            context.Storage.CommitModifications();
+            context.Index.Storage.Add(new StringKey(car.RegistrationNumber), car);
+            context.Index.CommitModifications();
 
-            var actual = context.Storage.Match(CompareOperation.Equal, (int)Nationality.Sweden).ToList();
+            var actual = context.Index.Match(CompareOperation.Equal, (int)Nationality.Sweden).ToList();
             Assert.AreEqual(1, actual.Count);
             Assert.AreEqual(new StringKey(car.RegistrationNumber), actual.First());
 
             var store = new MemoryBinaryStore(context.Store.ToArray());
             context = CreateTarget(store);
 
-            actual = context.Storage.Match(CompareOperation.Equal, (int)Nationality.Sweden).ToList();
+            actual = context.Index.Match(CompareOperation.Equal, (int)Nationality.Sweden).ToList();
             Assert.AreEqual(1, actual.Count);
             Assert.AreEqual(new StringKey(car.RegistrationNumber), actual.First());
         }
@@ -70,21 +72,21 @@ namespace Enigma.Test.Index
                 Nationality = Nationality.Sweden
             };
 
-            context.Storage.Add(new StringKey(car.RegistrationNumber), car);
-            context.Storage.CommitModifications();
+            context.Index.Storage.Add(new StringKey(car.RegistrationNumber), car);
+            context.Index.CommitModifications();
 
-            var actual = context.Storage.Match(CompareOperation.Equal, (int) Nationality.Sweden).ToList();
+            var actual = context.Index.Match(CompareOperation.Equal, (int) Nationality.Sweden).ToList();
             Assert.AreEqual(1, actual.Count);
             Assert.AreEqual(new StringKey(car.RegistrationNumber), actual.First());
 
             car.Nationality = Nationality.Denmark;
-            context.Storage.Update(new StringKey(car.RegistrationNumber), car);
-            context.Storage.CommitModifications();
+            context.Index.Storage.Update(new StringKey(car.RegistrationNumber), car);
+            context.Index.CommitModifications();
 
-            actual = context.Storage.Match(CompareOperation.Equal, (int)Nationality.Sweden).ToList();
+            actual = context.Index.Match(CompareOperation.Equal, (int)Nationality.Sweden).ToList();
             Assert.AreEqual(0, actual.Count);
 
-            actual = context.Storage.Match(CompareOperation.Equal, (int)Nationality.Denmark).ToList();
+            actual = context.Index.Match(CompareOperation.Equal, (int)Nationality.Denmark).ToList();
             Assert.AreEqual(1, actual.Count);
             Assert.AreEqual(new StringKey(car.RegistrationNumber), actual.First());
         }
@@ -99,18 +101,18 @@ namespace Enigma.Test.Index
                 Nationality = Nationality.Sweden
             };
 
-            context.Storage.Add(new StringKey(car.RegistrationNumber), car);
-            context.Storage.CommitModifications();
+            context.Index.Storage.Add(new StringKey(car.RegistrationNumber), car);
+            context.Index.CommitModifications();
 
-            var actual = context.Storage.Match(CompareOperation.Equal, (int)Nationality.Sweden).ToList();
+            var actual = context.Index.Match(CompareOperation.Equal, (int)Nationality.Sweden).ToList();
             Assert.AreEqual(1, actual.Count);
             Assert.AreEqual(new StringKey(car.RegistrationNumber), actual.First());
 
             car.Nationality = Nationality.Denmark;
-            context.Storage.Remove(new StringKey(car.RegistrationNumber));
-            context.Storage.CommitModifications();
+            context.Index.Storage.Remove(new StringKey(car.RegistrationNumber));
+            context.Index.CommitModifications();
 
-            actual = context.Storage.Match(CompareOperation.Equal, (int)Nationality.Sweden).ToList();
+            actual = context.Index.Match(CompareOperation.Equal, (int)Nationality.Sweden).ToList();
             Assert.AreEqual(0, actual.Count);
         }
 

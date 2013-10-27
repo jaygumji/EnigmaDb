@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using Enigma.Modelling;
 
 namespace Enigma.Store.Indexes
 {
-    public interface IComparableIndex : IIndex
+    public interface IComparableIndexAlgorithm : IIndexAlgorithm
     {
         IEnumerable<IKey> Equal(byte[] value);
         IEnumerable<IKey> NotEqual(byte[] value);
@@ -13,7 +14,7 @@ namespace Enigma.Store.Indexes
         IEnumerable<IKey> Contains(IEnumerable<byte[]> values);
     }
 
-    public interface IComparableIndex<T> : IComparableIndex
+    public interface IComparableIndexAlgorithm<T> : IComparableIndexAlgorithm, IIndexAlgorithm<T>
     {
         IEnumerable<IKey> Equal(T value);
         IEnumerable<IKey> NotEqual(T value);

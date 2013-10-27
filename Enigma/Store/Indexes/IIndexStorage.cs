@@ -1,20 +1,16 @@
-﻿using Enigma.Db.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+
 namespace Enigma.Store.Indexes
 {
-    interface IIndexStorage
+    public interface IIndexStorage
     {
-        IComparableIndex Index { get; }
         bool IsModified { get; }
+        bool IsEmpty { get; }
 
         void Initialize();
 
         void Add(IKey key, object entity);
         void Update(IKey key, object entity);
         void Remove(IKey entityId);
-
-        void CommitModifications();
-        
-        IEnumerable<IKey> Match(CompareOperation operation, object value);
     }
 }

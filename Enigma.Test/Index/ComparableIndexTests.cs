@@ -11,9 +11,9 @@ namespace Enigma.Test.Index
     public class ComparableIndexTests
     {
 
-        private static IComparableIndex<int> CreateIndex()
+        private static IComparableIndexAlgorithm<int> CreateIndex()
         {
-            var index = new ComparableIndex<int>("MyTest");
+            var index = new ComparableIndexAlgorithm<int>();
             index.Update(new ImmutableSortedCollection<int, IList<IKey>>(new SortedList<int, IList<IKey>> {
                 {0, new List<IKey> {
                     new StringKey("Value1")

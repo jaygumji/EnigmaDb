@@ -6,16 +6,21 @@ namespace Enigma.IO
     {
 
         private readonly byte[] _buffer;
+        private readonly StreamProviderSourceState _sourceState;
 
         public MemoryStreamProvider(int capacity)
             : this(new byte[capacity])
         {
+            _sourceState = StreamProviderSourceState.Created;
         }
 
         public MemoryStreamProvider(byte[] buffer)
         {
             _buffer = buffer;
+            _sourceState = StreamProviderSourceState.Reconnected;
         }
+
+        public StreamProviderSourceState SourceState { get { return _sourceState; } }
 
         public IWriteStream AcquireWriteStream()
         {

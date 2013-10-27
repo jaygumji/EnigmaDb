@@ -40,7 +40,11 @@ namespace Enigma.Db.Embedded
 
         internal EntityTable Table(string name)
         {
-            return _tables.GetOrAdd(name, n => new EntityTable(_service.CreateStorage(name), _service.CreateIndexes(name)));
+            return _tables.GetOrAdd(name, n => {
+                var storage = _service.CreateStorage(name);
+                var indexes = _service.CreateIndexes(name);
+                return new EntityTable(storage, indexes);
+            });
         }
 
         public void Truncate()

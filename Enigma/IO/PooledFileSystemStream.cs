@@ -2,20 +2,19 @@
 
 namespace Enigma.IO
 {
-    internal class PooledMemoryStream : IWriteStream
+    internal class PooledFileSystemStream : IWriteStream
     {
 
         private IStreamProvider _provider;
-        private readonly MemoryStream _stream;
+        private FileStream _stream;
 
-        public PooledMemoryStream(IStreamProvider provider, MemoryStream stream)
+        public PooledFileSystemStream(IStreamProvider provider, FileStream stream)
         {
             _provider = provider;
             _stream = stream;
         }
 
-        public MemoryStream Stream { get { return _stream; } }
-
+        public Stream Stream { get { return _stream; } }
         public long Length { get { return _stream.Length; } }
 
         public long Seek(long offset, SeekOrigin origin)
@@ -42,10 +41,11 @@ namespace Enigma.IO
         {
             _stream.Flush();
         }
-    
+
         public void FlushForced()
         {
-            _stream.Flush();
+            _stream.Flush(true);
         }
+
     }
 }
