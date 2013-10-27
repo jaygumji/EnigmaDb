@@ -7,6 +7,13 @@ namespace Enigma.ProofOfConcept.Entities
 {
     public class User
     {
+
+        public User()
+        {
+            Id = Guid.NewGuid();
+        }
+
+        public Guid Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Nick { get; set; }

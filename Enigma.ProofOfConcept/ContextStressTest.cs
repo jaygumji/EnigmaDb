@@ -11,100 +11,44 @@ namespace Enigma.ProofOfConcept
     {
 
         private static readonly Int32KeyGenerator KeyGenerator = new Int32KeyGenerator(3);
+        private static readonly Guid CategoryTestId = Guid.NewGuid();
+        private static readonly Guid CategoryDatabaseId = Guid.NewGuid();
+        private static readonly Guid SirTestUserId = Guid.NewGuid();
+
+        private static void SetupBasicCategoriesAndUsers(CommunityContext context)
+        {
+            context.Categories.Add(new Category {
+                Id = CategoryTestId,
+                Name = "Test"
+            });
+            context.Categories.Add(new Category {
+                Id = CategoryDatabaseId,
+                Name = "Database"
+            });
+
+            context.Users.Add(new User {
+                Id = SirTestUserId,
+                FirstName = "Sir",
+                LastName = "Test",
+                Nick = "Testmaniac",
+                Email = "test@jaygumji.com",
+                Password = System.Guid.NewGuid().ToByteArray()
+            });
+        }
 
         private static Article CreateUniqueArticle()
         {
             var id = KeyGenerator.Next();
             var article = new Article
             {
-                Id = id,
                 Subject = "Autogeneration, entry " + id,
                 Body = "Stress test",
                 Tags = "enigma db document database stress test",
                 CreatedAt = new DateTime(new DateTime(2012, 12, 07, 10, 00, 00).Ticks + id),
-                Categories = new List<Category> { new Category { Name = "Test" } },
-                Author = new User
-                {
-                    FirstName = "Sir",
-                    LastName = "Test",
-                    Nick = "Testmaniac",
-                    Email = "test@jaygumji.com",
-                    Password = System.Guid.NewGuid().ToByteArray()
-                }
+                CategoryIds = {CategoryTestId},
+                AuthorId = SirTestUserId
             };
             return article;
-        }
-
-        public static void SimpleTest()
-        {
-            Article article;
-
-            using (var context = new CommunityContext())
-            {
-                context.Articles.ToArray();
-                if (!context.Articles.TryGet(1, out article))
-                {
-                    article = new Article
-                    {
-                        Id = 1,
-                        Subject = "Enigma Db",
-                        Body = "Welcome to EnigmaDb",
-                        Tags = "enigma db document database",
-                        CreatedAt = new DateTime(2012, 12, 07, 10, 00, 00),
-                        Categories = new List<Category> { new Category { Name = "Databases" } },
-                        Author = new User
-                        {
-                            FirstName = "Johan",
-                            LastName = "Johnsson",
-                            Nick = "JayGuMJi",
-                            Email = "johan.johnsson@outlook.com"
-                        }
-                    };
-                    context.Articles.Add(article);
-                }
-
-                article.Subject = "Changed to a much longer text that needs more space";
-
-                if (!context.Articles.TryGet(2, out article))
-                    context.Articles.Add(new Article
-                    {
-                        Id = 2,
-                        Subject = "Enigma Db and LINQ",
-                        Body = "It will work",
-                        Tags = "enigma db document database linq",
-                        CreatedAt = new DateTime(2013, 01, 27, 21, 00, 00),
-                        Categories = new List<Category> { new Category { Name = "Databases" } },
-                        Author = new User {
-                            FirstName = "Martin",
-                            LastName = "Van der Cal",
-                            Nick = "Cal",
-                            Email = "martin.vandercal@gmail.com"
-                        }
-                    });
-                var count = context.SaveChanges();
-                Console.WriteLine("Saved {0} changes", count);
-
-                article = context.Articles.Get(1);
-                Console.WriteLine("Article subject: " + article.Subject);
-            }
-
-            using (var context = new CommunityContext())
-            {
-                article = context.Articles.Get(2);
-                Console.WriteLine("Article subject: " + article.Subject);
-            }
-
-            using (var context = new CommunityContext())
-            {
-                var q = (from a in context.Articles
-                         where a.Author.Nick == "Cal" && a.CreatedAt > DateTime.Parse("2013-01-26")
-                         select a);
-
-                article = q.First();
-
-                Console.WriteLine("Linq selected Id is " + article.Id);
-            }
-
         }
 
         public static void MassiveInserts()

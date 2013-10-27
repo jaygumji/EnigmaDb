@@ -1,6 +1,7 @@
 ﻿using Enigma.Db;
 using Enigma.Db.Embedded;
 using Enigma.Entities;
+using Enigma.Modelling;
 using Enigma.ProofOfConcept.Entities;
 using System;
 using System.IO;
@@ -25,6 +26,14 @@ namespace Enigma.ProofOfConcept.Context
         }
 
         public ISet<Article> Articles { get; set; }
+        public ISet<Category> Categories { get; set; }
+        public ISet<User> Users { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.Entity<Article>()
+                .Index(a => a.CreatedAt);
+        }
 
     }
 }

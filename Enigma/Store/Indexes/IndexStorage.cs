@@ -4,6 +4,7 @@ using Enigma.Reflection;
 using Enigma.Store.Binary;
 using Enigma.Store.Keys;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Enigma.Store.Indexes
@@ -11,7 +12,7 @@ namespace Enigma.Store.Indexes
     public class IndexStorage<T> : IIndexStorage
     {
         private readonly IBinaryStore _store;
-        private readonly Dictionary<IKey, IDictionary<T, IndexEntry<T>>> _entries; 
+        private readonly ConcurrentDictionary<IKey, IDictionary<T, IndexEntry<T>>> _entries; 
         private SortedDictionary<T, IList<IKey>> _values;
         private readonly IBinaryInformation<T> _information;
         private readonly IBinaryInformation<Int32> _lengthInformation;
@@ -29,7 +30,7 @@ namespace Enigma.Store.Indexes
             _isActiveInformation = BinaryInformation.Of<Boolean>();
             _extractor = new PropertyExtractor<T>(configuration.EntityType, configuration.UniqueName);
 
-            _entries = new Dictionary<IKey, IDictionary<T, IndexEntry<T>>>();
+            _entries = new ConcurrentDictionary<IKey, IDictionary<T, IndexEntry<T>>>();
         }
 
         public void Initialize()
@@ -40,11 +41,25 @@ namespace Enigma.Store.Indexes
             _sortedValues = new ImmutableSortedCollection<T, IList<IKey>>(_values);
         }
 
+        private IList<IKey> GetKeysOn(T value)
+        {
+            lock (_values) {
+                IList<IKey> keys;
+                if (!_values.TryGetValue(value, out keys)) {
+                    keys = new List<IKey>();
+                    _values.Add(value, keys);
+                }
+                return keys;
+            }
+        }
+
         private void ReevaluateIndex()
         {
             if (!_isModified) return;
             _isModified = false;
-            _sortedValues = new ImmutableSortedCollection<T, IList<IKey>>(_values);
+            lock (_values) {
+                _sortedValues = new ImmutableSortedCollection<T, IList<IKey>>(_values);
+            }
         }
 
         public void CommitTo(IIndexAlgorithm<T> indexAlgorithm)
@@ -109,12 +124,7 @@ namespace Enigma.Store.Indexes
         {
             var newValues = _extractor.Extract(entity);
 
-            IDictionary<T, IndexEntry<T>> entries;
-            if (!_entries.TryGetValue(key, out entries)) {
-                entries = new Dictionary<T, IndexEntry<T>>();
-                _entries.Add(key, entries);
-            }
-
+            var entries = _entries.GetOrAdd(key, k => new Dictionary<T, IndexEntry<T>>());
             foreach (var value in newValues)
                 AddValue(entries, key, value);
 
@@ -153,9 +163,8 @@ namespace Enigma.Store.Indexes
         public void Remove(IKey entityId)
         {
             IDictionary<T, IndexEntry<T>> entries;
-            if (_entries.TryGetValue(entityId, out entries)) {
+            if (_entries.TryRemove(entityId, out entries)) {
                 RemoveValues(entityId, entries.Values);
-                _entries.Remove(entityId);
                 _isModified = true;
             }
         }
@@ -198,12 +207,9 @@ namespace Enigma.Store.Indexes
 
             entries.Add(value, entry);
 
-            IList<IKey> keys;
-            if (!_values.TryGetValue(value, out keys)) {
-                keys = new List<IKey>();
-                _values.Add(value, keys);
-            }
-            keys.Add(key);
+            var keys = GetKeysOn(value);
+            lock (keys)
+                keys.Add(key);
         }
 
         private void RemoveValues(IKey key, IEnumerable<IndexEntry<T>> entries)
