@@ -1,3 +1,7 @@
+Version 0.1.3
+=============
+- Corrected multi threading issue with indexes
+
 Version 0.1.2
 =============
 Indexes are now stable to use with the compare algorithm on the top level for filtering.
