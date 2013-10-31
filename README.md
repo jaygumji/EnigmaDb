@@ -21,12 +21,12 @@ What's working right now?
 - The storage of data
 - Truncating data with a method call
 - Indexes on simple properties on top level node of the entities
-- Text compare algorithm for indexes to be able to use StartsWith, EndsWith and Contains on text
 - Data retrieval through LINQ
 - Inmemory storage, great for unittests
 
 What's on the roadmap?
 - Indexes that works with all type of properties
+- Text compare algorithm for indexes to be able to use StartsWith, EndsWith and Contains on text
 - Ability to add jobs that runs at a scheduled time
 - Maintainance job that truncates database at night and rebuilds indexes
 - Better lock management to improve write performance
