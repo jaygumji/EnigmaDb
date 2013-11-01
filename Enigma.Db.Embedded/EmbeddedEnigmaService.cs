@@ -1,4 +1,5 @@
-﻿using Enigma.Db.Engine;
+﻿using System;
+using Enigma.Db.Engine;
 using Enigma.Db.Linq;
 using Enigma.Modelling;
 using Enigma.Store;
@@ -6,22 +7,27 @@ using Enigma.Store.FileSystem;
 using Enigma.Store.Memory;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using Enigma.Threading;
 
 namespace Enigma.Db.Embedded
 {
-    public class EmbeddedEnigmaService
+    public class EmbeddedEnigmaService : IDisposable
     {
 
         private readonly ConcurrentDictionary<string, EntityTable> _tables;
         private readonly IStorageFactoryService _service;
+        private readonly BackgroundQueue _backgroundQueue;
 
         public EmbeddedEnigmaService(IStorageFactoryService service)
         {
             _tables = new ConcurrentDictionary<string, EntityTable>();
             _service = service;
+            _backgroundQueue = new BackgroundQueue();
+            _backgroundQueue.Start();
         }
+
+        public BackgroundQueue BackgroundQueue { get { return _backgroundQueue; } }
 
         public static EmbeddedEnigmaService CreateFileSystem(string baseDirectory)
         {
@@ -99,6 +105,11 @@ namespace Enigma.Db.Embedded
         public void Synchronize(Model model)
         {
             _service.SynchronizeModel(model);
+        }
+
+        public void Dispose()
+        {
+            _backgroundQueue.Dispose();
         }
     }
 }

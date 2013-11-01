@@ -59,7 +59,7 @@ namespace Enigma.Db.Embedded
             if (!_table.Storage.TryAdd(key, content))
                 return false;
 
-            _table.Indexes.Add(key, entity);
+            _service.BackgroundQueue.Enqueue(() => _table.Indexes.Add(key, entity));
             return true;
         }
 
@@ -71,7 +71,7 @@ namespace Enigma.Db.Embedded
             if (!_table.Storage.TryUpdate(key, data))
                 return false;
 
-            _table.Indexes.Update(key, entity);
+            _service.BackgroundQueue.Enqueue(() => _table.Indexes.Update(key, entity));
             return true;
         }
 
@@ -82,13 +82,13 @@ namespace Enigma.Db.Embedded
             if (!_table.Storage.TryRemove(key))
                 return false;
 
-            _table.Indexes.Remove(key);
+            _service.BackgroundQueue.Enqueue(() => _table.Indexes.Remove(key));
             return true;
         }
 
         public void CommitModifications()
         {
-            _table.Indexes.CommitModifications();
+            _service.BackgroundQueue.Enqueue(() => _table.Indexes.CommitModifications());
         }
 
         public bool TryGet(object id, out T entity)

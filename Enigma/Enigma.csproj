@@ -217,13 +217,20 @@
     <Compile Include="Store\StorageFragment.cs" />
     <Compile Include="Store\StorageFragmentCollection.cs" />
     <Compile Include="Store\TableOfContent.cs" />
+    <Compile Include="Threading\AsyncBackgroundTask.cs" />
+    <Compile Include="Threading\BackgroundQueue.cs" />
+    <Compile Include="Threading\BackgroundTask.cs" />
+    <Compile Include="Threading\CompositeBackgroundTask.cs" />
     <Compile Include="Threading\ExclusiveLock.cs" />
     <Compile Include="Threading\ExclusiveLockHandle.cs" />
+    <Compile Include="Threading\IBackgroundTask.cs" />
     <Compile Include="Threading\ILock.cs" />
     <Compile Include="Threading\ILockHandle.cs" />
+    <Compile Include="Threading\InvokeHandler.cs" />
     <Compile Include="Threading\Lock.cs" />
     <Compile Include="Threading\LockHandle.cs" />
     <Compile Include="Threading\LockObject.cs" />
+    <Compile Include="Threading\Times.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
