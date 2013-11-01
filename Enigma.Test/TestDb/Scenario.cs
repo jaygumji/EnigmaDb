@@ -97,6 +97,7 @@ namespace Enigma.Test.TestDb
             context.Cars.Add(NDN022);
             context.Cars.Add(MDS800);
             context.SaveChanges();
+            context.WaitForBackgroundQueue();
             return context;
         }
     }

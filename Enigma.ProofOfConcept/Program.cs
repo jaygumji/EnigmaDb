@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Enigma.ProofOfConcept.Context;
 
 namespace Enigma.ProofOfConcept
 {
@@ -13,6 +9,7 @@ namespace Enigma.ProofOfConcept
         public static void Main(string[] args)
         {
             ContextStressTest.MassiveInserts();
+            CommunityContext.Service.Dispose();
             Console.ReadLine();
         }
 

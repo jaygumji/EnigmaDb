@@ -34,6 +34,10 @@ namespace Enigma.ProofOfConcept
                 Email = "test@jaygumji.com",
                 Password = System.Guid.NewGuid().ToByteArray()
             });
+
+            var article = CreateUniqueArticle();
+            context.Articles.Add(article);
+            context.SaveChanges();
         }
 
         private static Article CreateUniqueArticle()
@@ -53,9 +57,12 @@ namespace Enigma.ProofOfConcept
 
         public static void MassiveInserts()
         {
+            using (var context = new CommunityContext())
+                SetupBasicCategoriesAndUsers(context);
+
             var startedAt = DateTime.Now;
             var tasks = new List<Task>();
-            for (var i = 0; i < 10000; i++)
+            for (var i = 0; i < 5000; i++)
             {
                 var task = Task.Factory.StartNew(() =>
                 {
@@ -75,18 +82,19 @@ namespace Enigma.ProofOfConcept
             Task.WaitAll(tasks.ToArray());
             var allTasksCompletedAt = DateTime.Now;
 
-            Console.WriteLine("All tasks completed in {0}, from all tasks created {1}", allTasksCompletedAt.Subtract(startedAt), allTasksCompletedAt.Subtract(tasksCreatedAt));
+            Console.WriteLine("All tasks completed in {0}", allTasksCompletedAt.Subtract(startedAt));
+            Console.WriteLine("from all tasks created {0}", allTasksCompletedAt.Subtract(tasksCreatedAt));
 
-            var beganWriting10000PostsOn1Thread = DateTime.Now;
-            Console.WriteLine("Preparing to write 10000 posts on 1 thread");
+            var beganWriting5000PostsOn1Thread = DateTime.Now;
+            Console.WriteLine("Preparing to write 5000 posts on 1 thread");
             using (var context = new CommunityContext())
             {
-                for (var i = 0; i < 10000; i++)
+                for (var i = 0; i < 5000; i++)
                     context.Articles.Add(CreateUniqueArticle());
                 
                 var count = context.SaveChanges();
 
-                Console.WriteLine("Saved {0} additional articles in the database, time taken: {1}", count, DateTime.Now.Subtract(beganWriting10000PostsOn1Thread));
+                Console.WriteLine("Saved {0} additional articles in the database, time taken: {1}", count, DateTime.Now.Subtract(beganWriting5000PostsOn1Thread));
             }
 
             using (var context = new CommunityContext())
@@ -108,7 +116,7 @@ namespace Enigma.ProofOfConcept
                 var articles = context.Articles.Take(10);
                 foreach (var article in articles)
                 {
-                    Console.WriteLine("Article ({0}) with subject {1} was retrieved", article.Id, article.Subject);
+                    Console.WriteLine("Article with subject {0} was retrieved", article.Subject);
                 }
             }
 

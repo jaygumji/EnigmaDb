@@ -9,9 +9,10 @@ namespace Enigma.Threading
     {
         private readonly Thread _thread;
         private readonly SortedList<DateTime, CompositeBackgroundTask> _scheduledTasks;
-        private readonly List<IBackgroundTask> _tasks; 
         private readonly AutoResetEvent _event;
-
+        private readonly object _tasksLock = new object();
+        private List<IBackgroundTask> _tasks; 
+        
         private DateTime _nextTaskAt;
         private bool _continue;
 
@@ -35,8 +36,9 @@ namespace Enigma.Threading
             _scheduledTasks = new SortedList<DateTime, CompositeBackgroundTask>();
             _tasks = new List<IBackgroundTask>();
             _event = new AutoResetEvent(false);
-
+            
             MaxIdleTime = TimeSpan.FromMinutes(5);
+            _continue = true;
         }
 
         public void Start()
@@ -62,7 +64,7 @@ namespace Enigma.Threading
 
         public void Enqueue(IBackgroundTask task)
         {
-            lock (_tasks)
+            lock (_tasksLock)
                 _tasks.Add(task);
 
             UpdateBackgroundWorker();
@@ -86,6 +88,12 @@ namespace Enigma.Threading
             UpdateBackgroundWorker(dueAt);
         }
 
+        public void WaitUntilEmpty()
+        {
+            while (_tasks.Count > 0)
+                Thread.Sleep(TimeSpan.FromMilliseconds(10));
+        }
+
         private void UpdateBackgroundWorker()
         {
             _event.Set();
@@ -102,6 +110,11 @@ namespace Enigma.Threading
         private void ThreadRun(object obj)
         {
             while (_continue){
+                if (_tasks.Count > 0) {
+                    foreach (var task in DequeueTasks())
+                        task.Invoke();
+                }
+
                 if (_scheduledTasks.Count == 0) {
                     _event.WaitOne(MaxIdleTime);
                     continue;
@@ -114,9 +127,6 @@ namespace Enigma.Threading
                     continue;
                 }
 
-                foreach (var task in DequeueTasks())
-                    task.Invoke();
-
                 var dueTasks = GetDueTasks(now);
                 foreach (var task in dueTasks)
                     task.Invoke();
@@ -125,8 +135,12 @@ namespace Enigma.Threading
 
         private IEnumerable<IBackgroundTask> DequeueTasks()
         {
-            lock (_tasks)
-                return _tasks.ToList();
+            var tasks = _tasks;
+
+            lock (_tasksLock)
+                _tasks = new List<IBackgroundTask>();
+
+            return tasks;
         }
 
         private IEnumerable<IBackgroundTask> GetDueTasks(DateTime dueAt)

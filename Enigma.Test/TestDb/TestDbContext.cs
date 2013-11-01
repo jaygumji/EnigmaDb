@@ -8,14 +8,25 @@ namespace Enigma.Test.TestDb
 {
     public class TestDbContext : EnigmaContext
     {
+        private readonly EmbeddedEnigmaService _service;
 
         private static EmbeddedEnigmaService CreateService()
         {
             return EmbeddedEnigmaService.CreateMemory();
         }
 
-        public TestDbContext() : base(new EmbeddedEnigmaConnection(CreateService()))
+        public TestDbContext() : this(CreateService())
         {
+        }
+
+        public TestDbContext(EmbeddedEnigmaService service) : base(new EmbeddedEnigmaConnection(service))
+        {
+            _service = service;
+        }
+
+        public void WaitForBackgroundQueue()
+        {
+            _service.BackgroundQueue.WaitUntilEmpty();
         }
 
         protected override void OnModelCreating(Modelling.ModelBuilder builder)
