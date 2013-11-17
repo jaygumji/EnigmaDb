@@ -43,14 +43,14 @@ namespace Enigma.Store.Indexes
 
         private IList<IKey> GetKeysOn(T value)
         {
+            IList<IKey> keys;
             lock (_values) {
-                IList<IKey> keys;
                 if (!_values.TryGetValue(value, out keys)) {
                     keys = new List<IKey>();
                     _values.Add(value, keys);
                 }
-                return keys;
             }
+            return keys;
         }
 
         private void ReevaluateIndex()

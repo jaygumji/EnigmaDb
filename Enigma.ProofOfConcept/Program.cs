@@ -8,9 +8,11 @@ namespace Enigma.ProofOfConcept
 
         public static void Main(string[] args)
         {
-            ContextStressTest.MassiveInserts();
-            CommunityContext.Service.Dispose();
-            Console.ReadLine();
+            var ui = new ConsoleUI();
+            ui.AddCommand(new StressTestMassiveInserts());
+            ui.AddCommand(new InstrumentationProfiling());
+            ui.AddCommand(new ResourceContentionProfiling());
+            ui.Run();
         }
 
     }

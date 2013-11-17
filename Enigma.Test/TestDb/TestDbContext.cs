@@ -26,7 +26,7 @@ namespace Enigma.Test.TestDb
 
         public void WaitForBackgroundQueue()
         {
-            _service.BackgroundQueue.WaitUntilEmpty();
+            _service.BackgroundQueue.WaitUntilIdle();
         }
 
         protected override void OnModelCreating(Modelling.ModelBuilder builder)

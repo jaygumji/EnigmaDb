@@ -1,17 +1,10 @@
-﻿using Enigma.Binary;
-using Enigma.IO;
-using Enigma.Modelling;
+﻿using Enigma.IO;
 using Enigma.ProtocolBuffer;
 using Enigma.Store;
 using Enigma.Store.Binary;
-using Enigma.Store.FileSystem;
 using Enigma.Store.Keys;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Enigma.ProofOfConcept
 {

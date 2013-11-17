@@ -1,34 +1,29 @@
-﻿using Enigma.Binary;
+﻿using System.Collections.Concurrent;
+using System.Runtime.InteropServices;
+using Enigma.Binary;
 using Enigma.Modelling;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using ProtoBuf.Meta;
 
 namespace Enigma.ProtocolBuffer
 {
     public class ProtocolBufferBinaryConverter<T> : IBinaryConverter<T>
     {
 
-        private readonly ProtoBuf.Meta.RuntimeTypeModel _typeModel;
+        private readonly TypeModel _typeModel;
 
-        public ProtocolBufferBinaryConverter() : this(Model.ByConvention<T>())
+        public ProtocolBufferBinaryConverter()
         {
+            _typeModel = TypeModelBuilder.Create<T>();
         }
 
         public ProtocolBufferBinaryConverter(Model model)
         {
-            _typeModel = ProtoBuf.Meta.TypeModel.Create();
-            foreach (var entityMap in model.EntityMaps)
-                ApplyEntityMap(entityMap);
-        }
-
-        private void ApplyEntityMap(IEntityMap entityMap)
-        {
-            var metaType = _typeModel.Add(entityMap.EntityType, false);
-            foreach (var propertyMap in entityMap.Properties)
-                metaType.Add(propertyMap.Index, propertyMap.PropertyName);
+            _typeModel = TypeModelBuilder.Create(model);
         }
 
         public T Convert(byte[] value)

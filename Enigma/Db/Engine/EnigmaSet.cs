@@ -14,13 +14,13 @@ namespace Enigma.Db
     {
         private readonly IEnigmaEntityEngine<T> _engine;
         private readonly IChangeManager _changeManager;
-        private readonly IQueryable<T> _queryable;
+        private readonly Lazy<IQueryable<T>> _queryable;
         
         public EnigmaSet(IEnigmaEngine engine, IChangeManager changeManager)
         {
             _engine = engine.GetEntityEngine<T>();
             _changeManager = changeManager;
-            _queryable = new EnigmaQueryable<T>(engine, changeManager.Model);
+            _queryable = new Lazy<IQueryable<T>>(() => new EnigmaQueryable<T>(engine, changeManager.Model));
         }
 
         public void Add(T entity)
@@ -52,10 +52,9 @@ namespace Enigma.Db
             return false;
         }
 
-
         public System.Collections.Generic.IEnumerator<T> GetEnumerator()
         {
-            return _queryable.GetEnumerator();
+            return _queryable.Value.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -63,10 +62,10 @@ namespace Enigma.Db
             return GetEnumerator();
         }
 
-        Type IQueryable.ElementType { get { return _queryable.ElementType; } }
+        Type IQueryable.ElementType { get { return _queryable.Value.ElementType; } }
 
-        Expression IQueryable.Expression { get { return _queryable.Expression; } }
+        Expression IQueryable.Expression { get { return _queryable.Value.Expression; } }
 
-        IQueryProvider IQueryable.Provider { get { return _queryable.Provider; } }
+        IQueryProvider IQueryable.Provider { get { return _queryable.Value.Provider; } }
     }
 }

@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 
 namespace Enigma.Threading
 {
+    /// <summary>
+    /// Manages a queue of work in the background with FIFO
+    /// </summary>
     public class BackgroundQueue : IDisposable
     {
         private readonly Thread _thread;
         private readonly SortedList<DateTime, CompositeBackgroundTask> _scheduledTasks;
         private readonly AutoResetEvent _event;
+        private readonly ManualResetEventSlim _idleEvent;
         private readonly object _tasksLock = new object();
         private List<IBackgroundTask> _tasks; 
         
@@ -28,7 +31,7 @@ namespace Enigma.Threading
         public TimeSpan MaxIdleTime { get; set; }
 
         /// <summary>
-        /// Create a new instance of <see cref="BackgroundQueue"/>
+        /// Initializes a new instance of the <see cref="BackgroundQueue"/> class.
         /// </summary>
         public BackgroundQueue()
         {
@@ -36,32 +39,41 @@ namespace Enigma.Threading
             _scheduledTasks = new SortedList<DateTime, CompositeBackgroundTask>();
             _tasks = new List<IBackgroundTask>();
             _event = new AutoResetEvent(false);
+            _idleEvent = new ManualResetEventSlim(true);
             
             MaxIdleTime = TimeSpan.FromMinutes(5);
             _continue = true;
         }
 
-        public void Start()
-        {
-            _thread.Start();
-        }
-
-        public void Stop()
+        private void Stop()
         {
             _continue = false;
             _event.Set();
         }
 
+        /// <summary>
+        /// Enqueues the specified invoker.
+        /// </summary>
+        /// <param name="invoker">The invoker.</param>
         public void Enqueue(InvokeHandler invoker)
         {
             Enqueue(new BackgroundTask {Invoker = invoker});
         }
 
+        /// <summary>
+        /// Enqueues the specified invoker.
+        /// </summary>
+        /// <param name="invoker">The invoker.</param>
+        /// <param name="dueAt">The due at.</param>
         public void Enqueue(InvokeHandler invoker, DateTime dueAt)
         {
             Enqueue(new BackgroundTask { Invoker = invoker }, dueAt);
         }
 
+        /// <summary>
+        /// Enqueues the specified task.
+        /// </summary>
+        /// <param name="task">The task.</param>
         public void Enqueue(IBackgroundTask task)
         {
             lock (_tasksLock)
@@ -70,6 +82,11 @@ namespace Enigma.Threading
             UpdateBackgroundWorker();
         }
 
+        /// <summary>
+        /// Enqueues the specified task.
+        /// </summary>
+        /// <param name="task">The task.</param>
+        /// <param name="dueAt">The due at.</param>
         public void Enqueue(IBackgroundTask task, DateTime dueAt)
         {
             if (dueAt <= DateTime.Now) {
@@ -88,27 +105,50 @@ namespace Enigma.Threading
             UpdateBackgroundWorker(dueAt);
         }
 
-        public void WaitUntilEmpty()
+        /// <summary>
+        /// Waits until idle.
+        /// </summary>
+        public void WaitUntilIdle()
         {
-            while (_tasks.Count > 0)
-                Thread.Sleep(TimeSpan.FromMilliseconds(10));
+            _idleEvent.Wait();
+        }
+
+        /// <summary>
+        /// Waits until idle.
+        /// </summary>
+        /// <param name="timeout">The timeout.</param>
+        public void WaitUntilIdle(TimeSpan timeout)
+        {
+            _idleEvent.Wait(timeout);
         }
 
         private void UpdateBackgroundWorker()
         {
+            if (_thread.ThreadState == ThreadState.Unstarted)
+                _thread.Start();
+
             _event.Set();
         }
 
         private void UpdateBackgroundWorker(DateTime triggersAt)
         {
+            if (_thread.ThreadState == ThreadState.Unstarted)
+                _thread.Start();
+
             if (triggersAt < _nextTaskAt) {
                 _event.Set();
                 _nextTaskAt = triggersAt;
             }
         }
 
+        /// <summary>
+        /// The main working method of the thread.
+        /// </summary>
+        /// <param name="obj">An unused object argument.</param>
         private void ThreadRun(object obj)
         {
+            _idleEvent.Reset();
+
             while (_continue){
                 if (_tasks.Count > 0) {
                     foreach (var task in DequeueTasks())
@@ -116,14 +156,18 @@ namespace Enigma.Threading
                 }
 
                 if (_scheduledTasks.Count == 0) {
+                    _idleEvent.Set();
                     _event.WaitOne(MaxIdleTime);
+                    _idleEvent.Reset();
                     continue;
                 }
 
                 var now = DateTime.Now;
                 var timeToNext = _nextTaskAt.Subtract(now);
                 if (timeToNext > TimeSpan.Zero) {
+                    _idleEvent.Set();
                     _event.WaitOne(timeToNext > MaxIdleTime ? MaxIdleTime : timeToNext);
+                    _idleEvent.Reset();
                     continue;
                 }
 
@@ -157,11 +201,19 @@ namespace Enigma.Threading
             }
         }
 
-
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <remarks>
+        /// <para>This will attempt to do a soft stop of the background queue lasting max 1 second.
+        /// If that fails, a hard stop will ensue.</para>
+        /// </remarks>
         public void Dispose()
         {
             Stop();
+            if (_thread.ThreadState != ThreadState.Running) return;
             _thread.Join(TimeSpan.FromSeconds(1));
+            if (_thread.ThreadState != ThreadState.Running) return;
             _thread.Abort();
             _thread.Join(TimeSpan.FromSeconds(1));
         }

@@ -120,6 +120,7 @@
     <Compile Include="IO\PooledMemoryStream.cs" />
     <Compile Include="IO\StreamProviderSourceState.cs" />
     <Compile Include="Modelling\IIndexAlgorithm.cs" />
+    <Compile Include="ProtocolBuffer\TypeModelBuilder.cs" />
     <Compile Include="Reflection\CollectionContainerTypeInfo.cs" />
     <Compile Include="Reflection\ContainerTypeInfoExtensions.cs" />
     <Compile Include="Reflection\IPropertyAccessor.cs" />

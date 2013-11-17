@@ -11,7 +11,7 @@ namespace Enigma.Db.Embedded
             _service = service;
         }
 
-        public IEnigmaEngine CreateEngine(Modelling.Model model)
+        public IEnigmaEngine CreateEngine(Model model)
         {
             return new EmbeddedEnigmaEngine(model, _service);
         }

@@ -35,8 +35,10 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EmbeddedEnigmaConfiguration.cs" />
     <Compile Include="EmbeddedEnigmaConnection.cs" />
     <Compile Include="EmbeddedEnigmaEngine.cs" />
+    <Compile Include="EmbeddedEnigmaEngineConfiguration.cs" />
     <Compile Include="EmbeddedEnigmaEntityEngine.cs" />
     <Compile Include="EmbeddedEnigmaService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

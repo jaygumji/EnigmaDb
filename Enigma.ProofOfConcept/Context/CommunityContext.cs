@@ -17,7 +17,8 @@ namespace Enigma.ProofOfConcept.Context
             var directory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "CommunityDb");
             if (Directory.Exists(directory)) Directory.Delete(directory, true);
 
-            Service = EmbeddedEnigmaService.CreateFileSystem(directory, new Store.CompositeStorageConfiguration { FragmentSize = DataSize.FromKB(5) });
+            Service = EmbeddedEnigmaService.CreateFileSystem(directory, new Store.CompositeStorageConfiguration { FragmentSize = DataSize.FromMB(5) });
+            Service.Configuration.Engine.UpdateIndexesInBackground = true;
         }
 
         public CommunityContext()

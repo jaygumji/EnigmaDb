@@ -10,37 +10,43 @@ namespace Enigma.ProofOfConcept
     public static class ContextStressTest
     {
 
-        private static readonly Int32KeyGenerator KeyGenerator = new Int32KeyGenerator(3);
-        private static readonly Guid CategoryTestId = Guid.NewGuid();
-        private static readonly Guid CategoryDatabaseId = Guid.NewGuid();
-        private static readonly Guid SirTestUserId = Guid.NewGuid();
+        public static readonly Int32KeyGenerator KeyGenerator = new Int32KeyGenerator(3);
+        public static readonly Guid CategoryTestId = Guid.NewGuid();
+        public static readonly Guid CategoryDatabaseId = Guid.NewGuid();
+        public static readonly Guid SirTestUserId = Guid.NewGuid();
 
-        private static void SetupBasicCategoriesAndUsers(CommunityContext context)
+        private static bool _isBasicCategoriesAndUsersInitialized;
+        public static void SetupBasicCategoriesAndUsers()
         {
-            context.Categories.Add(new Category {
-                Id = CategoryTestId,
-                Name = "Test"
-            });
-            context.Categories.Add(new Category {
-                Id = CategoryDatabaseId,
-                Name = "Database"
-            });
+            if (_isBasicCategoriesAndUsersInitialized) return;
+            _isBasicCategoriesAndUsersInitialized = true;
 
-            context.Users.Add(new User {
-                Id = SirTestUserId,
-                FirstName = "Sir",
-                LastName = "Test",
-                Nick = "Testmaniac",
-                Email = "test@jaygumji.com",
-                Password = System.Guid.NewGuid().ToByteArray()
-            });
+            using (var context = new CommunityContext()) {
+                context.Categories.Add(new Category {
+                    Id = CategoryTestId,
+                    Name = "Test"
+                });
+                context.Categories.Add(new Category {
+                    Id = CategoryDatabaseId,
+                    Name = "Database"
+                });
 
-            var article = CreateUniqueArticle();
-            context.Articles.Add(article);
-            context.SaveChanges();
+                context.Users.Add(new User {
+                    Id = SirTestUserId,
+                    FirstName = "Sir",
+                    LastName = "Test",
+                    Nick = "Testmaniac",
+                    Email = "test@jaygumji.com",
+                    Password = System.Guid.NewGuid().ToByteArray()
+                });
+
+                var article = CreateUniqueArticle();
+                context.Articles.Add(article);
+                context.SaveChanges();
+            }
         }
 
-        private static Article CreateUniqueArticle()
+        public static Article CreateUniqueArticle()
         {
             var id = KeyGenerator.Next();
             var article = new Article
@@ -53,73 +59,6 @@ namespace Enigma.ProofOfConcept
                 AuthorId = SirTestUserId
             };
             return article;
-        }
-
-        public static void MassiveInserts()
-        {
-            using (var context = new CommunityContext())
-                SetupBasicCategoriesAndUsers(context);
-
-            var startedAt = DateTime.Now;
-            var tasks = new List<Task>();
-            for (var i = 0; i < 5000; i++)
-            {
-                var task = Task.Factory.StartNew(() =>
-                {
-                    using (var context = new CommunityContext())
-                    {
-                        context.Articles.Add(CreateUniqueArticle());
-                        var count = context.SaveChanges();
-                        //Console.WriteLine("Saved {0} changes", count);
-                    }
-                });
-                tasks.Add(task);
-            }
-            var tasksCreatedAt = DateTime.Now;
-
-            Console.WriteLine("Task creation completed in {0}", tasksCreatedAt.Subtract(startedAt));
-
-            Task.WaitAll(tasks.ToArray());
-            var allTasksCompletedAt = DateTime.Now;
-
-            Console.WriteLine("All tasks completed in {0}", allTasksCompletedAt.Subtract(startedAt));
-            Console.WriteLine("from all tasks created {0}", allTasksCompletedAt.Subtract(tasksCreatedAt));
-
-            var beganWriting5000PostsOn1Thread = DateTime.Now;
-            Console.WriteLine("Preparing to write 5000 posts on 1 thread");
-            using (var context = new CommunityContext())
-            {
-                for (var i = 0; i < 5000; i++)
-                    context.Articles.Add(CreateUniqueArticle());
-                
-                var count = context.SaveChanges();
-
-                Console.WriteLine("Saved {0} additional articles in the database, time taken: {1}", count, DateTime.Now.Subtract(beganWriting5000PostsOn1Thread));
-            }
-
-            using (var context = new CommunityContext())
-            {
-                var articles = context.Articles.Take(50).ToList().Concat(context.Articles.Skip(9950).Take(50)).ToList();
-                foreach (var article in articles)
-                    context.Articles.Remove(article);
-
-                context.SaveChanges();
-                Console.WriteLine(articles.Count + " articles was removed");
-            }
-
-            CommunityContext.Service.Truncate();
-
-            Console.WriteLine("Database was truncated");
-
-            using (var context = new CommunityContext())
-            {
-                var articles = context.Articles.Take(10);
-                foreach (var article in articles)
-                {
-                    Console.WriteLine("Article with subject {0} was retrieved", article.Subject);
-                }
-            }
-
         }
 
     }

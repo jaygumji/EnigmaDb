@@ -36,21 +36,20 @@ namespace Enigma.Store.Binary
 
         public override int GetHashCode()
         {
-            var index = 0;
-            var hashCode = 0;
-            while (index + 4 < _value.Length)
-            {
-                hashCode ^= BitConverter.ToInt32(_value, index);
-                index += 4;
-            }
+            unchecked {
+                const int p = 16777619;
+                var hash = (int) 2166136261;
 
-            while (index < _value.Length)
-            {
-                hashCode ^= _value[index];
-                index++;
-            }
+                for (var i = 0; i < _value.Length; i++)
+                    hash = (hash ^ _value[i]) * p;
 
-            return hashCode;
+                hash += hash << 13;
+                hash ^= hash >> 7;
+                hash += hash << 3;
+                hash ^= hash >> 17;
+                hash += hash << 5;
+                return hash;
+            }
         }
 
         public override string ToString()
