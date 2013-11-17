@@ -10,8 +10,10 @@ It relies on the following thirdparty open source libraries
 
 Right now it's only tested on Windows. In the future the following is planned to be tested and supported.
 - Windows
-- Linux, Mono
 - Windows Phone
+
+Other platforms that I want to include, I just can't say when.
+- Linux, Mono
 - Android, Monodroid
 - iOS, Monotouch
 
@@ -24,7 +26,7 @@ What's working right now?
 
 What's on the roadmap?
 - Indexes that works with all type of properties
-- Index rebuilding
+- Text compare algorithm for indexes to be able to use StartsWith, EndsWith and Contains on text
 - Ability to add jobs that runs at a scheduled time
 - Maintainance job that truncates database at night and rebuilds indexes
 - Better lock management to improve write performance
@@ -33,7 +35,7 @@ What's on the roadmap?
 Installation
 ============
 Get the nuget package at the following location.
-https://www.nuget.org/packages/EnigmaDb/0.1.0
+https://www.nuget.org/packages/EnigmaDb
 
 Or simply add it via the package manager.
 > Install-Package EnigmaDb
@@ -46,7 +48,6 @@ In the example below we're storing the database in the CommunityDb folder just u
 
     public class CommunityContext : EnigmaContext
     {
-    
         public static readonly EmbeddedEnigmaService Service;
     
         static CommunityContext()
@@ -62,19 +63,37 @@ In the example below we're storing the database in the CommunityDb folder just u
         }
     
         public ISet<Article> Articles { get; set; }
-    
+        public ISet<User> Users { get; set; }
+        
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            // We add an index on AuthorId to be able to get all articles
+            // of a specific user with increased performance.
+            builder.Entity<Article>()
+                .Index(a => a.AuthorId);
+        }
     }
 
 We have only one entity here, Article.
-By default EnigmaDb looks for properties with the name Id, ID, Guid or GUID as the primary key
+By convention EnigmaDb looks for properties with the name Id, ID, Guid or GUID as the primary key
 
     public class Article
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
+        public Guid AuthorId { get; set; }
         public string Subject { get; set; }
         public string Body { get; set; }
         public string Tags { get; set; }
         public DateTime CreatedAt { get; set; }
+    }
+    
+    public class User
+    {
+        public Guid Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Username { get; set; }
+        public byte[] Password { get; set; }
     }
 
 All entities in EnigmaDb are POCO entities, they have no connection to the database.
