@@ -17,15 +17,19 @@ Other platforms that I want to include, I just can't say when.
 - Android, Monodroid
 - iOS, Monotouch
 
+Changelog?
+https://github.com/jaygumji/EnigmaDb/blob/master/CHANGELOG.md
+
 What's working right now?
 - The storage of data
 - Truncating data with a method call
-- Indexes on simple properties on top level node of the entities
+- Indexes with compare and sorting
+- Entities can be indexed in the background to increase add performance
 - Data retrieval through LINQ
 - Inmemory storage, great for unittests
 
 What's on the roadmap?
-- Indexes that works with all type of properties
+- Fine tuning indexes, this I fear will never end
 - Text compare algorithm for indexes to be able to use StartsWith, EndsWith and Contains on text
 - Ability to add jobs that runs at a scheduled time
 - Maintainance job that truncates database at night and rebuilds indexes
@@ -55,6 +59,8 @@ In the example below we're storing the database in the CommunityDb folder just u
             var directory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "CommunityDb");
     
             Service = EmbeddedEnigmaService.CreateFileSystem(directory);
+            // Uncomment the following line to allow entities to be indexed in the background
+            // Service.Configuration.Engine.UpdateIndexesInBackground = true;
         }
     
         public CommunityContext()
@@ -71,6 +77,9 @@ In the example below we're storing the database in the CommunityDb folder just u
             // of a specific user with increased performance.
             builder.Entity<Article>()
                 .Index(a => a.AuthorId);
+            
+            builder.Entity<User>()
+                .Index(u => u.Details.Tags);
         }
     }
 
@@ -79,8 +88,8 @@ By convention EnigmaDb looks for properties with the name Id, ID, Guid or GUID a
 
     public class Article
     {
-        public Guid Id { get; set; }
-        public Guid AuthorId { get; set; }
+        public int Id { get; set; }
+        public int AuthorId { get; set; }
         public string Subject { get; set; }
         public string Body { get; set; }
         public string Tags { get; set; }
@@ -89,11 +98,13 @@ By convention EnigmaDb looks for properties with the name Id, ID, Guid or GUID a
     
     public class User
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Username { get; set; }
         public byte[] Password { get; set; }
+        
+        public PersonalDetails Details { get; set;
     }
 
 All entities in EnigmaDb are POCO entities, they have no connection to the database.
