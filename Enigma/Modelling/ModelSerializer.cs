@@ -132,20 +132,23 @@ namespace Enigma.Modelling
 
         private IIndex ReadIndex(XmlVisitor visitor, Type entityType)
         {
-            string propertyName = null;
+            string uniqueName = null;
             while (visitor.VisitNext())
             {
                 if (visitor.NodeType == XmlNodeType.EndElement && visitor.Name == "Index")
                 {
-                    if (string.IsNullOrEmpty(propertyName)) throw new ArgumentException("Missing required element PropertyName");
+                    if (string.IsNullOrEmpty(uniqueName)) throw new ArgumentException("Missing required element UniqueName");
 
-                    return Index.Create(entityType, propertyName);
+                    return Index.Create(entityType, uniqueName);
                 }
 
                 if (visitor.NodeType != XmlNodeType.Element) continue;
 
-                if (visitor.Name == "PropertyName")
-                    propertyName = visitor.GetElementContentAsString();
+                // TODO: Backwardscompatiblitiy 0.2.0: PropertyName
+                if (string.Equals(visitor.Name, "PropertyName", StringComparison.InvariantCulture))
+                    uniqueName = visitor.GetElementContentAsString();
+                else if (string.Equals(visitor.Name, "UniqueName", StringComparison.InvariantCulture))
+                    uniqueName = visitor.GetElementContentAsString();
                 else
                     throw new ArgumentException("Unexpected xml element " + visitor.Name);
             }
@@ -191,7 +194,7 @@ namespace Enigma.Modelling
 
                 if (visitor.Name == "Name")
                     name = visitor.GetElementContentAsString();
-                else if (visitor.Name == "PropertyName")
+                else if (visitor.Name == "UniqueName")
                     propertyName = visitor.GetElementContentAsString();
                 else if (visitor.Name == "Index")
                     index = visitor.GetElementContentAsInt32();
@@ -224,7 +227,7 @@ namespace Enigma.Modelling
                         xmlWriter.WriteStartElement("Property");
                         xmlWriter.WriteElementString("Name", property.Name);
                         if (property.Name != property.PropertyName)
-                            xmlWriter.WriteElementString("PropertyName", property.PropertyName);
+                            xmlWriter.WriteElementString("UniqueName", property.PropertyName);
                         xmlWriter.WriteStartElement("Index");
                         xmlWriter.WriteValue(property.Index);
                         xmlWriter.WriteEndElement(); // Index
@@ -236,7 +239,7 @@ namespace Enigma.Modelling
                     foreach (var index in entityMap.Indexes)
                     {
                         xmlWriter.WriteStartElement("Index");
-                        xmlWriter.WriteElementString("PropertyName", index.PropertyName);
+                        xmlWriter.WriteElementString("UniqueName", index.UniqueName);
                         xmlWriter.WriteEndElement(); // Index
                     }
                     xmlWriter.WriteEndElement(); // Indexes

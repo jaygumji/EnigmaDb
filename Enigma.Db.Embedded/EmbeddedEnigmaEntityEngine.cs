@@ -122,13 +122,44 @@ namespace Enigma.Db.Embedded
 
         public IEnumerable<T> All()
         {
-            return _service.All(_entityMap.Name).Select(b => _converter.Convert(b)).ToList();
+            return Range(0, 0);
         }
 
-
-        public IEnumerable<T> Match(EnigmaCriteria criteria)
+        public IEnumerable<T> Range(int skip, int take)
         {
-            return _service.Match(_entityMap.Name, criteria).Select(b => _converter.Convert(b)).ToList();
+            var storage = _service.Table(_entityMap.Name).Storage;
+            var entries = storage.TableOfContent.Entries;
+            if (skip > 0)
+                entries = entries.Skip(skip);
+            if (take > 0)
+                entries = entries.Take(take);
+
+            var result = new List<T>();
+            foreach (var entry in entries) {
+                byte[] content;
+                if (storage.TryGet(entry.Key, out content))
+                    result.Add(_converter.Convert(content));
+            }
+            return result;
+        }
+
+        public bool TryResolve(IEnigmaExpressionTreeExecutor executor, out IEnumerable<T> values)
+        {
+            IEnumerable<IKey> keys;
+            if (!executor.TryResolve(out keys)) {
+                values = null;
+                return false;
+            }
+
+            var result = new List<T>();
+            var storage = _service.Table(_entityMap.Name).Storage;
+            foreach (var key in keys) {
+                byte[] content;
+                if (storage.TryGet(key, out content))
+                    result.Add(_converter.Convert(content));
+            }
+            values = result;
+            return true;
         }
 
     }

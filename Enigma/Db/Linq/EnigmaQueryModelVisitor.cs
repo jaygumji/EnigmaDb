@@ -35,28 +35,26 @@ namespace Enigma.Db.Linq
         {
             base.VisitResultOperator(resultOperator, queryModel, index);
 
-            if (resultOperator is FirstResultOperator)
-            {
-                _objectExpression.Criteria.Take = 1;
+            if (resultOperator is FirstResultOperator) {
+                _objectExpression.Executor.Take(1);
                 return;
             }
 
             var takeResultOperator = resultOperator as TakeResultOperator;
-            if (takeResultOperator != null)
-            {
+            if (takeResultOperator != null) {
                 var countConstantExpression = takeResultOperator.Count as ConstantExpression;
-                if (countConstantExpression != null)
-                    _objectExpression.Criteria.Take = (int) countConstantExpression.Value;
+                if (countConstantExpression != null) {
+                    _objectExpression.Take = (int)countConstantExpression.Value;
+                }
 
                 return;
             }
 
             var skipResultOperator = resultOperator as SkipResultOperator;
-            if (skipResultOperator != null)
-            {
+            if (skipResultOperator != null) {
                 var countConstantExpression = skipResultOperator.Count as ConstantExpression;
                 if (countConstantExpression != null)
-                    _objectExpression.Criteria.Skip = (int)countConstantExpression.Value;
+                    _objectExpression.Skip = (int)countConstantExpression.Value;
 
                 return;
             }
@@ -82,6 +80,7 @@ namespace Enigma.Db.Linq
         {
             var visitor = new EnigmaExpressionTreeVisitor(_objectExpression);
             visitor.VisitExpression(fromClause.FromExpression);
+            //_objectExpression.AddParameter(fromClause.ItemType, fromClause.ItemName);
         }
 
         public override void VisitSelectClause(SelectClause selectClause, QueryModel queryModel)
@@ -101,6 +100,12 @@ namespace Enigma.Db.Linq
 
         public override void VisitOrderByClause(OrderByClause orderByClause, QueryModel queryModel, int index)
         {
+            var visitor = new EnigmaExpressionTreeVisitor(_objectExpression);
+            foreach (var ordering in orderByClause.Orderings) {
+                visitor.VisitExpression(ordering.Expression);
+                _objectExpression.OrderBy(ordering.OrderingDirection);
+            }
+
             base.VisitOrderByClause(orderByClause, queryModel, index);
         }
 

@@ -1,4 +1,5 @@
-﻿using Enigma.Binary;
+﻿using System.Linq;
+using Enigma.Binary;
 using Enigma.Modelling;
 using Enigma.Reflection;
 using Enigma.Store.Binary;
@@ -166,6 +167,17 @@ namespace Enigma.Store.Indexes
             if (_entries.TryRemove(entityId, out entries)) {
                 RemoveValues(entityId, entries.Values);
                 _isModified = true;
+            }
+        }
+
+        public void ApplyOrderingValues(OrderedKey[] orderedKeys)
+        {
+            foreach (var orderedKey in orderedKeys) {
+                IDictionary<T, IndexEntry<T>> entry;
+                if (_entries.TryGetValue(orderedKey, out entry) && entry.Values.Count > 0)
+                    orderedKey.AddIndexedValue(entry.Values.First().Value);
+                else
+                    orderedKey.AddIndexedValue(DBNull.Value);
             }
         }
 

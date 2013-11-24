@@ -12,7 +12,7 @@ namespace Enigma.Test.ProtoBuf
         {
             var target = new ProtocolBufferBinaryConverter<Car>();
 
-            var car = Scenario.AJD289;
+            var car = RandomCars.AK9777;
 
             var bytes = target.Convert(car);
 

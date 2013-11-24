@@ -1,4 +1,6 @@
-﻿using Enigma.Modelling;
+﻿using Enigma.Db.Embedded.Linq;
+using Enigma.Db.Linq;
+using Enigma.Modelling;
 using Enigma.ProtocolBuffer;
 using System;
 using System.Collections.Generic;
@@ -31,6 +33,11 @@ namespace Enigma.Db.Embedded
             var newEntityEngine = new EmbeddedEnigmaEntityEngine<T>(_model.Entity<T>(), _service, converter);
             _entityEngines.Add(entityType, newEntityEngine);
             return newEntityEngine;
+        }
+
+        public IEnigmaExpressionTreeExecutor CreateExecutor()
+        {
+            return new EmbeddedEnigmaExpressionTreeExecutor(_service);
         }
 
         public void Synchronize()

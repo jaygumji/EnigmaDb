@@ -29,13 +29,14 @@ namespace Enigma.Test.TestDb
             _service.BackgroundQueue.WaitUntilIdle();
         }
 
-        protected override void OnModelCreating(Modelling.ModelBuilder builder)
+        protected override void OnModelCreating(Enigma.Modelling.ModelBuilder builder)
         {
             builder.Entity<Car>()
                 .Key(c => c.RegistrationNumber)
                 .Index(c => c.Nationality)
                 .Index(c => c.EstimatedValue)
-                .Index(c => c.EstimatedAt);
+                .Index(c => c.EstimatedAt)
+                .Index(c => c.Engine.HorsePower);
         }
 
         public ISet<Car> Cars { get; set; }

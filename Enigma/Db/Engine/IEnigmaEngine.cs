@@ -1,4 +1,5 @@
-﻿using Enigma.Modelling;
+﻿using Enigma.Db.Linq;
+using Enigma.Modelling;
 namespace Enigma.Db
 {
     public interface IEnigmaEngine
@@ -7,5 +8,6 @@ namespace Enigma.Db
 
         void Synchronize();
         IEnigmaEntityEngine<T> GetEntityEngine<T>();
+        IEnigmaExpressionTreeExecutor CreateExecutor();
     }
 }

@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using Enigma.Store;
-using Enigma.Store.Indexes;
 
-namespace Enigma.Modelling
+namespace Enigma.Store.Indexes
 {
     /// <summary>
     /// An index algorith to use in the index

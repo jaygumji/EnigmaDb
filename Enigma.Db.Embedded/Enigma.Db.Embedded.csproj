@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Remotion.Linq, Version=1.15.2.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Remotion.Linq.1.15.2.0\lib\net45\Remotion.Linq.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
@@ -41,6 +45,14 @@
     <Compile Include="EmbeddedEnigmaEngineConfiguration.cs" />
     <Compile Include="EmbeddedEnigmaEntityEngine.cs" />
     <Compile Include="EmbeddedEnigmaService.cs" />
+    <Compile Include="Linq\AndIndexExpression.cs" />
+    <Compile Include="Linq\CompareIndexExpression.cs" />
+    <Compile Include="Linq\EmbeddedEnigmaExpressionTreeExecutor.cs" />
+    <Compile Include="Linq\EmbeddedIndexOrdering.cs" />
+    <Compile Include="Linq\IIndexExpression.cs" />
+    <Compile Include="Linq\NullIndexExpression.cs" />
+    <Compile Include="Linq\OrIndexExpression.cs" />
+    <Compile Include="Linq\StaticIndexExpression.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -48,6 +60,9 @@
       <Project>{00c48ba2-32f9-45b2-9fa0-b689a4944954}</Project>
       <Name>Enigma</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

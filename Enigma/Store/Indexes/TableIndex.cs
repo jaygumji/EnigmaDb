@@ -50,6 +50,5 @@ namespace Enigma.Store.Indexes
                     throw new System.InvalidOperationException("Comparable index does not have the operation " + operation.ToString());
             }
         }
-
     }
 }

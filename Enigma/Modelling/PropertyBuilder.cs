@@ -7,8 +7,8 @@ namespace Enigma.Modelling
 {
     public class PropertyBuilder<T>
     {
-        private EntityMap _entityMap;
-        private PropertyMap<T> _propertyMap;
+        private readonly EntityMap _entityMap;
+        private readonly PropertyMap<T> _propertyMap;
 
         public PropertyBuilder(EntityMap entityMap, PropertyMap<T> propertyMap)
         {

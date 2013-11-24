@@ -19,8 +19,9 @@ namespace Enigma.Db
         bool TryGet(object id, out T entity);
 
         IEnumerable<T> All();
+        IEnumerable<T> Range(int skip, int take);
 
-        IEnumerable<T> Match(EnigmaCriteria enigmaCriteria);
+        bool TryResolve(IEnigmaExpressionTreeExecutor executor, out IEnumerable<T> values);
     }
 
 }

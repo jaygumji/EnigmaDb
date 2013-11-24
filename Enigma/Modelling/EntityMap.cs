@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using Enigma.Db.Linq;
 
 namespace Enigma.Modelling
 {
@@ -32,12 +33,14 @@ namespace Enigma.Modelling
 
         public Index<TProperty> Index<TProperty>(Expression<Func<T, TProperty>> property)
         {
-            var propertyInfo = Expressions.PropertySelector.GetProperty<T, TProperty>(property);
+            var propertyInfos = Expressions.PropertySelector.GetPropertyPath<T, TProperty>(property);
+            var uniqueName = string.Join(".", propertyInfos.Select(p => p.Name));
+
             IIndex index;
-            if (TryGetIndex(propertyInfo.Name, out index))
+            if (TryGetIndex(uniqueName, out index))
                 return (Index<TProperty>)index;
 
-            var newIndex = new Index<TProperty>(propertyInfo);
+            var newIndex = new Index<TProperty>(uniqueName);
             Add(newIndex);
             return newIndex;
         }
@@ -57,7 +60,7 @@ namespace Enigma.Modelling
         }
 
         protected EntityMap(Type entityType, IEnumerable<IPropertyMap> propertyMappings, IEnumerable<IIndex> indexes)
-            : this(entityType, propertyMappings.ToDictionary(pm => pm.PropertyName), indexes.ToDictionary(i => i.PropertyName))
+            : this(entityType, propertyMappings.ToDictionary(pm => pm.PropertyName), indexes.ToDictionary(i => i.UniqueName))
         {
         }
 
@@ -93,7 +96,7 @@ namespace Enigma.Modelling
 
         public void Add(IIndex index)
         {
-            _indexes.Add(index.PropertyName, index);
+            _indexes.Add(index.UniqueName, index);
         }
 
         public string Name { get { return _entityType.Name; } }
@@ -131,7 +134,7 @@ namespace Enigma.Modelling
             foreach (var index in entity._indexes.Values)
             {
                 IIndex myIndex;
-                if (_indexes.TryGetValue(index.PropertyName, out myIndex))
+                if (_indexes.TryGetValue(index.UniqueName, out myIndex))
                     ((Index)myIndex).CopyFrom((Index)index);
             }
         }

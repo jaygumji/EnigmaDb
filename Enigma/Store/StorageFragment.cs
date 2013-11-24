@@ -186,12 +186,6 @@ namespace Enigma.Store
             }
         }
 
-        public IEnumerable<byte[]> All()
-        {
-            using (_maintenance.Lock.Enter())
-                return _tableOfContent.Entries.Select(e => _store.Read(e.ValueOffset, e.ValueLength)).ToList();
-        }
-
         byte[] IStorageManagerService.GetContent(Entry entry)
         {
             return _store.Read(entry.ValueOffset, entry.ValueLength);

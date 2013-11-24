@@ -52,10 +52,14 @@
   <ItemGroup>
     <Compile Include="Algorithm\BinarySearchTests.cs" />
     <Compile Include="DualBinaryStoreTests.cs" />
+    <Compile Include="Expressions\PropertySelectorTests.cs" />
     <Compile Include="Fakes\MyEntity.cs" />
     <Compile Include="Index\ComparableIndexTests.cs" />
     <Compile Include="Index\IndexStorageTests.cs" />
+    <Compile Include="Linq\IndexFilterTests.cs" />
+    <Compile Include="Modelling\EntityBuilderTests.cs" />
     <Compile Include="Store\StorageTests.cs" />
+    <Compile Include="TestDb\TheACars.cs" />
     <Compile Include="TestDb\Scenario.cs" />
     <Compile Include="ProtoBuf\ProtoBufBinaryConverterTest.cs" />
     <Compile Include="TestDb\CarModel.cs" />
@@ -65,8 +69,9 @@
     <Compile Include="TestDb\CarEngine.cs" />
     <Compile Include="TestDb\Compartment.cs" />
     <Compile Include="TestDb\Nationality.cs" />
+    <Compile Include="TestDb\RandomCars.cs" />
     <Compile Include="TestDb\TestDbContext.cs" />
-    <Compile Include="Model\ModelSerializerTests.cs" />
+    <Compile Include="Modelling\ModelSerializerTests.cs" />
     <Compile Include="Resource.cs" />
     <Compile Include="Store\FakeBinaryStore.cs" />
     <Compile Include="Store\TableOfContentTests.cs" />

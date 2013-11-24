@@ -76,20 +76,19 @@ namespace Enigma.Store.Indexes
                 index.CommitModifications();
         }
 
-        public IEnumerable<IKey> Match(IEnumerable<EnigmaIndexOperation> indexOperations)
+        public IEnumerable<IKey> Match(string path, CompareOperation operation, object value)
         {
-            var keys = new List<IEnumerable<IKey>>();
-            foreach (var indexOperation in indexOperations) {
-                ITableIndex storage;
-                if (_indexes.TryGetValue(indexOperation.UniqueName, out storage))
-                    keys.Add(storage.Match(indexOperation.Operation, indexOperation.Value));
-            }
+            ITableIndex index;
+            if (_indexes.TryGetValue(path, out index))
+                return index.Match(operation, value);
 
-            if (keys.Count == 0) return Key.EmptyKeys;
-            if (keys.Count == 1) return keys[0];
+            return Key.EmptyKeys;
+        }
 
-            // TODO: This might need to be rewritten to improve performance
-            return keys.Aggregate((agg, nextKeys) => agg.Intersect(nextKeys)).ToList();
+        public void ApplyOrderingValues(string uniqueName, OrderedKey[] orderedKeys)
+        {
+            var index = _indexes[uniqueName];
+            index.Storage.ApplyOrderingValues(orderedKeys);
         }
     }
 }

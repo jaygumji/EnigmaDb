@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Linq.Expressions;
-using System.Text;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ExpressionTreeVisitors;
 using Remotion.Linq.Parsing;
-using System.Collections.Generic;
 using System.Reflection;
-using Enigma.Db.Linq;
 
 namespace Enigma.Db.Linq
 {

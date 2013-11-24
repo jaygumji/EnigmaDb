@@ -12,5 +12,7 @@ namespace Enigma.Store.Indexes
         void Add(IKey key, object entity);
         void Update(IKey key, object entity);
         void Remove(IKey entityId);
+
+        void ApplyOrderingValues(OrderedKey[] orderedKeys);
     }
 }

@@ -1,10 +1,10 @@
-﻿using Enigma.Test.Fakes;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 using System.Linq;
+using System.Text;
+using Enigma.Test.Fakes;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Enigma.Test.Model
+namespace Enigma.Test.Modelling
 {
     [TestClass]
     public class ModelSerializerTests
@@ -25,7 +25,7 @@ namespace Enigma.Test.Model
                 StringAssert.Contains(modelAsXml, "<Name>MyEntity</Name>");
                 StringAssert.Contains(modelAsXml, "<Name>Message</Name>");
                 StringAssert.Contains(modelAsXml, "<KeyName>Id</KeyName>");
-                StringAssert.Contains(modelAsXml, "<Index><PropertyName>Value</PropertyName></Index>");
+                StringAssert.Contains(modelAsXml, "<Index><UniqueName>Value</UniqueName></Index>");
             }
 
         }
@@ -57,7 +57,7 @@ namespace Enigma.Test.Model
 
                 var indexes = entity.Indexes.ToArray();
                 Assert.AreEqual(1, indexes.Length);
-                Assert.AreEqual("Value", indexes[0].PropertyName);
+                Assert.AreEqual("Value", indexes[0].UniqueName);
             }
         }
 

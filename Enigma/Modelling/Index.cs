@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using Enigma.Reflection;
 
@@ -6,28 +7,19 @@ namespace Enigma.Modelling
 {
     public class Index<T> : Index, IIndex<T>
     {
-        public Index(PropertyInfo propertyInfo) : base(propertyInfo)
-        {
-        }
-
-        public Index(string propertyName) : base(propertyName, typeof(T))
+        public Index(string uniqueName) : base(uniqueName, typeof(T))
         {
         }
     }
 
     public abstract class Index : IIndex
     {
-        private readonly string _propertyName;
+        private readonly string _uniqueName;
         private readonly Type _valueType;
 
-        protected Index(PropertyInfo propertyInfo)
-            : this(propertyInfo.Name, propertyInfo.PropertyType)
+        protected Index(string uniqueName, Type valueType)
         {
-        }
-
-        protected Index(string propertyName, Type valueType)
-        {
-            _propertyName = propertyName;
+            _uniqueName = uniqueName;
 
             var extendedValueType = new ExtendedType(valueType);
             switch (extendedValueType.Class) {
@@ -46,19 +38,14 @@ namespace Enigma.Modelling
             _valueType = valueType;
         }
 
-        public string PropertyName { get { return _propertyName; } }
+        public string UniqueName { get { return _uniqueName; } }
         public Type ValueType { get { return _valueType; } }
 
-        public static Index Create(Type entityType, string propertyName)
+        public static Index Create(Type entityType, string uniqueName)
         {
-            var propertyInfo = entityType.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            return Create(entityType, propertyInfo);
-        }
-
-        public static Index Create(Type entityType, PropertyInfo propertyInfo)
-        {
+            var propertyInfo = PropertyExtractor.GetProperties(entityType, uniqueName).Last();
             var type = typeof(Index<>).MakeGenericType(propertyInfo.PropertyType);
-            return (Index)Activator.CreateInstance(type, propertyInfo);
+            return (Index) Activator.CreateInstance(type, uniqueName);
         }
 
         public void CopyFrom(Index index)

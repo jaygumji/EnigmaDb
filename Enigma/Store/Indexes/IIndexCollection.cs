@@ -16,6 +16,7 @@ namespace Enigma.Store.Indexes
 
         void CommitModifications();
 
-        IEnumerable<IKey> Match(IEnumerable<EnigmaIndexOperation> list);
+        IEnumerable<IKey> Match(string path, CompareOperation operation, object value);
+        void ApplyOrderingValues(string uniqueName, OrderedKey[] orderedKeys);
     }
 }

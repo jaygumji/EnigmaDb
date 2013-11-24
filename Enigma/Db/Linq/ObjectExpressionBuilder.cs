@@ -7,6 +7,8 @@ using System.Reflection;
 using System.Text;
 using Enigma.Store;
 using Enigma.Store.Indexes;
+using Remotion.Linq.Clauses;
+using OrderingDirection = Remotion.Linq.Clauses.OrderingDirection;
 
 namespace Enigma.Db.Linq
 {
@@ -17,29 +19,32 @@ namespace Enigma.Db.Linq
 
         private readonly Stack<ParameterExpression> _parameters;
         private readonly Stack<Expression> _expressions;
+        private readonly List<OrderingExpression> _orderings;
         private PropertyPath _propertyPath;
         private readonly Model _model;
+        private readonly IEnigmaExpressionTreeExecutor _executor;
         private IEntityMap _entityMap;
         private ParameterExpression _entityParameter;
-        private readonly EnigmaCriteria _criteria;
-        private readonly List<object> _keys; 
+        private int _skip;
+        private int _take;
 
-        public ObjectExpressionBuilder(Model model)
+        public ObjectExpressionBuilder(Model model, IEnigmaExpressionTreeExecutor executor)
         {
             _parameters = new Stack<ParameterExpression>();
             _expressions = new Stack<Expression>();
+            _orderings = new List<OrderingExpression>();
             _model = model;
-            _criteria = new EnigmaCriteria();
-            _keys = new List<object>();
+            _executor = executor;
         }
 
         public Model Model { get { return _model; } }
         public IEnumerable<ParameterExpression> Parameters { get { return _parameters; } }
         public ParameterExpression EntityParameter { get { return _entityParameter; } }
         public ParameterExpression LastParameter { get { return _parameters.Peek(); } }
-        public EnigmaCriteria Criteria { get { return _criteria; }}
-        public IEnumerable<object> Keys { get { return _keys; } }
-        public bool HasKeys { get { return _keys.Count > 0; } }
+        public IEnigmaExpressionTreeExecutor Executor { get { return _executor; } }
+        public IEnumerable<OrderingExpression> Orderings { get { return _orderings; } } 
+        public int Skip { get { return _skip; } set { _skip = value; _executor.Skip(value); } }
+        public int Take { get { return _take; } set { _take = value; _executor.Take(value); } }
 
         public void AddParameter(Type entityType, string entityAlias)
         {
@@ -70,42 +75,52 @@ namespace Enigma.Db.Linq
         {
             var right = _expressions.Pop();
             var left = _expressions.Pop();
-            if (_propertyPath != null)
-            {
-                var path = _propertyPath.GetPath();
-                _propertyPath = null;
-                if (_entityMap != null) {
-                    if (expressionType == ExpressionType.Equal
-                        && string.Equals(path, _entityMap.KeyName, StringComparison.InvariantCulture)) {
 
-                        _keys.Add(((ConstantExpression)right).Value);
-                    }
-                    CompareOperation compareOperation;
-                    if (CompareOperations.TryGet(expressionType, out compareOperation)) {
-                        var index = _entityMap.Indexes.FirstOrDefault(i => string.Equals(i.PropertyName, path, StringComparison.InvariantCulture));
-                        if (index != null) {
-                            _criteria.IndexOperations.Add(new EnigmaIndexOperation {
-                                Operation = compareOperation,
-                                UniqueName = path,
-                                Value = ((ConstantExpression)right).Value
-                            });
-                        }
-                    }
-                }
+            CompareOperation operation;
+            if (CompareOperations.TryGet(expressionType, out operation)) {
+                if (!TryBinaryAnalyzeCompare(operation, right))
+                    _executor.Unknown();
+            }
+            else if (expressionType == ExpressionType.And || expressionType == ExpressionType.AndAlso) {
+                _executor.And();
+            }
+            else if (expressionType == ExpressionType.Or || expressionType == ExpressionType.OrElse) {
+                _executor.Or();
             }
 
             var expression = Expression.MakeBinary(expressionType, left, right);
             _expressions.Push(expression);
         }
 
+        private bool TryBinaryAnalyzeCompare(CompareOperation operation, Expression right)
+        {
+            if (_propertyPath == null) return false;
+
+            var path = _propertyPath;
+            var pathString = _propertyPath.GetUniqueName();
+            _propertyPath = null;
+
+            if (_entityMap == null) return false;
+
+            if (operation == CompareOperation.Equal
+                && string.Equals(pathString, _entityMap.KeyName, StringComparison.InvariantCulture)) {
+                _executor.EqualKey(((ConstantExpression) right).Value);
+                return true;
+            }
+
+            var index = _entityMap.Indexes.FirstOrDefault(i => string.Equals(i.UniqueName, pathString, StringComparison.InvariantCulture));
+                
+            if (index == null) return false;
+
+            _executor.Compare(path, operation, ((ConstantExpression)right).Value);
+            return true;
+        }
+
         public void Convert(UnaryExpression expression)
         {
             Expression operand;
             if (_propertyPath != null)
-            {
                 operand = _propertyPath.GetExpression(_parameters);
-                //_propertyPath = null;
-            }
             else
                 operand = _expressions.Pop();
 
@@ -134,7 +149,8 @@ namespace Enigma.Db.Linq
             if (_entityParameter != null && _expressions.Count > 0)
             {
                 expression = _expressions.Peek();
-                return true;
+                // Edge case when no where clause is specified.
+                return expression.NodeType != ExpressionType.Constant;
             }
 
             expression = null;
@@ -184,6 +200,29 @@ namespace Enigma.Db.Linq
                 return ((PropertyInfo)member.Member).PropertyType.GetInterfaces().FirstOrDefault(i => i.GetGenericTypeDefinition() == interfaceType);
             }
             return null;
+        }
+
+        public void OrderBy(OrderingDirection orderingDirection)
+        {
+            var orderByExpression = _expressions.Pop();
+
+            if (_propertyPath == null)
+                throw new ExpressionTreeParseException("Order by requires an entity property");
+
+            var path = _propertyPath;
+
+            _orderings.Add(new OrderingExpression(path, orderByExpression, orderingDirection));
+
+            var pathString = _propertyPath.GetUniqueName();
+            _propertyPath = null;
+
+            if (_entityMap == null) return;
+
+            var index = _entityMap.Indexes.FirstOrDefault(i => string.Equals(i.UniqueName, pathString, StringComparison.InvariantCulture));
+
+            if (index == null) return;
+
+            _executor.OrderBy(path, OrderingDirections.Get(orderingDirection));
         }
     }
 }

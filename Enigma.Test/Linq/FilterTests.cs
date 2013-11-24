@@ -16,11 +16,11 @@ namespace Enigma.Test.Linq
             using (var context = Scenario.SomeCars())
             {
                 var q = (from c in context.Cars
-                         where c.RegistrationNumber == "AJD289"
+                         where c.RegistrationNumber == "AK9777"
                          select c);
 
                 var car = q.First();
-                Assert.AreEqual("AJD289", car.RegistrationNumber);
+                Assert.AreEqual("AK9777", car.RegistrationNumber);
                 Assert.AreEqual(CarBrand.Toyota, car.Model.Brand);
             }
         }
@@ -37,8 +37,8 @@ namespace Enigma.Test.Linq
                 var cars = q.ToList();
                 Assert.AreEqual(3, cars.Count);
 
-                var car = cars.First(c => c.RegistrationNumber == "AJD289");
-                Assert.AreEqual("AJD289", car.RegistrationNumber);
+                var car = cars.First(c => c.RegistrationNumber == "AK9777");
+                Assert.AreEqual("AK9777", car.RegistrationNumber);
                 Assert.AreEqual(CarBrand.Toyota, car.Model.Brand);
             }
         }
@@ -70,7 +70,7 @@ namespace Enigma.Test.Linq
                          select c);
 
                 var car = q.First();
-                Assert.AreEqual("NDN022", car.RegistrationNumber);
+                Assert.AreEqual("NDN100", car.RegistrationNumber);
                 Assert.AreEqual(CarBrand.Ford, car.Model.Brand);
             }
         }
@@ -86,13 +86,13 @@ namespace Enigma.Test.Linq
                          where years.Contains(c.Model.Year)
                          select c);
 
-                var cars = q.ToArray();
-                Assert.AreEqual(2, cars.Length);
+                var cars = q.ToList();
+                Assert.AreEqual(2, cars.Count);
                 var first = cars.First();
                 var second = cars.Skip(1).First();
 
-                Assert.AreEqual(2001, first.Model.Year);
-                Assert.AreEqual(1988, second.Model.Year);
+                Assert.AreEqual(1988, first.Model.Year);
+                Assert.AreEqual(2001, second.Model.Year);
             }
 
         }
@@ -108,13 +108,13 @@ namespace Enigma.Test.Linq
                          where years.Any(y => y == c.Model.Year)
                          select c);
 
-                var cars = q.ToArray();
-                Assert.AreEqual(2, cars.Length);
-                var first = cars.First();
-                var second = cars.Skip(1).First();
+                var cars = q.ToList();
+                Assert.AreEqual(2, cars.Count);
+                var first = cars[0];
+                var second = cars[1];
 
-                Assert.AreEqual(2001, first.Model.Year);
-                Assert.AreEqual(1988, second.Model.Year);
+                Assert.AreEqual(1988, first.Model.Year);
+                Assert.AreEqual(2001, second.Model.Year);
             }
 
         }
@@ -134,7 +134,7 @@ namespace Enigma.Test.Linq
                 Assert.AreEqual(1, cars.Length);
                 var first = cars.First();
 
-                Assert.AreEqual("NDN022", first.RegistrationNumber);
+                Assert.AreEqual("NDN100", first.RegistrationNumber);
             }
 
         }

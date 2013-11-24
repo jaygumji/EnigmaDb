@@ -3,7 +3,7 @@ namespace Enigma.Modelling
 {
     public interface IIndex
     {
-        string PropertyName { get; }
+        string UniqueName { get; }
         Type ValueType { get; }
     }
 

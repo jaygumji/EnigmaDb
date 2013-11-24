@@ -14,7 +14,7 @@ namespace Enigma.Threading
         private readonly AutoResetEvent _event;
         private readonly ManualResetEventSlim _idleEvent;
         private readonly object _tasksLock = new object();
-        private List<IBackgroundTask> _tasks; 
+        private List<IBackgroundTask> _tasks;
         
         private DateTime _nextTaskAt;
         private bool _continue;

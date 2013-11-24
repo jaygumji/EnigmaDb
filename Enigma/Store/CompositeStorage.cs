@@ -84,10 +84,5 @@ namespace Enigma.Store
             content = null;
             return false;
         }
-
-        public IEnumerable<byte[]> All()
-        {
-            return _fragments.SelectMany(f => f.All()).ToList();
-        }
     }
 }

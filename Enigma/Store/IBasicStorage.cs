@@ -11,8 +11,5 @@ namespace Enigma.Store
         bool TryUpdate(IKey key, byte[] content);
         bool TryRemove(IKey key);
         bool TryGet(IKey key, out byte[] content);
-
-
-        IEnumerable<byte[]> All();
     }
 }

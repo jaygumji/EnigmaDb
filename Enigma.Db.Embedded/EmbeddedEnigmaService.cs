@@ -151,39 +151,6 @@ namespace Enigma.Db.Embedded
         }
 
         /// <summary>
-        /// All the content in a table.
-        /// </summary>
-        /// <param name="name">The name of the table.</param>
-        /// <returns>All content in the table</returns>
-        public IEnumerable<byte[]> All(string name)
-        {
-            return Table(name).Storage.All();
-        }
-
-        /// <summary>
-        /// Matches the specified criteria.
-        /// </summary>
-        /// <param name="name">The name of the table.</param>
-        /// <param name="criteria">The criteria.</param>
-        /// <returns>All content that matches the criteria</returns>
-        public IEnumerable<byte[]> Match(string name, EnigmaCriteria criteria)
-        {
-            var table = Table(name);
-            if (criteria.IndexOperations.Count <= 0)
-                return Table(name).Storage.All();
-
-            var keys = table.Indexes.Match(criteria.IndexOperations);
-
-            var result = new List<byte[]>();
-            foreach (var key in keys) {
-                byte[] content;
-                if (table.Storage.TryGet(key, out content))
-                    result.Add(content);
-            }
-            return result;
-        }
-
-        /// <summary>
         /// Synchronizes the specified model.
         /// </summary>
         /// <param name="model">The model.</param>
