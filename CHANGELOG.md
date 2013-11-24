@@ -1,3 +1,9 @@
+Version 0.2.0
+=============
+- Performance optimization for getting, adding and updating entities
+- Indexes now work with nested properties
+- Indexes now works with sorting
+
 Version 0.1.3
 =============
 - Corrected multi threading issue with indexes
