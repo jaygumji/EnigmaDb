@@ -181,7 +181,7 @@ namespace Enigma.Db.Linq
 
             var anyMethod = AnyMethodWithInnerDelegate.MakeGenericMethod(elementType);
             var lambda = Expression.Lambda(inner, parameter);
-            //var methodCall = Expression.Call(typeof(Queryable), "Where", new Type[] { queryable.ElementType }, queryable.Expression, lambda);
+            //var methodCall = Expression.Call(typeof(Queryable), "Where", new VariableType[] { queryable.ElementType }, queryable.Expression, lambda);
             var callExpression = Expression.Call(anyMethod, source, lambda);
             _expressions.Push(callExpression);
         }

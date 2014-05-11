@@ -12,15 +12,16 @@ namespace Enigma.Reflection
 
         public static IContainerTypeInfo GetContainerTypeInfo(this Type type)
         {
+            //Nullable.GetUnderlyingType(type);
             if (type.IsGenericType) {
                 var genericTypeDefinition = type.GetGenericTypeDefinition();
-                if (genericTypeDefinition == CollectionType)
-                    return new CollectionContainerTypeInfo(type.GetGenericArguments()[0]);
-
                 if (genericTypeDefinition == DictionaryType) {
                     var arguments = type.GetGenericArguments();
                     return new DictionaryContainerTypeInfo(arguments[0], arguments[1]);
                 }
+
+                if (genericTypeDefinition == CollectionType)
+                    return new CollectionContainerTypeInfo(type.GetGenericArguments()[0]);
 
                 if (genericTypeDefinition == NullableType)
                     return new NullableContainerTypeInfo(type.GetGenericArguments()[0]);

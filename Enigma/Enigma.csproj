@@ -114,6 +114,10 @@
     <Compile Include="Db\Engine\TriggerManager.cs" />
     <Compile Include="Entities\ISet.cs" />
     <Compile Include="Expressions\PropertySelector.cs" />
+    <Compile Include="IO\BinaryDataReader.cs" />
+    <Compile Include="IO\BinaryDataWriter.cs" />
+    <Compile Include="IO\IDataReader.cs" />
+    <Compile Include="IO\IDataWriter.cs" />
     <Compile Include="IO\IReadStream.cs" />
     <Compile Include="IO\IStream.cs" />
     <Compile Include="IO\IStreamProvider.cs" />
@@ -122,6 +126,68 @@
     <Compile Include="IO\PooledFileSystemStream.cs" />
     <Compile Include="IO\PooledMemoryStream.cs" />
     <Compile Include="IO\StreamProviderSourceState.cs" />
+    <Compile Include="IO\WriteReservation.cs" />
+    <Compile Include="Reflection\Emit\ConstructorBuilder.cs" />
+    <Compile Include="Reflection\Emit\ILExpressed.cs" />
+    <Compile Include="Reflection\Emit\IVariable.cs" />
+    <Compile Include="Binary\BinaryPacker.cs" />
+    <Compile Include="Reflection\Emit\AssemblyBuilder.cs" />
+    <Compile Include="Reflection\Emit\ClassBuilder.cs" />
+    <Compile Include="Reflection\Emit\MethodBuilder.cs" />
+    <Compile Include="Reflection\Emit\OpCodesLookups.cs" />
+    <Compile Include="Serialization\IReadVisitor.cs" />
+    <Compile Include="Serialization\PackedDataReadVisitor.cs" />
+    <Compile Include="Serialization\ReadVisitArgs.cs" />
+    <Compile Include="Serialization\IGraphTraveller.cs" />
+    <Compile Include="Serialization\IWriteVisitor.cs" />
+    <Compile Include="Serialization\LevelType.cs" />
+    <Compile Include="Serialization\PackedDataWriteVisitor.cs" />
+    <Compile Include="Serialization\InvalidGraphException.cs" />
+    <Compile Include="Serialization\Reflection\Emit\ChildTravellerInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serialization\Reflection\Emit\CollectionMembers.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serialization\Reflection\Emit\DynamicReadTravellerBuilder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serialization\Reflection\Emit\DynamicReadTravellerMembers.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serialization\Reflection\Emit\DynamicTraveller.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serialization\Reflection\Emit\DynamicTravellerBuilder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serialization\Reflection\Emit\DynamicTravellerContext.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serialization\Reflection\Emit\DynamicWriteTravellerBuilder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serialization\Reflection\Emit\DynamicWriteTravellerMembers.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serialization\Reflection\Emit\NullableMembers.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serialization\Reflection\Emit\ReflectionAnalyzer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serialization\Reflection\TypeReflectionContext.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serialization\SerializationEngine.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serialization\UnexpectedLengthException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serialization\WriteVisitArgs.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Store\Indexes\IIndexAlgorithm.cs" />
     <Compile Include="ProtocolBuffer\TypeModelBuilder.cs" />
     <Compile Include="Reflection\CollectionContainerTypeInfo.cs" />
@@ -237,6 +303,9 @@
     <Compile Include="Threading\LockHandle.cs" />
     <Compile Include="Threading\LockObject.cs" />
     <Compile Include="Threading\Times.cs" />
+    <Compile Include="TypeExtensions.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

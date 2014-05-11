@@ -7,7 +7,7 @@ namespace Enigma.Reflection
     public class ExtendedType
     {
         private static readonly IList<Type> SystemValueClasses = new[] {
-            typeof (DateTime), typeof (String), typeof (TimeSpan), typeof(Guid)
+            typeof (DateTime), typeof (String), typeof (TimeSpan), typeof(Guid), typeof(Decimal), typeof(byte[])
         }; 
 
         private readonly Type _type;
@@ -24,6 +24,14 @@ namespace Enigma.Reflection
         public Type Inner { get { return _type; } }
         public TypeClass Class { get { return _class.Value; } }
         public IContainerTypeInfo Container { get { return _containerTypeInfo.Value; } }
+        public bool ImplementsCollection { get { return Class == TypeClass.Collection || Class == TypeClass.Dictionary; } }
+
+        public bool IsValueOrNullableOfValue()
+        {
+            if (Class == TypeClass.Value) return true;
+            if (Class != TypeClass.Nullable) return false;
+            return Container.AsNullable().ElementType.Extend().Class == TypeClass.Value;
+        }
 
         public bool TryGetCollectionTypeInfo(out CollectionContainerTypeInfo collectionTypeInfo)
         {
@@ -37,22 +45,22 @@ namespace Enigma.Reflection
             return dictionaryTypeInfo != null;
         }
 
-        #region Get Type Class
+        #region Get VariableType Class
 
         private static TypeClass GetTypeClass(Type type, IContainerTypeInfo containerInfo)
         {
-            var collection = containerInfo as CollectionContainerTypeInfo;
-            if (collection != null) return TypeClass.Collection;
+            if (type.IsPrimitive) return TypeClass.Value;
+            if (type.IsEnum) return TypeClass.Value;
+            if (SystemValueClasses.Contains(type)) return TypeClass.Value;
 
             var dictionary = containerInfo as DictionaryContainerTypeInfo;
             if (dictionary != null) return TypeClass.Dictionary;
 
+            var collection = containerInfo as CollectionContainerTypeInfo;
+            if (collection != null) return TypeClass.Collection;
+
             var nullable = containerInfo as NullableContainerTypeInfo;
             if (nullable != null) return TypeClass.Nullable;
-
-            if (type.IsPrimitive) return TypeClass.Value;
-            if (type.IsEnum) return TypeClass.Value;
-            if (SystemValueClasses.Contains(type)) return TypeClass.Value;
 
             return TypeClass.Complex;
         }
@@ -60,4 +68,5 @@ namespace Enigma.Reflection
         #endregion
 
     }
+
 }
