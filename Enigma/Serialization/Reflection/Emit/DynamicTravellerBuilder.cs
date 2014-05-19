@@ -41,6 +41,8 @@ namespace Enigma.Serialization.Reflection.Emit
                 if (!ReflectionAnalyzer.TryGetComplexTypes(property.PropertyTypeContext.Extended, out types)) continue;
                 
                 foreach (var type in types) {
+                    if (childTravellers.ContainsKey(type)) continue;
+
                     var dynamicTraveller = _dynamicTravellerContext.Get(type);
                     var interfaceType = typeof (IGraphTraveller<>).MakeGenericType(type);
                     var fieldBuilder = _classBuilder.DefinePrivateField(string.Concat("_childTraveller", type.Name, fieldIndex), interfaceType);

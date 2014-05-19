@@ -135,13 +135,16 @@
     <Compile Include="Reflection\Emit\ClassBuilder.cs" />
     <Compile Include="Reflection\Emit\MethodBuilder.cs" />
     <Compile Include="Reflection\Emit\OpCodesLookups.cs" />
+    <Compile Include="Serialization\IGenericSerializer.cs" />
     <Compile Include="Serialization\IReadVisitor.cs" />
-    <Compile Include="Serialization\PackedDataReadVisitor.cs" />
+    <Compile Include="Serialization\ITypedSerializer.cs" />
+    <Compile Include="Serialization\PackedBinary\PackedDataReadVisitor.cs" />
+    <Compile Include="Serialization\PackedBinary\PackedDataSerializer.cs" />
     <Compile Include="Serialization\ReadVisitArgs.cs" />
     <Compile Include="Serialization\IGraphTraveller.cs" />
     <Compile Include="Serialization\IWriteVisitor.cs" />
     <Compile Include="Serialization\LevelType.cs" />
-    <Compile Include="Serialization\PackedDataWriteVisitor.cs" />
+    <Compile Include="Serialization\PackedBinary\PackedDataWriteVisitor.cs" />
     <Compile Include="Serialization\InvalidGraphException.cs" />
     <Compile Include="Serialization\Reflection\Emit\ChildTravellerInfo.cs">
       <SubType>Code</SubType>
@@ -149,6 +152,7 @@
     <Compile Include="Serialization\Reflection\Emit\CollectionMembers.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Serialization\Reflection\Emit\DictionaryMembers.cs" />
     <Compile Include="Serialization\Reflection\Emit\DynamicReadTravellerBuilder.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -182,9 +186,12 @@
     <Compile Include="Serialization\SerializationEngine.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Serialization\Travellers\CollectionTraveller.cs" />
+    <Compile Include="Serialization\Travellers\IElementValueTraveller.cs" />
     <Compile Include="Serialization\UnexpectedLengthException.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Serialization\ValueState.cs" />
     <Compile Include="Serialization\WriteVisitArgs.cs">
       <SubType>Code</SubType>
     </Compile>

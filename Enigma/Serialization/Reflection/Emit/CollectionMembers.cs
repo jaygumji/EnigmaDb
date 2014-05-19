@@ -15,13 +15,14 @@ namespace Enigma.Serialization.Reflection.Emit
         public CollectionMembers(ExtendedType collectionType)
         {
             ElementType = collectionType.Container.AsCollection().ElementType;
-            VariableType = collectionType.Inner.IsInterface
-                ? typeof (List<>).MakeGenericType(ElementType)
-                : collectionType.Inner;
+            VariableType = typeof(ICollection<>).MakeGenericType(ElementType);
+
             Add = VariableType.GetMethod("Add", new[] { ElementType });
-            if (Add == null) throw InvalidGraphException.MissingCollectionAddMethod(collectionType.Inner);
-            Constructor = VariableType.GetConstructor(Type.EmptyTypes);
-            if (Constructor == null) throw InvalidGraphException.CollectionHasNoParameterLessConstructor(collectionType.Inner);
+            var instanceType = collectionType.Inner.IsInterface
+                ? typeof(List<>).MakeGenericType(ElementType)
+                : collectionType.Inner;
+            Constructor = instanceType.GetConstructor(Type.EmptyTypes);
+            if (Constructor == null) throw InvalidGraphException.NoParameterLessConstructor(collectionType.Inner);
         }
     }
 }

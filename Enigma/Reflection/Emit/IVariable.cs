@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Reflection.Emit;
 
 namespace Enigma.Reflection.Emit
@@ -42,4 +43,21 @@ namespace Enigma.Reflection.Emit
             get { return _variableType; }
         }
     }
+
+    public class InstancePropertyVariable : IVariable
+    {
+        private readonly IVariable _instance;
+        private readonly PropertyInfo _info;
+
+        public InstancePropertyVariable(IVariable instance, PropertyInfo info)
+        {
+            _instance = instance;
+            _info = info;
+        }
+
+        public IVariable Instance { get { return _instance; } }
+        public PropertyInfo Info { get { return _info; } }
+        public Type VariableType { get { return _info.PropertyType; } }
+    }
+
 }

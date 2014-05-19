@@ -2,6 +2,7 @@
 using System.Linq;
 using Enigma.IO;
 using Enigma.Serialization;
+using Enigma.Serialization.PackedBinary;
 using Enigma.Serialization.Reflection.Emit;
 using Enigma.Test.Fakes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -35,10 +36,19 @@ namespace Enigma.Test.Serialization
             Assert.IsTrue(expected.Messages.SequenceEqual(actual.Messages));
             Assert.IsTrue(expected.Stamps.SequenceEqual(actual.Stamps));
 
+            Assert.IsNotNull(actual.Relation);
             Assert.AreEqual(expected.Relation.Id, actual.Relation.Id);
             Assert.AreEqual(expected.Relation.Name, actual.Relation.Name);
             Assert.AreEqual(expected.Relation.Description, actual.Relation.Description);
             Assert.AreEqual(expected.Relation.Value, actual.Relation.Value);
+            Assert.IsNull(actual.DummyRelation);
+
+            Assert.IsTrue(expected.IndexedValues.SequenceEqual(actual.IndexedValues, new IndexedValueComparer()));
+
+            Assert.IsNotNull(actual.Categories);
+            Assert.AreEqual(3, actual.Categories.Count);
+            Assert.IsTrue(expected.Categories.Keys.SequenceEqual(actual.Categories.Keys));
+            Assert.IsTrue(expected.Categories.Values.SequenceEqual(actual.Categories.Values, new CategoryComparer()));
         }
 
         [TestMethod]
@@ -68,6 +78,7 @@ namespace Enigma.Test.Serialization
 
             var context = new DynamicTravellerContext(true);
             var traveller = context.GetInstance<DataBlock>();
+            context.Save();
 
             var graph = new DataBlock();
             traveller.Travel(visitor, graph);

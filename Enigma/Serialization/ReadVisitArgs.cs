@@ -2,8 +2,9 @@ namespace Enigma.Serialization
 {
     public class ReadVisitArgs
     {
-        public static readonly ReadVisitArgs Item = new ReadVisitArgs("Item", 0, LevelType.Item);
-        public static readonly ReadVisitArgs KeyValue = new ReadVisitArgs("KeyValue", 0, LevelType.KeyValue);
+        public static readonly ReadVisitArgs CollectionItem = new ReadVisitArgs("CollectionItem", 0, LevelType.CollectionItem);
+        public static readonly ReadVisitArgs DictionaryKey = new ReadVisitArgs("DictionaryKey", 0, LevelType.DictionaryKey);
+        public static readonly ReadVisitArgs DictionaryValue = new ReadVisitArgs("DictionaryValue", 0, LevelType.DictionaryValue);
 
         private readonly string _name;
         private readonly uint _index;
@@ -50,6 +51,11 @@ namespace Enigma.Serialization
         public static ReadVisitArgs Collection(string name, uint index)
         {
             return new ReadVisitArgs(name, index, LevelType.Collection);
+        }
+
+        public static ReadVisitArgs Dictionary(string name, uint index)
+        {
+            return new ReadVisitArgs(name, index, LevelType.Dictionary);
         }
 
         public static ReadVisitArgs Root(string name)

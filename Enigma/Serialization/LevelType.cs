@@ -7,7 +7,8 @@ namespace Enigma.Serialization
         Collection,
         Dictionary,
         Root,
-        Item,
-        KeyValue
+        CollectionItem,
+        DictionaryKey,
+        DictionaryValue
     }
 }

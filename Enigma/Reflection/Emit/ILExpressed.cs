@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using System.Reflection.Emit;
+using Remotion.Linq.Parsing.Structure.IntermediateModel;
 
 namespace Enigma.Reflection.Emit
 {
@@ -24,6 +25,12 @@ namespace Enigma.Reflection.Emit
                 else
                     _il.Emit(OpCodes.Ldarg_S, index);
             }
+        }
+
+        public void LoadArgsAddress(params int[] indexes)
+        {
+            foreach (var index in indexes)
+                _il.Emit(OpCodes.Ldarga_S, index);
         }
 
         public void LoadVal(int value)
@@ -59,6 +66,38 @@ namespace Enigma.Reflection.Emit
             var arg = variable as MethodArgVariable;
             if (arg != null) {
                 LoadArgs(arg.Index);
+                return;
+            }
+            var property = variable as InstancePropertyVariable;
+            if (property != null) {
+                if (property.Instance.VariableType.IsValueType)
+                    LoadVarAddress(property.Instance);
+                else
+                    LoadVar(property.Instance);
+
+                if (property.VariableType.IsValueType)
+                    Call(property.Info.GetGetMethod());
+                else
+                    CallVirt(property.Info.GetGetMethod());
+                return;
+            }
+
+            throw new InvalidOperationException("Invalid variable " + variable.GetType());
+        }
+
+        public void LoadVarAddress(IVariable variable)
+        {
+            if (variable == null) throw new ArgumentNullException("variable");
+
+            var local = variable as LocalVariable;
+            if (local != null) {
+                LoadLocalAddress(local.Local);
+                return;
+            }
+            var arg = variable as MethodArgVariable;
+            if (arg != null) {
+                _il.Emit(OpCodes.Ldarga_S, arg.Index);
+                LoadArgsAddress(arg.Index);
                 return;
             }
 
@@ -122,7 +161,6 @@ namespace Enigma.Reflection.Emit
                 _il.Emit(opCode);
                 return;
             }
-
             _il.Emit(OpCodes.Ldloc_S, local.LocalIndex);
         }
 
@@ -136,11 +174,6 @@ namespace Enigma.Reflection.Emit
             _il.MarkLabel(label);
         }
 
-        public void Transfer(Label label)
-        {
-            _il.Emit(OpCodes.Br_S, label);
-        }
-
         public void LoadField(FieldInfo field)
         {
             _il.Emit(OpCodes.Ldfld, field);
@@ -151,12 +184,32 @@ namespace Enigma.Reflection.Emit
             _il.Emit(OpCodes.Ldsfld, field);
         }
 
-        public void TransferIfFalse(Label label)
+        public void TransferLong(Label label)
+        {
+            _il.Emit(OpCodes.Br, label);
+        }
+
+        public void TransferLongIfFalse(Label label)
+        {
+            _il.Emit(OpCodes.Brfalse, label);
+        }
+
+        public void TransferLongIfTrue(Label label)
+        {
+            _il.Emit(OpCodes.Brtrue, label);
+        }
+
+        public void TransferShort(Label label)
+        {
+            _il.Emit(OpCodes.Br_S, label);
+        }
+
+        public void TransferShortIfFalse(Label label)
         {
             _il.Emit(OpCodes.Brfalse_S, label);
         }
 
-        public void TransferIfTrue(Label label)
+        public void TransferShortIfTrue(Label label)
         {
             _il.Emit(OpCodes.Brtrue_S, label);
         }
@@ -208,5 +261,14 @@ namespace Enigma.Reflection.Emit
             _il.Emit(OpCodes.Newobj, constructor);
         }
 
+        public void Constrained(Type type)
+        {
+            _il.Emit(OpCodes.Constrained, type);
+        }
+
+        public void Throw()
+        {
+            _il.Emit(OpCodes.Throw);
+        }
     }
 }

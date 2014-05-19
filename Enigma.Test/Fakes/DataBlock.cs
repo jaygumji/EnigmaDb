@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using Enigma.IO;
 using Enigma.Serialization;
+using Enigma.Serialization.PackedBinary;
 using Enigma.Test.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -33,6 +34,10 @@ namespace Enigma.Test.Fakes
         public IList<DateTime> Stamps { get; set; }
 
         public Relation Relation { get; set; }
+        public Relation DummyRelation { get; set; }
+
+        public Dictionary<string, int> IndexedValues { get; set; }
+        public Dictionary<Identifier, Category> Categories { get; set; }
 
         public static DataBlock Filled()
         {
@@ -60,6 +65,17 @@ namespace Enigma.Test.Fakes
                     Name = "Connection",
                     Description = "Generic connection between relations",
                     Value = 77
+                },
+                IndexedValues = new Dictionary<string, int> {
+                    {"V1", 1},
+                    {"V2", 2},
+                    {"V3", 3},
+                    {"V4", 4}
+                },
+                Categories = new Dictionary<Identifier, Category> {
+                    {new Identifier {Id = 1, Type = ApplicationType.Api}, new Category {Name = "Warning", Description = "Warning of something", Image = new byte[]{1, 2, 3, 4, 5}}},
+                    {new Identifier {Id = 2, Type = ApplicationType.Api}, new Category {Name = "Error", Description = "Error of something", Image = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9}}},
+                    {new Identifier {Id = 3, Type = ApplicationType.Service}, new Category {Name = "Temporary"}}
                 }
             };
         }

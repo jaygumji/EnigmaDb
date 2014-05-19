@@ -186,9 +186,9 @@ namespace Enigma.Store.Indexes
             var valueBytes = _information.Converter.Convert(value);
 
             var entryLength = (_information.IsFixedLength ? 0 : _lengthInformation.FixedLength) // Value length
-                + _lengthInformation.FixedLength // Key length
+                + _lengthInformation.FixedLength // DictionaryKey length
                 + _isActiveInformation.FixedLength // IsActive
-                + key.Value.Length // Key
+                + key.Value.Length // DictionaryKey
                 + valueBytes.Length; // Value
 
             var entryData = new byte[entryLength];

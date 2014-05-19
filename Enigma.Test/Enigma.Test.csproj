@@ -53,7 +53,10 @@
     <Compile Include="Algorithm\BinarySearchTests.cs" />
     <Compile Include="DualBinaryStoreTests.cs" />
     <Compile Include="Expressions\PropertySelectorTests.cs" />
+    <Compile Include="Fakes\ApplicationType.cs" />
+    <Compile Include="Fakes\Category.cs" />
     <Compile Include="Fakes\DataBlock.cs" />
+    <Compile Include="Fakes\Identifier.cs" />
     <Compile Include="Fakes\MyEntity.cs" />
     <Compile Include="Fakes\Relation.cs" />
     <Compile Include="Index\ComparableIndexTests.cs" />
@@ -61,9 +64,15 @@
     <Compile Include="Linq\IndexFilterTests.cs" />
     <Compile Include="Modelling\EntityBuilderTests.cs" />
     <Compile Include="Serialization\BinaryPackerTests.cs" />
+    <Compile Include="Serialization\CategoryComparer.cs" />
+    <Compile Include="Serialization\CategoryHardCodedTraveller.cs" />
     <Compile Include="Serialization\DataBlockHardCodedTraveller.cs" />
+    <Compile Include="Serialization\Fakes\ValueDictionary.cs" />
+    <Compile Include="Serialization\IdentifierHardCodedTraveller.cs" />
+    <Compile Include="Serialization\IndexedValueComparer.cs" />
     <Compile Include="Serialization\ReadTravellerTests.cs" />
     <Compile Include="Serialization\RelationHardCodedTraveller.cs" />
+    <Compile Include="Serialization\SpecificTests.cs" />
     <Compile Include="Serialization\WriteTravellerTests.cs" />
     <Compile Include="Store\StorageTests.cs" />
     <Compile Include="TestDb\TheACars.cs" />

@@ -28,7 +28,7 @@ namespace Enigma.Store
         /// <summary>
         /// Find out whether this table of content contains an entry
         /// </summary>
-        /// <param name="key">Key</param>
+        /// <param name="key">DictionaryKey</param>
         /// <returns>true if the table of content contains an entry with the matching key, otherwise false</returns>
         bool Contains(IKey key);
     }

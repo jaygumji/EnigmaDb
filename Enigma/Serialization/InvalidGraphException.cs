@@ -23,9 +23,9 @@ namespace Enigma.Serialization
             return new InvalidGraphException(string.Format("Collection of type {0} is used in the graph, but the collection is missing an Add method that takes the element type as parameter", type.FullName));
         }
 
-        public static InvalidGraphException CollectionHasNoParameterLessConstructor(Type type)
+        public static InvalidGraphException NoDictionaryValue(string name)
         {
-            return new InvalidGraphException(string.Format("Collection of type {0} is used in the graph, but the collection is missing a parameterless constructor", type.FullName));
+            return new InvalidGraphException(string.Format("Failed to read the value of a dictionary key value pair of property {0}", name));
         }
     }
 }

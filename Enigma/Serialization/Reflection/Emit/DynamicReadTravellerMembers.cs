@@ -15,7 +15,10 @@ namespace Enigma.Serialization.Reflection.Emit
         public readonly MethodInfo VisitArgsNullableValue;
         public readonly MethodInfo VisitArgsSingle;
         public readonly MethodInfo VisitArgsCollection;
+        public readonly MethodInfo VisitArgsDictionary;
         public readonly FieldInfo VisitArgsItemField;
+        public readonly FieldInfo VisitArgsDictionaryKey;
+        public readonly FieldInfo VisitArgsDictionaryValue;
 
         public readonly MethodInfo VisitorTryVisit;
         public readonly MethodInfo VisitorLeave;
@@ -25,6 +28,8 @@ namespace Enigma.Serialization.Reflection.Emit
 
         public readonly MethodInfo EnumeratorMoveNext;
         public readonly MethodInfo DisposableDispose;
+        
+        public readonly MethodInfo ExceptionNoDictionaryValue;
 
         public DynamicReadTravellerMembers()
         {
@@ -34,7 +39,10 @@ namespace Enigma.Serialization.Reflection.Emit
             VisitArgsNullableValue = visitArgsType.GetMethod("NullableValue");
             VisitArgsSingle = visitArgsType.GetMethod("Single");
             VisitArgsCollection = visitArgsType.GetMethod("Collection");
-            VisitArgsItemField = visitArgsType.GetField("Item");
+            VisitArgsItemField = visitArgsType.GetField("CollectionItem");
+            VisitArgsDictionary = visitArgsType.GetMethod("Dictionary");
+            VisitArgsDictionaryKey = visitArgsType.GetField("DictionaryKey");
+            VisitArgsDictionaryValue = visitArgsType.GetField("DictionaryValue");
 
             var readVisitorType = typeof(IReadVisitor);
             VisitorTryVisit = readVisitorType.GetMethod("TryVisit");
@@ -60,6 +68,8 @@ namespace Enigma.Serialization.Reflection.Emit
 
             EnumeratorMoveNext = typeof(IEnumerator).GetMethod("MoveNext");
             DisposableDispose = typeof(IDisposable).GetMethod("Dispose");
+
+            ExceptionNoDictionaryValue = typeof (InvalidGraphException).GetMethod("NoDictionaryValue");
         }
 
     }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Enigma.Binary;
 using Enigma.IO;
 
-namespace Enigma.Serialization
+namespace Enigma.Serialization.PackedBinary
 {
     public class PackedDataReadVisitor : IReadVisitor
     {
@@ -35,7 +35,7 @@ namespace Enigma.Serialization
             UInt32 dataIndex;
             while (SkipDataIndex(dataIndex = _reader.ReadZ(), index)) {
                 var byteLength = _reader.ReadByte();
-                if (byteLength == 0) continue; // Null value
+                if (byteLength == BinaryPacker.Null) continue;
 
                 if (byteLength != BinaryPacker.VariabelLength)
                     _reader.Skip(byteLength);
@@ -55,26 +55,31 @@ namespace Enigma.Serialization
             return true;
         }
 
-        public bool TryVisit(ReadVisitArgs args)
+        public ValueState TryVisit(ReadVisitArgs args)
         {
+            if (args.Type != LevelType.Root)
+                if (args.Index > 0 && !MoveToIndex(args.Index))
+                    return ValueState.NotFound;
+
             switch (args.Type) {
                 case LevelType.Single:
                 case LevelType.Collection:
                 case LevelType.Dictionary:
-                    var foundIndex = MoveToIndex(args.Index);
-                    if (foundIndex) {
-                        var byteLength = _reader.ReadByte();
-                        if (byteLength != BinaryPacker.VariabelLength)
-                            throw new UnexpectedLengthException(args, byteLength);
-                        _reader.Skip(4);
-                        _stack.Push(args);
-                    }
-                    return foundIndex;
-                case LevelType.Item:
-                    return _reader.ReadBoolean();
+                case LevelType.DictionaryKey:
+                case LevelType.DictionaryValue:
+                case LevelType.CollectionItem:
+                    var byteLength = _reader.ReadByte();
+                    if (byteLength == BinaryPacker.Null) return ValueState.Null;
+                    if (byteLength != BinaryPacker.VariabelLength)
+                        throw new UnexpectedLengthException(args, byteLength);
+
+                    _reader.Skip(4);
+
+                    _stack.Push(args);
+                    return ValueState.Found;
             }
             _stack.Push(args);
-            return true;
+            return ValueState.Found;
         }
 
         public void Leave()
@@ -88,6 +93,9 @@ namespace Enigma.Serialization
 
             switch (args.Type) {
                 case LevelType.Single:
+                case LevelType.DictionaryKey:
+                case LevelType.DictionaryValue:
+                case LevelType.CollectionItem:
                     MoveToIndex(UInt32.MaxValue);
                     _endOfLevel = false;
                     break;

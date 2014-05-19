@@ -4,7 +4,7 @@ using System.Linq;
 namespace Enigma.Store.Binary
 {
     /// <summary>
-    /// Key in binary format
+    /// DictionaryKey in binary format
     /// </summary>
     /// <remarks>
     /// <para>Although keys can be in many different formats, they are always treated as binary keys.

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Enigma.Binary;
 using Enigma.IO;
 
-namespace Enigma.Serialization
+namespace Enigma.Serialization.PackedBinary
 {
     public class PackedDataWriteVisitor : IWriteVisitor
     {
@@ -20,18 +20,26 @@ namespace Enigma.Serialization
         {
             _stack.Push(args);
 
+            if (args.Type != LevelType.Root)
+                if (args.Index > 0)
+                    _writer.WriteZ(args.Index);
+
             switch (args.Type) {
                 case LevelType.Single:
                 case LevelType.Collection:
                 case LevelType.Dictionary:
-                    _writer.WriteZ(args.Index);
-                    _writer.Write(Byte.MaxValue);
-                    // Create a reservation to write the length of the entry
-                    args.State = _writer.Reserve();
-                    break;
-                case LevelType.Item:
-                case LevelType.KeyValue:
-                    _writer.Write(true);
+                case LevelType.DictionaryKey:
+                case LevelType.DictionaryValue:
+                case LevelType.CollectionItem:
+                    if (args.HasValue) {
+                        _writer.Write(BinaryPacker.VariabelLength);
+
+                        // Create a reservation to write the length of the entry
+                        args.State = _writer.Reserve();
+                    }
+                    else
+                        _writer.Write(BinaryPacker.Null);
+
                     break;
             }
         }
@@ -43,9 +51,14 @@ namespace Enigma.Serialization
                 case LevelType.Single:
                 case LevelType.Collection:
                 case LevelType.Dictionary:
-                    _writer.WriteZ(0);
-                    // Updates the reservation with the length of this entry
-                    _writer.Write((WriteReservation) args.State);
+                case LevelType.DictionaryKey:
+                case LevelType.DictionaryValue:
+                case LevelType.CollectionItem:
+                    if (args.HasValue) {
+                        _writer.WriteZ(0);
+                        // Updates the reservation with the length of this entry
+                        _writer.Write((WriteReservation)args.State);
+                    }
                     break;
             }
         }

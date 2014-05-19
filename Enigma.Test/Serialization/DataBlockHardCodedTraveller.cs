@@ -9,10 +9,14 @@ namespace Enigma.Test.Serialization
     {
 
         private readonly IGraphTraveller<Relation> _travellerRelation0;
+        private readonly IGraphTraveller<Identifier> _travellerIdentifier1;
+        private readonly IGraphTraveller<Category> _travellerCategory2;
 
         public DataBlockHardCodedTraveller()
         {
             _travellerRelation0 = new RelationHardCodedTraveller();
+            _travellerIdentifier1 = new IdentifierHardCodedTraveller();
+            _travellerCategory2 = new CategoryHardCodedTraveller();
         }
 
         public void Travel(IWriteVisitor visitor, DataBlock graph)
@@ -38,19 +42,20 @@ namespace Enigma.Test.Serialization
                 var c = graph.Messages;
                 visitor.Visit(WriteVisitArgs.Collection("Messages", 17, c));
 
-                if (c != null)
+                if (c != null) {
                     foreach (var cv in c)
-                        visitor.VisitValue(cv, WriteVisitArgs.Item);
+                        visitor.VisitValue(cv, WriteVisitArgs.CollectionItem);
+                }
 
                 visitor.Leave();
             }
 
             {
-                var c = graph.Stamps;
+                var c = (ICollection<DateTime>) graph.Stamps;
                 visitor.Visit(WriteVisitArgs.Collection("Stamps", 18, c));
                 if (c != null)
                     foreach (var cv in c)
-                        visitor.VisitValue(cv, WriteVisitArgs.Item);
+                        visitor.VisitValue(cv, WriteVisitArgs.CollectionItem);
 
                 visitor.Leave();
             }
@@ -60,6 +65,43 @@ namespace Enigma.Test.Serialization
                 visitor.Visit(WriteVisitArgs.Single("Relation", 19, c));
                 if (c != null)
                     _travellerRelation0.Travel(visitor, c);
+                visitor.Leave();
+            }
+
+            {
+                var c = graph.DummyRelation;
+                visitor.Visit(WriteVisitArgs.Single("DummyRelation", 20, c));
+                if (c != null)
+                    _travellerRelation0.Travel(visitor, c);
+                visitor.Leave();
+            }
+
+            {
+                var c = (IDictionary<string, int>) graph.IndexedValues;
+                visitor.Visit(WriteVisitArgs.Dictionary("IndexedValues", 21, c));
+                if (c != null) {
+                    foreach (var ckv in c) {
+                        visitor.VisitValue(ckv.Key, WriteVisitArgs.DictionaryKey);
+                        visitor.VisitValue(ckv.Value, WriteVisitArgs.DictionaryValue);
+                    }
+                }
+                visitor.Leave();
+            }
+
+            {
+                var c = (IDictionary<Identifier, Category>)graph.Categories;
+                visitor.Visit(WriteVisitArgs.Dictionary("Categories", 22, c));
+                if (c != null) {
+                    foreach (var ckv in c) {
+                        visitor.Visit(WriteVisitArgs.DictionaryKey);
+                        _travellerIdentifier1.Travel(visitor, ckv.Key);
+                        visitor.Leave();
+
+                        visitor.Visit(WriteVisitArgs.DictionaryValue);
+                        _travellerCategory2.Travel(visitor, ckv.Value);
+                        visitor.Leave();
+                    }
+                }
                 visitor.Leave();
             }
         }
@@ -140,29 +182,107 @@ namespace Enigma.Test.Serialization
             if (visitor.TryVisitValue(ReadVisitArgs.Value("Blob", 16), out v15))
                 graph.Blob = v15;
 
-            if (visitor.TryVisit(ReadVisitArgs.Collection("Messages", 17))) {
-                var c = new List<string>();
-                string cv;
-                while (visitor.TryVisitValue(ReadVisitArgs.Item, out cv) && cv != null)
-                    c.Add(cv);
-                graph.Messages = c;
-                visitor.Leave();
+            ValueState state;
+            state = visitor.TryVisit(ReadVisitArgs.Collection("Messages", 17));
+            if (state != ValueState.NotFound) {
+                if (state == ValueState.Found) {
+                    var c = new List<string>();
+                    string cv;
+                    while (visitor.TryVisitValue(ReadVisitArgs.CollectionItem, out cv) && cv != null)
+                        c.Add(cv);
+                    graph.Messages = c;
+
+                    visitor.Leave();
+                }
+                else
+                    graph.Messages = null;
             }
 
-            if (visitor.TryVisit(ReadVisitArgs.Collection("Stamps", 18))) {
-                var c = new List<DateTime>();
-                DateTime? cv;
-                while (visitor.TryVisitValue(ReadVisitArgs.Item, out cv) && cv.HasValue)
-                    c.Add(cv.Value);
-                graph.Stamps = c;
-                visitor.Leave();
+            state = visitor.TryVisit(ReadVisitArgs.Collection("Stamps", 18));
+            if (state != ValueState.NotFound) {
+                if (state == ValueState.Found) {
+                    var c = new List<DateTime>();
+                    DateTime? cv;
+                    while (visitor.TryVisitValue(ReadVisitArgs.CollectionItem, out cv) && cv.HasValue)
+                        c.Add(cv.Value);
+                    graph.Stamps = c;
+
+                    visitor.Leave();
+                }
+                else
+                    graph.Stamps = null;
             }
 
-            if (visitor.TryVisit(ReadVisitArgs.Single("Relation", 19))) {
-                var c = new Relation();
-                _travellerRelation0.Travel(visitor, c);
-                graph.Relation = c;
-                visitor.Leave();
+            state = visitor.TryVisit(ReadVisitArgs.Single("Relation", 19));
+            if (state != ValueState.NotFound) {
+                if (state == ValueState.Found) {
+                    var c = new Relation();
+                    _travellerRelation0.Travel(visitor, c);
+                    graph.Relation = c;
+
+                    visitor.Leave();
+                }
+                else
+                    graph.Relation = null;
+            }
+
+            state = visitor.TryVisit(ReadVisitArgs.Single("DummyRelation", 20));
+            if (state != ValueState.NotFound) {
+                if (state == ValueState.Found) {
+                    var c = new Relation();
+                    _travellerRelation0.Travel(visitor, c);
+                    graph.DummyRelation = c;
+
+                    visitor.Leave();
+                }
+                else
+                    graph.DummyRelation = null;
+            }
+
+            state = visitor.TryVisit(ReadVisitArgs.Dictionary("IndexedValues", 21));
+            if (state != ValueState.NotFound) {
+                if (state == ValueState.Found) {
+                    IDictionary<string, int> c = new Dictionary<string, int>();
+                    string ck;
+                    while (visitor.TryVisitValue(ReadVisitArgs.DictionaryKey, out ck) && ck != null) {
+                        int? cv;
+                        if (!visitor.TryVisitValue(ReadVisitArgs.DictionaryValue, out cv) || !cv.HasValue)
+                            throw InvalidGraphException.NoDictionaryValue("IndexedValues");
+                        
+                        c.Add(ck, cv.Value);
+                    }
+                    graph.IndexedValues = (Dictionary<string, int>) c;
+
+                    visitor.Leave();
+                }
+                else
+                    graph.IndexedValues = null;
+            }
+
+            state = visitor.TryVisit(ReadVisitArgs.Dictionary("Categories", 22));
+            if (state != ValueState.NotFound) {
+                if (state == ValueState.Found) {
+                    IDictionary<Identifier, Category> c = new Dictionary<Identifier, Category>();
+                    while (visitor.TryVisit(ReadVisitArgs.DictionaryKey) == ValueState.Found) {
+                        var ck = new Identifier();
+                        _travellerIdentifier1.Travel(visitor, ck);
+                        visitor.Leave();
+
+                        if (visitor.TryVisit(ReadVisitArgs.DictionaryValue) != ValueState.Found)
+                            throw InvalidGraphException.NoDictionaryValue("Categories");
+
+                        var cv = new Category();
+                        _travellerCategory2.Travel(visitor, cv);
+                        visitor.Leave();
+
+                        c.Add(ck, cv);
+                    }
+                    graph.Categories = (Dictionary<Identifier, Category>) c;
+
+                    visitor.Leave();
+                }
+                else
+                    graph.IndexedValues = null;
             }
 
         }

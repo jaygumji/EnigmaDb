@@ -33,6 +33,26 @@ namespace Enigma.Reflection
             return Container.AsNullable().ElementType.Extend().Class == TypeClass.Value;
         }
 
+        public bool IsEnum()
+        {
+            return _type.IsEnum || (Class == TypeClass.Nullable && Container.AsNullable().ElementType.IsEnum);
+        }
+
+        public Type GetUnderlyingEnumType()
+        {
+            if (_type.IsEnum) return Enum.GetUnderlyingType(_type);
+
+            if (Class == TypeClass.Nullable) {
+                var elementType = Container.AsNullable().ElementType;
+                if (elementType.IsEnum) {
+                    var underlyingType = Enum.GetUnderlyingType(elementType);
+                    return typeof (Nullable<>).MakeGenericType(underlyingType);
+                }
+            }
+
+            throw new InvalidOperationException("The type is not an enum");
+        }
+
         public bool TryGetCollectionTypeInfo(out CollectionContainerTypeInfo collectionTypeInfo)
         {
             collectionTypeInfo = _containerTypeInfo.Value as CollectionContainerTypeInfo;

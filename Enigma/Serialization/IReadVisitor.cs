@@ -4,7 +4,7 @@ namespace Enigma.Serialization
 {
     public interface IReadVisitor
     {
-        bool TryVisit(ReadVisitArgs args);
+        ValueState TryVisit(ReadVisitArgs args);
         void Leave();
 
         bool TryVisitValue(ReadVisitArgs args, out Byte? value);
