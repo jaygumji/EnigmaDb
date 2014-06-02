@@ -43,12 +43,13 @@ namespace Enigma.Test.Serialization
             Assert.AreEqual(expected.Relation.Value, actual.Relation.Value);
             Assert.IsNull(actual.DummyRelation);
 
-            Assert.IsTrue(expected.IndexedValues.SequenceEqual(actual.IndexedValues, new IndexedValueComparer()));
+            Assert.IsTrue(expected.IndexedValues.Keys.SequenceEqual(actual.IndexedValues.Keys));
+            Assert.IsTrue(expected.IndexedValues.Values.SequenceEqual(actual.IndexedValues.Values));
 
             Assert.IsNotNull(actual.Categories);
             Assert.AreEqual(3, actual.Categories.Count);
             Assert.IsTrue(expected.Categories.Keys.SequenceEqual(actual.Categories.Keys));
-            Assert.IsTrue(expected.Categories.Values.SequenceEqual(actual.Categories.Values, new CategoryComparer()));
+            Assert.IsTrue(expected.Categories.Values.SequenceEqual(actual.Categories.Values));
         }
 
         [TestMethod]
@@ -76,9 +77,8 @@ namespace Enigma.Test.Serialization
             var reader = new BinaryDataReader(stream);
             var visitor = new PackedDataReadVisitor(reader);
 
-            var context = new DynamicTravellerContext(true);
+            var context = new DynamicTravellerContext();
             var traveller = context.GetInstance<DataBlock>();
-            context.Save();
 
             var graph = new DataBlock();
             traveller.Travel(visitor, graph);

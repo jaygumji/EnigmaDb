@@ -45,7 +45,6 @@ namespace Enigma.Serialization.Reflection.Emit
             if (extPropertyType.IsValueOrNullableOfValue()) {
                 var isNullable = extPropertyType.Class == TypeClass.Nullable;
                 var isEnum = extPropertyType.IsEnum();
-                if (isEnum) return;
                 var isValueType = extPropertyType.Inner.IsValueType;
                 _il.LoadArgs(1);
                 _il.LoadVal(context.Property.Name);
@@ -59,7 +58,7 @@ namespace Enigma.Serialization.Reflection.Emit
                 Type valueType;
                 if (isEnum) {
                     mediatorPropertyType = extPropertyType.GetUnderlyingEnumType();
-                    valueType = isNullable ? mediatorPropertyType : Members.Nullable[mediatorPropertyType].NullableType;
+                    valueType = Members.Nullable[mediatorPropertyType].NullableType;
                 }
                 else {
                     mediatorPropertyType = extPropertyType.Inner;
@@ -100,13 +99,7 @@ namespace Enigma.Serialization.Reflection.Emit
                 else
                     _il.LoadLocal(valueLocal);
 
-                if (isEnum) {
-                    if (!isNullable)
-                        _il.Call(Members.Nullable[mediatorPropertyType].GetValue);
-
-                    _il.Cast(context.Property.PropertyType);
-                }
-                else if (!isNullable && isValueType)
+                if (!isNullable && (isValueType || isEnum))
                     _il.Call(Members.Nullable[mediatorPropertyType].GetValue);
 
                 _il.CallVirt(context.Property.GetSetMethod());
@@ -144,15 +137,19 @@ namespace Enigma.Serialization.Reflection.Emit
                 _il.Construct(dictionaryMembers.Constructor);
                 _il.SetLocal(dictionaryLocal);
 
-                var keyLocal = _il.DeclareLocal("ck", dictionaryMembers.KeyType);
+                NullableMembers keyNullableMembers;
+                var keyLocal = _il.DeclareLocal("ck", Members.Nullable.TryGetValue(dictionaryMembers.KeyType, out keyNullableMembers) ? keyNullableMembers.NullableType : dictionaryMembers.KeyType);
                 GenerateEnumerateCode(keyLocal, Members.VisitArgsDictionaryKey, () => {
-                    var addValueLabel = _il.DefineLabel();
+                    var throwExceptionLabel = _il.DefineLabel();
+                    var endBodyLabel = _il.DefineLabel();
 
-                    var valueLocal = _il.DeclareLocal("cv", dictionaryMembers.ValueType);
+                    NullableMembers valueNullableMembers;
+                    var hasNullableMembers = Members.Nullable.TryGetValue(dictionaryMembers.ValueType, out valueNullableMembers);
+                    var valueLocal = _il.DeclareLocal("cv", hasNullableMembers ? valueNullableMembers.NullableType : dictionaryMembers.ValueType);
                     var valueType = dictionaryMembers.ValueType;
-                    var extValueType = valueType.Extend();
                     _il.LoadArgs(1);
                     _il.LoadStaticField(Members.VisitArgsDictionaryValue);
+                    var extValueType = valueType.Extend();
 
                     if (extValueType.IsValueOrNullableOfValue()) {
                         var loadOneLabel = _il.DefineLabel();
@@ -160,11 +157,11 @@ namespace Enigma.Serialization.Reflection.Emit
 
                         _il.LoadLocalAddress(valueLocal);
                         _il.CallVirt(Members.VisitorTryVisitValue[dictionaryMembers.ValueType]);
-                        _il.TransferShortIfTrue(loadOneLabel);
+                        _il.TransferShortIfFalse(loadOneLabel);
 
-                        if (valueType.IsValueType) {
+                        if (hasNullableMembers) {
                             _il.LoadLocalAddress(valueLocal);
-                            _il.Call(Members.Nullable[valueType].GetHasValue);
+                            _il.Call(valueNullableMembers.GetHasValue);
                         }
                         else {
                             _il.LoadLocal(valueLocal);
@@ -177,35 +174,34 @@ namespace Enigma.Serialization.Reflection.Emit
                         _il.MarkLabel(loadOneLabel);
                         _il.LoadVal(1);
                         _il.MarkLabel(checkConditionLabel);
-                        _il.TransferShortIfTrue(addValueLabel);
-                        _il.LoadVal(context.Property.Name);
-                        _il.Call(Members.ExceptionNoDictionaryValue);
-                        _il.Throw();
+                        _il.TransferShortIfTrue(throwExceptionLabel);
                     }
                     else {
                         _il.CallVirt(Members.VisitorTryVisit);
                         _il.LoadVal((int) ValueState.Found);
                         _il.CompareEquals();
+                        _il.LoadVal(0);
+                        _il.CompareEquals();
+                        _il.TransferShortIfTrue(throwExceptionLabel);
 
-                        var skipThrowLabel = _il.DefineLabel();
-                        _il.TransferShortIfTrue(skipThrowLabel);
-                        _il.LoadVal(context.Property.Name);
-                        _il.Call(Members.ExceptionNoDictionaryValue);
-                        _il.Throw();
-
-                        _il.MarkLabel(skipThrowLabel);
                         GenerateCreateAndChildCallCode(valueLocal);
                         _il.LoadArgs(1);
                         _il.CallVirt(Members.VisitorLeave);
                     }
 
-                    
-                    _il.MarkLabel(addValueLabel);
                     _il.LoadLocal(dictionaryLocal);
                     GenerateLoadLocalValueCode(keyLocal);
                     GenerateLoadLocalValueCode(valueLocal);
 
                     _il.CallVirt(dictionaryMembers.Add);
+                    _il.TransferShort(endBodyLabel);
+
+                    _il.MarkLabel(throwExceptionLabel);
+                    _il.LoadVal(context.Property.Name);
+                    _il.Call(Members.ExceptionNoDictionaryValue);
+                    _il.Throw();
+
+                    _il.MarkLabel(endBodyLabel);
                 });
 
                 _il.LoadVar(graphVariable);
@@ -432,35 +428,6 @@ namespace Enigma.Serialization.Reflection.Emit
                 _il.TransferLongIfTrue(bodyLabel);
             }
 
-        }
-
-        private void GenerateDictionaryKeyValueCode(LocalBuilder local, Type type, FieldInfo visitArgsField, Label valueNotFoundLabel, Label valueNotFoundCheckLabel)
-        {
-            _il.LoadArgs(1);
-            _il.LoadStaticField(visitArgsField);
-
-
-            var extType = type.Extend();
-            if (extType.IsValueOrNullableOfValue()) {
-                _il.LoadLocalAddress(local);
-
-                _il.CallVirt(Members.VisitorTryVisitValue[type]);
-                _il.TransferShortIfFalse(valueNotFoundLabel);
-
-                if (type.IsValueType) {
-                    _il.LoadLocalAddress(local);
-                    _il.Call(Members.Nullable[type].GetHasValue);
-                    _il.TransferShort(valueNotFoundCheckLabel);
-                }
-                else {
-                    _il.LoadLocal(local);
-                    _il.TransferShortIfFalse(valueNotFoundLabel);
-                }
-            }
-            else {
-                //_il.CallVirt(Members.VisitorTryVisit);
-
-            }
         }
 
         private LocalBuilder DeclareAndLoadLocal(string name, Type type)

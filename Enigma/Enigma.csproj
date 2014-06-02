@@ -82,6 +82,7 @@
     <Compile Include="Binary\Information\BinaryInformationTimeSpan.cs" />
     <Compile Include="Binary\Information\BinaryInformationDecimal.cs" />
     <Compile Include="Binary\Information\BinaryInformationBoolean.cs" />
+    <Compile Include="BlobComparer.cs" />
     <Compile Include="DataSize.cs" />
     <Compile Include="Db\Engine\ChangeEntry.cs" />
     <Compile Include="Db\Engine\ChangeManager.cs" />
@@ -187,7 +188,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Serialization\Travellers\CollectionTraveller.cs" />
-    <Compile Include="Serialization\Travellers\IElementValueTraveller.cs" />
+    <Compile Include="Serialization\Travellers\ElementTravellerInt16.cs" />
+    <Compile Include="Serialization\Travellers\IElementTraveller.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Serialization\UnexpectedLengthException.cs">
       <SubType>Code</SubType>
     </Compile>

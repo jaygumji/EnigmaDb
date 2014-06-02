@@ -38,9 +38,8 @@ namespace Enigma.Test.Serialization
             var writer = new BinaryDataWriter(stream);
             var visitor = new PackedDataWriteVisitor(writer);
 
-            var context = new DynamicTravellerContext(true);
+            var context = new DynamicTravellerContext();
             var traveller = context.GetInstance<DataBlock>();
-            context.Save();
             traveller.Travel(visitor, DataBlock.Filled());
 
             var bytes = stream.ToArray();

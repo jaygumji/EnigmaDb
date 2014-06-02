@@ -9,6 +9,10 @@ namespace Enigma.Serialization.Reflection.Emit
         private readonly Dictionary<Type, DynamicTraveller> _travellers;
         private readonly AssemblyBuilder _assemblyBuilder;
 
+        public DynamicTravellerContext() : this(false)
+        {
+        }
+
         public DynamicTravellerContext(bool canSaveAssembly)
         {
             _travellers = new Dictionary<Type, DynamicTraveller>();

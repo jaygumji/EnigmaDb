@@ -62,9 +62,6 @@ namespace Enigma.Modelling
 
         public void Register(Type entityType)
         {
-            if (_entityMaps.ContainsKey(entityType.Name))
-                return;
-
             RegisterHierarchy(entityType);
         }
 
@@ -75,6 +72,9 @@ namespace Enigma.Modelling
 
         private void RegisterHierarchy(Type entityType, string name)
         {
+            if (_entityMaps.ContainsKey(name))
+                return;
+
             var properties = entityType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
             var propertyMappings = new Dictionary<string, IPropertyMap>();
             var propertyMapType = typeof(PropertyMap<>);
@@ -96,6 +96,16 @@ namespace Enigma.Modelling
                         if (extendedElementType.Class == TypeClass.Complex)
                             relationTypes.Add(collectionInfo.ElementType);
                     }
+                    else if (extended.Class == TypeClass.Dictionary) {
+                        var dictionaryInfo = extended.Container.AsDictionary();
+                        var extendedKeyType = new ExtendedType(dictionaryInfo.KeyType);
+                        if (extendedKeyType.Class == TypeClass.Complex)
+                            relationTypes.Add(dictionaryInfo.KeyType);
+
+                        var extendedValueType = new ExtendedType(dictionaryInfo.ValueType);
+                        if (extendedValueType.Class == TypeClass.Complex)
+                            relationTypes.Add(dictionaryInfo.ValueType);
+                    }
                     else if (extended.Class == TypeClass.Complex)
                         relationTypes.Add(property.PropertyType);
                 }
@@ -116,7 +126,7 @@ namespace Enigma.Modelling
             else if (propertyMappings.ContainsKey("GUID"))
                 entityMap.KeyName = "GUID";
 
-            _entityMaps.Add(entityType.Name, entityMap);
+            _entityMaps.Add(name, entityMap);
 
             foreach (var relationType in relationTypes)
                 RegisterHierarchy(relationType);

@@ -6,7 +6,7 @@ namespace Enigma.Serialization
     public class SerializationEngine
     {
 
-        private static readonly DynamicTravellerContext Context = new DynamicTravellerContext(false);
+        private static readonly DynamicTravellerContext Context = new DynamicTravellerContext();
         private static readonly object[] EmptyParameters = {};
 
         public void Serialize(IWriteVisitor visitor, object graph)

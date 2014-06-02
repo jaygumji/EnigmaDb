@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reflection;
 using System.Reflection.Emit;
 using Enigma.Reflection;
 using Enigma.Reflection.Emit;
@@ -159,8 +160,8 @@ namespace Enigma.Serialization.Reflection.Emit
             var checkIfNullLabel = GenerateReferenceNullCheck(dictionary, checkLocal);
 
             GenerateEnumerateCode(checkLocal, dictionary, elementType, itVarLocal => {
-                GenerateEnumerateContentCode(new InstancePropertyVariable(itVarLocal, elementType.GetProperty("Key")));
-                GenerateEnumerateContentCode(new InstancePropertyVariable(itVarLocal, elementType.GetProperty("Value")));
+                GenerateEnumerateContentCode(new InstancePropertyVariable(itVarLocal, elementType.GetProperty("Key")), Members.VisitArgsDictionaryKey);
+                GenerateEnumerateContentCode(new InstancePropertyVariable(itVarLocal, elementType.GetProperty("Value")), Members.VisitArgsDictionaryValue);
             });
 
             _il.MarkLabel(checkIfNullLabel);
@@ -172,12 +173,12 @@ namespace Enigma.Serialization.Reflection.Emit
 
             var checkIfNullLabel = GenerateReferenceNullCheck(collection, checkLocal);
 
-            GenerateEnumerateCode(checkLocal, collection, elementType, GenerateEnumerateContentCode);
+            GenerateEnumerateCode(checkLocal, collection, elementType, v => GenerateEnumerateContentCode(v, Members.VisitArgsCollectionItem));
 
             _il.MarkLabel(checkIfNullLabel);
         }
 
-        private void GenerateEnumerateContentCode(IVariable variable)
+        private void GenerateEnumerateContentCode(IVariable variable, FieldInfo staticVisitArgsField)
         {
             var type = variable.VariableType;
             var extType = type.Extend();
@@ -188,7 +189,7 @@ namespace Enigma.Serialization.Reflection.Emit
                 _il.LoadVar(variable);
                 if (!isNullable && type.IsValueType)
                     _il.Construct(Members.NullableConstructors[type]);
-                _il.LoadStaticField(Members.VisitArgsCollectionItem);
+                _il.LoadStaticField(staticVisitArgsField);
                 var visitValueMethod = Members.VisitorVisitValue[type];
                 _il.CallVirt(visitValueMethod);
             }
@@ -203,8 +204,8 @@ namespace Enigma.Serialization.Reflection.Emit
 
                 if (type == dictionaryType)
                     GenerateEnumerateCode(checkLocal, variable, elementType, itVarLocal => {
-                        GenerateEnumerateContentCode(new InstancePropertyVariable(itVarLocal, elementType.GetProperty("Key")));
-                        GenerateEnumerateContentCode(new InstancePropertyVariable(itVarLocal, elementType.GetProperty("Value")));
+                        GenerateEnumerateContentCode(new InstancePropertyVariable(itVarLocal, elementType.GetProperty("Key")), Members.VisitArgsDictionaryKey);
+                        GenerateEnumerateContentCode(new InstancePropertyVariable(itVarLocal, elementType.GetProperty("Value")), Members.VisitArgsDictionaryValue);
                     });
                 else {
                     _il.LoadVar(variable);
@@ -213,8 +214,8 @@ namespace Enigma.Serialization.Reflection.Emit
                     _il.SetLocal(dictionaryLocal);
 
                     GenerateEnumerateCode(checkLocal, new LocalVariable(dictionaryLocal), elementType, itVarLocal => {
-                        GenerateEnumerateContentCode(new InstancePropertyVariable(itVarLocal, elementType.GetProperty("Key")));
-                        GenerateEnumerateContentCode(new InstancePropertyVariable(itVarLocal, elementType.GetProperty("Value")));
+                        GenerateEnumerateContentCode(new InstancePropertyVariable(itVarLocal, elementType.GetProperty("Key")), Members.VisitArgsDictionaryKey);
+                        GenerateEnumerateContentCode(new InstancePropertyVariable(itVarLocal, elementType.GetProperty("Value")), Members.VisitArgsDictionaryValue);
                     });
                 }
             }
@@ -223,18 +224,18 @@ namespace Enigma.Serialization.Reflection.Emit
                 var collectionType = typeof (ICollection<>).MakeGenericType(elementType);
                 var checkLocal = _il.DeclareLocal("check", typeof(bool));
                 if (type == collectionType)
-                    GenerateEnumerateCode(checkLocal, variable, elementType, GenerateEnumerateContentCode);
+                    GenerateEnumerateCode(checkLocal, variable, elementType, v => GenerateEnumerateContentCode(v, Members.VisitArgsCollectionItem));
                 else {
                     _il.LoadVar(variable);
                     _il.Cast(collectionType);
                     var collectionLocal = _il.DeclareLocal("collection", collectionType);
                     _il.SetLocal(collectionLocal);
-                    GenerateEnumerateCode(checkLocal, new LocalVariable(collectionLocal), elementType, GenerateEnumerateContentCode);
+                    GenerateEnumerateCode(checkLocal, new LocalVariable(collectionLocal), elementType, v => GenerateEnumerateContentCode(v, Members.VisitArgsCollectionItem));
                 }
             }
             else {
                 _il.LoadArgs(1);
-                _il.LoadStaticField(Members.VisitArgsCollectionItem);
+                _il.LoadStaticField(staticVisitArgsField);
                 _il.CallVirt(Members.VisitorVisit);
 
                 GenerateChildCall(variable);

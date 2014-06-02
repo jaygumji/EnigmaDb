@@ -5,9 +5,9 @@ namespace Enigma.Serialization.Travellers
     public class CollectionTraveller<T> where T : class
     {
 
-        private readonly IElementValueTraveller<T> _traveller;
+        private readonly IElementTraveller<T> _traveller;
 
-        public CollectionTraveller(IElementValueTraveller<T> traveller)
+        public CollectionTraveller(IElementTraveller<T> traveller)
         {
             _traveller = traveller;
         }

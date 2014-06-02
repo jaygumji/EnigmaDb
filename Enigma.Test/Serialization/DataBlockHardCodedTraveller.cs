@@ -246,10 +246,10 @@ namespace Enigma.Test.Serialization
                     string ck;
                     while (visitor.TryVisitValue(ReadVisitArgs.DictionaryKey, out ck) && ck != null) {
                         int? cv;
-                        if (!visitor.TryVisitValue(ReadVisitArgs.DictionaryValue, out cv) || !cv.HasValue)
+                        if (visitor.TryVisitValue(ReadVisitArgs.DictionaryValue, out cv) && cv.HasValue)
+                            c.Add(ck, cv.Value);
+                        else
                             throw InvalidGraphException.NoDictionaryValue("IndexedValues");
-                        
-                        c.Add(ck, cv.Value);
                     }
                     graph.IndexedValues = (Dictionary<string, int>) c;
 
@@ -268,14 +268,15 @@ namespace Enigma.Test.Serialization
                         _travellerIdentifier1.Travel(visitor, ck);
                         visitor.Leave();
 
-                        if (visitor.TryVisit(ReadVisitArgs.DictionaryValue) != ValueState.Found)
+                        if (visitor.TryVisit(ReadVisitArgs.DictionaryValue) == ValueState.Found) {
+                            var cv = new Category();
+                            _travellerCategory2.Travel(visitor, cv);
+                            visitor.Leave();
+
+                            c.Add(ck, cv);
+                        }
+                        else
                             throw InvalidGraphException.NoDictionaryValue("Categories");
-
-                        var cv = new Category();
-                        _travellerCategory2.Travel(visitor, cv);
-                        visitor.Leave();
-
-                        c.Add(ck, cv);
                     }
                     graph.Categories = (Dictionary<Identifier, Category>) c;
 
