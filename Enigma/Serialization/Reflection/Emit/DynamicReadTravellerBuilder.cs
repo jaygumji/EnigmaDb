@@ -43,6 +43,7 @@ namespace Enigma.Serialization.Reflection.Emit
             //if (extPropertyType.Class == TypeClass.Dictionary) return;
             //if (extPropertyType.Class == TypeClass.Complex) return;
             //if (extPropertyType.Class == TypeClass.Collection) return;
+            //if (extPropertyType.Class == TypeClass.Nullable) return;
             //if (extPropertyType.Class == TypeClass.Value) return;
             if (extPropertyType.IsValueOrNullableOfValue()) {
                 var isNullable = extPropertyType.Class == TypeClass.Nullable;
@@ -55,7 +56,6 @@ namespace Enigma.Serialization.Reflection.Emit
                     ? Members.VisitArgsNullableValue
                     : Members.VisitArgsValue);
 
-
                 Type mediatorPropertyType;
                 Type valueType;
                 if (isEnum) {
@@ -64,14 +64,14 @@ namespace Enigma.Serialization.Reflection.Emit
                 }
                 else {
                     mediatorPropertyType = extPropertyType.Inner;
-                    valueType = isValueType ? Members.Nullable[mediatorPropertyType].NullableType : mediatorPropertyType;
+                    valueType = !isNullable && isValueType ? Members.Nullable[mediatorPropertyType].NullableType : mediatorPropertyType;
                 }
 
                 var valueLocal = _il.DeclareLocal("value", valueType);
                 _il.LoadLocalAddress(valueLocal);
                 _il.CallVirt(Members.VisitorTryVisitValue[valueType]);
 
-                if (isValueType) {
+                if (isValueType && !isNullable) {
                     var labelValueNotFound = _il.DefineLabel();
                     _il.TransferShortIfFalse(labelValueNotFound);
 
@@ -96,7 +96,7 @@ namespace Enigma.Serialization.Reflection.Emit
                 _il.TransferShortIfTrue(skipSetValueLabel);
 
                 _il.LoadVar(graphVariable);
-                if (isValueType)
+                if (isValueType && !isNullable)
                     _il.LoadLocalAddress(valueLocal);
                 else
                     _il.LoadLocal(valueLocal);

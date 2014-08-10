@@ -136,7 +136,10 @@
     <Compile Include="IO\PooledMemoryStream.cs" />
     <Compile Include="IO\StreamProviderSourceState.cs" />
     <Compile Include="IO\WriteReservation.cs" />
+    <Compile Include="Reflection\Emit\CallMethodILCode.cs" />
+    <Compile Include="Reflection\Emit\Constant.cs" />
     <Compile Include="Reflection\Emit\ConstructorBuilder.cs" />
+    <Compile Include="Reflection\Emit\IConstant.cs" />
     <Compile Include="Reflection\Emit\IILCode.cs" />
     <Compile Include="Reflection\Emit\ILCodeSnippets.cs" />
     <Compile Include="Reflection\Emit\ILExpressed.cs" />
@@ -146,6 +149,7 @@
     <Compile Include="Reflection\Emit\ClassBuilder.cs" />
     <Compile Include="Reflection\Emit\MethodBuilder.cs" />
     <Compile Include="Reflection\Emit\OpCodesLookups.cs" />
+    <Compile Include="Reflection\Emit\Parameter.cs" />
     <Compile Include="Reflection\TypeCache.cs" />
     <Compile Include="Scheduling\DailyConfiguration.cs" />
     <Compile Include="Scheduling\DateTimeQueue.cs" />

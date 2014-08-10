@@ -68,6 +68,9 @@
     <Compile Include="Serialization\CategoryHardCodedTraveller.cs" />
     <Compile Include="Serialization\DataBlockHardCodedTraveller.cs" />
     <Compile Include="Serialization\Fakes\ComplexDictionary.cs" />
+    <Compile Include="Serialization\Fakes\NullableValuesEntity.cs" />
+    <Compile Include="Serialization\NullableValuesEntityHardCodedTraveller.cs" />
+    <Compile Include="Serialization\NullableValuesTests.cs" />
     <Compile Include="Serialization\Fakes\ValueDictionary.cs" />
     <Compile Include="Serialization\IdentifierHardCodedTraveller.cs" />
     <Compile Include="Serialization\ReadTravellerTests.cs" />

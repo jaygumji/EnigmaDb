@@ -62,7 +62,10 @@ namespace Enigma.Serialization.Reflection.Emit
                 if (valueTypeExt.Class == TypeClass.Nullable) {
                     var innerType = valueTypeExt.Container.AsNullable().ElementType;
                     VisitorTryVisitValue.Add(innerType, method);
-                    Nullable.Add(innerType, new NullableMembers(innerType));
+
+                    var nullableMembers = new NullableMembers(innerType);
+                    Nullable.Add(innerType, nullableMembers);
+                    //Nullable.Add(valueType, nullableMembers);
                 }
             }
 

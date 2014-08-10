@@ -19,11 +19,14 @@ namespace Enigma.Reflection.Emit
             InvokeMethod(instance, getMethod);
         }
 
-        public void InvokeMethod(IVariable instance, MethodInfo method)
+        public void InvokeMethod(IVariable instance, MethodInfo method, params Parameter[] parameters)
         {
-            if (method.IsStatic) throw new InvalidOperationException("Invoked method as an instance method while the method is static");
-            _il.LoadVar(instance);
-            _il.CallVirt(method);
+            _il.Generate(new CallMethodILCode(instance, method, parameters));
+        }
+
+        public void InvokeMethod(MethodInfo method, params Parameter[] parameters)
+        {
+            _il.Generate(new CallMethodILCode(method, parameters));
         }
 
         public void AsNullable(Type type)
@@ -33,5 +36,6 @@ namespace Enigma.Reflection.Emit
 
             _il.Construct(container.Constructor);
         }
+
     }
 }

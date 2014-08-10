@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Reflection;
-using System.Reflection.Emit;
 using Enigma.Reflection;
 using Enigma.Reflection.Emit;
 using MethodBuilder = Enigma.Reflection.Emit.MethodBuilder;
@@ -41,33 +39,39 @@ namespace Enigma.Serialization.Reflection.Emit
             //if (extPropertyType.Class == TypeClass.Dictionary) return;
             //if (extPropertyType.Class == TypeClass.Complex) return;
             //if (extPropertyType.Class == TypeClass.Collection) return;
+            //if (extPropertyType.Class == TypeClass.Nullable) return;
             //if (extPropertyType.Class == TypeClass.Value) return;
             if (extPropertyType.IsValueOrNullableOfValue()) {
                 var isNullable = extPropertyType.Class == TypeClass.Nullable;
                 var isEnum = extPropertyType.IsEnum();
 
                 var valueType = extPropertyType.Inner;
+
                 _il.LoadVar(_visitorVariable);
                 _il.Snippets.GetPropertyValue(graphVariable, context.Property);
 
                 if (isEnum) {
                     valueType = extPropertyType.GetUnderlyingEnumType();
-                    if (extPropertyType.Class != TypeClass.Nullable)
-                        _il.Construct(Members.NullableConstructors[valueType]);
+                    if (!isNullable) _il.Snippets.AsNullable(valueType);
                 }
-                else if (!isNullable && context.Property.PropertyType.IsValueType)
+                else if (!isNullable && valueType.IsValueType)
                     _il.Snippets.AsNullable(valueType);
 
                 _il.LoadValue(context.Property.Name);
                 _il.LoadValue(context.Index);
 
                 if (isEnum) {
-                    _il.LoadVar(graphVariable);
-                    _il.CallVirt(context.Property.GetGetMethod());
+                    _il.Snippets.GetPropertyValue(graphVariable, context.Property);
                     _il.Call(Members.VisitArgsEnumValue.MakeGenericMethod(valueType));
                 }
-                else if (isNullable)
+                else if (isNullable) {
+                    _il.Snippets.GetPropertyValue(graphVariable, context.Property);
+                    var local = _il.DeclareLocal("nullableValue", valueType);
+                    _il.SetLocal(local);
+                    _il.LoadLocalAddress(local);
+                    _il.Call(extPropertyType.Container.AsNullable().GetHasValueMethod);
                     _il.Call(Members.VisitArgsNullableValue);
+                }
                 else
                     _il.Call(Members.VisitArgsValue);
 
@@ -76,82 +80,58 @@ namespace Enigma.Serialization.Reflection.Emit
             }
             else if (extPropertyType.Class == TypeClass.Dictionary) {
                 var container = extPropertyType.Container.AsDictionary();
-                var keyType = container.KeyType;
-                var valueType = container.ValueType;
+                _il.Snippets.GetPropertyValue(graphVariable, context.Property);
 
-                _il.LoadVar(graphVariable);
-                _il.CallVirt(context.Property.GetGetMethod());
-
-                var dictionaryType = typeof (IDictionary<,>).MakeGenericType(keyType, valueType);
+                var dictionaryType = container.DictionaryInterfaceType;
                 var cLocal = _il.DeclareLocal("dictionary", dictionaryType);
                 if (dictionaryType != extPropertyType.Inner)
                     _il.Cast(dictionaryType);
                 _il.SetLocal(cLocal);
-                _il.LoadVar(_visitorVariable);
-                _il.LoadValue(context.Property.Name);
-                _il.LoadValue(context.Index);
-                _il.LoadLocal(cLocal);
 
-                var visitArgsDictionaryMethod = Members.VisitArgsDictionary.MakeGenericMethod(keyType, valueType);
-                _il.Call(visitArgsDictionaryMethod);
-                _il.CallVirt(Members.VisitorVisit);
+                var visitArgsDictionaryMethod = Members.VisitArgsDictionary.MakeGenericMethod(container.KeyType, container.ValueType);
+                var callVisitArgsDictionaryMethod = new CallMethodILCode(visitArgsDictionaryMethod, context.Property.Name, context.Index, cLocal);
+
+                _il.Snippets.InvokeMethod(_visitorVariable, Members.VisitorVisit, callVisitArgsDictionaryMethod);
 
                 GenerateDictionaryCode(new LocalVariable(cLocal), container.ElementType);
 
-                _il.LoadVar(_visitorVariable);
-                _il.CallVirt(Members.VisitorLeave);
+                _il.Snippets.InvokeMethod(_visitorVariable, Members.VisitorLeave);
             }
             else if (extPropertyType.Class == TypeClass.Collection) {
-                var elementType = extPropertyType.Container.AsCollection().ElementType;
-                _il.LoadVar(graphVariable);
-                _il.CallVirt(context.Property.GetGetMethod());
+                var container = extPropertyType.Container.AsCollection();
+                _il.Snippets.GetPropertyValue(graphVariable, context.Property);
 
-                var collectionType = typeof (ICollection<>).MakeGenericType(elementType);
+                var collectionType = container.CollectionInterfaceType;
                 var cLocal = _il.DeclareLocal("collection", collectionType);
                 if (collectionType != extPropertyType.Inner)
                     _il.Cast(collectionType);
                 _il.SetLocal(cLocal);
-                _il.LoadVar(_visitorVariable);
-                _il.LoadValue(context.Property.Name);
-                _il.LoadValue(context.Index);
-                _il.LoadLocal(cLocal);
 
-                var visitArgsCollectionMethod = Members.VisitArgsCollection.MakeGenericMethod(elementType);
-                _il.Call(visitArgsCollectionMethod);
-                _il.CallVirt(Members.VisitorVisit);
+                var visitArgsCollectionMethod = Members.VisitArgsCollection.MakeGenericMethod(container.ElementType);
+                var callVisitArgsCollectionMethod = new CallMethodILCode(visitArgsCollectionMethod, context.Property.Name, context.Index, cLocal);
+                _il.Snippets.InvokeMethod(_visitorVariable, Members.VisitorVisit, callVisitArgsCollectionMethod);
 
                 GenerateCollectionCode(new LocalVariable(cLocal));
 
-                _il.LoadVar(_visitorVariable);
-                _il.CallVirt(Members.VisitorLeave);
+                _il.Snippets.InvokeMethod(_visitorVariable, Members.VisitorLeave);
             }
             else {
                 var singleLocal = _il.DeclareLocal("single", context.Property.PropertyType);
-                _il.LoadVar(graphVariable);
-                _il.CallVirt(context.Property.GetGetMethod());
+                _il.Snippets.GetPropertyValue(graphVariable, context.Property);
                 _il.SetLocal(singleLocal);
-                _il.LoadVar(_visitorVariable);
-                _il.LoadValue(context.Property.Name);
-                _il.LoadValue(context.Index);
-                _il.LoadLocal(singleLocal);
-                _il.Call(Members.VisitArgsSingle);
-                _il.CallVirt(Members.VisitorVisit);
 
+                var callVisitArgsMethod = new CallMethodILCode(Members.VisitArgsSingle, context.Property.Name, context.Index, singleLocal);
+                _il.Snippets.InvokeMethod(_visitorVariable, Members.VisitorVisit, callVisitArgsMethod);
+
+                var localVar = new LocalVariable(singleLocal);
                 var checkIfNullLabel = _il.DefineLabel();
-                var checkLocal = _il.DeclareLocal("check", typeof(bool));
-                _il.LoadLocal(singleLocal);
-                _il.LoadNull();
-                _il.CompareEquals();
-                _il.SetLocal(checkLocal);
-                _il.LoadLocal(checkLocal);
-                _il.TransferLongIfTrue(checkIfNullLabel);
+                _il.TransferIfNull(localVar, checkIfNullLabel);
 
-                GenerateChildCall(new LocalVariable(singleLocal));
+                GenerateChildCall(localVar);
 
                 _il.MarkLabel(checkIfNullLabel);
 
-                _il.LoadVar(_visitorVariable);
-                _il.CallVirt(Members.VisitorLeave);
+                _il.Snippets.InvokeMethod(_visitorVariable, Members.VisitorLeave);
             }
         }
 
