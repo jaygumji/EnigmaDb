@@ -1,30 +1,37 @@
 using System;
 using System.Reflection;
 using System.Reflection.Emit;
-using Remotion.Linq.Parsing.Structure.IntermediateModel;
 
 namespace Enigma.Reflection.Emit
 {
     public class ILExpressed
     {
         private readonly ILGenerator _il;
+        private readonly TypeCache _typeCache;
+        private readonly ILCodeSnippets _snippets;
 
-        public ILExpressed(ILGenerator il)
+        public ILExpressed(ILGenerator il) : this(il, new TypeCache())
+        {
+        }
+
+        public ILExpressed(ILGenerator il, TypeCache typeCache)
         {
             _il = il;
+            _typeCache = typeCache;
+            _snippets = new ILCodeSnippets(this);
         }
 
         public ILGenerator Gen { get { return _il; } }
+        public TypeCache TypeCache { get { return _typeCache; } }
+        public ILCodeSnippets Snippets { get { return _snippets; } }
 
-        public void LoadArgs(params int[] indexes)
+        private void LoadArg(int index)
         {
-            foreach (var index in indexes) {
-                OpCode opCode;
-                if (OpCodesLookups.LoadArg.TryGetValue(index, out opCode))
-                    _il.Emit(opCode);
-                else
-                    _il.Emit(OpCodes.Ldarg_S, index);
-            }
+            OpCode opCode;
+            if (OpCodesLookups.LoadArg.TryGetValue(index, out opCode))
+                _il.Emit(opCode);
+            else
+                _il.Emit(OpCodes.Ldarg_S, index);
         }
 
         public void LoadArgsAddress(params int[] indexes)
@@ -33,7 +40,7 @@ namespace Enigma.Reflection.Emit
                 _il.Emit(OpCodes.Ldarga_S, index);
         }
 
-        public void LoadVal(int value)
+        public void LoadValue(int value)
         {
             OpCode opCode;
             if (OpCodesLookups.LoadInt32.TryGetValue(value, out opCode)) {
@@ -44,12 +51,12 @@ namespace Enigma.Reflection.Emit
             _il.Emit(OpCodes.Ldc_I4_S, value);
         }
 
-        public void LoadVal(uint value)
+        public void LoadValue(uint value)
         {
-            LoadVal((int)value);
+            LoadValue((int)value);
         }
 
-        public void LoadVal(string value)
+        public void LoadValue(string value)
         {
             _il.Emit(OpCodes.Ldstr, value);
         }
@@ -65,7 +72,7 @@ namespace Enigma.Reflection.Emit
             }
             var arg = variable as MethodArgVariable;
             if (arg != null) {
-                LoadArgs(arg.Index);
+                LoadArg(arg.Index);
                 return;
             }
             var property = variable as InstancePropertyVariable;
@@ -214,6 +221,22 @@ namespace Enigma.Reflection.Emit
             _il.Emit(OpCodes.Brtrue_S, label);
         }
 
+        public void TransferIfNull(IVariable reference, Label label)
+        {
+            LoadVar(reference);
+            LoadNull();
+            CompareEquals();
+            TransferLongIfTrue(label);
+        }
+
+        public void TransferIfNotNull(IVariable reference, Label label)
+        {
+            LoadVar(reference);
+            LoadNull();
+            CompareEquals();
+            TransferLongIfFalse(label);
+        }
+
         public Label Try()
         {
             return _il.BeginExceptionBlock();
@@ -246,14 +269,14 @@ namespace Enigma.Reflection.Emit
 
         public void SetFieldWithDefaultConstructor(FieldInfo field, ConstructorInfo constructor)
         {
-            LoadArgs(0);
+            LoadArg(0);
             _il.Emit(OpCodes.Newobj, constructor);
             _il.Emit(OpCodes.Stfld, field);
         }
 
         public void LoadThis()
         {
-            LoadArgs(0);
+            LoadArg(0);
         }
 
         public void Construct(ConstructorInfo constructor)
@@ -270,5 +293,11 @@ namespace Enigma.Reflection.Emit
         {
             _il.Emit(OpCodes.Throw);
         }
+
+        public void Generate(IILCode code)
+        {
+            code.Generate(this);
+        }
+
     }
 }

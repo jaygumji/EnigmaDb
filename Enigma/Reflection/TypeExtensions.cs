@@ -6,13 +6,12 @@ namespace Enigma.Reflection
 {
     public static class TypeExtensions
     {
-        private static readonly Type CollectionType = typeof (ICollection<>);
-        private static readonly Type DictionaryType = typeof (IDictionary<,>);
-        private static readonly Type NullableType = typeof (Nullable<>);
+        public static readonly Type CollectionType = typeof (ICollection<>);
+        public static readonly Type DictionaryType = typeof (IDictionary<,>);
+        public static readonly Type NullableType = typeof (Nullable<>);
 
         public static IContainerTypeInfo GetContainerTypeInfo(this Type type)
         {
-            //Nullable.GetUnderlyingType(type);
             if (type.IsGenericType) {
                 var genericTypeDefinition = type.GetGenericTypeDefinition();
                 if (genericTypeDefinition == DictionaryType) {
@@ -24,7 +23,7 @@ namespace Enigma.Reflection
                     return new CollectionContainerTypeInfo(type.GetGenericArguments()[0]);
 
                 if (genericTypeDefinition == NullableType)
-                    return new NullableContainerTypeInfo(type.GetGenericArguments()[0]);
+                    return new NullableContainerTypeInfo(type, type.GetGenericArguments()[0]);
             }
 
             var interfaceTypes = type.GetInterfaces();
@@ -40,5 +39,11 @@ namespace Enigma.Reflection
 
             return null;
         }
+
+        public static Type AsNullable(this Type type)
+        {
+            return NullableType.MakeGenericType(type);
+        }
+
     }
 }
