@@ -5,15 +5,15 @@ namespace Enigma.Reflection.Emit
 {
     public class CallMethodILCode : IILCode
     {
-        private readonly IVariable _instance;
+        private readonly ILCodeVariable _instance;
         private readonly MethodInfo _method;
-        private readonly Parameter[] _parameters;
+        private readonly ILCodeParameter[] _parameters;
 
-        public CallMethodILCode(MethodInfo method, params Parameter[] parameters) : this(null, method, parameters)
+        public CallMethodILCode(MethodInfo method, params ILCodeParameter[] parameters) : this(null, method, parameters)
         {
         }
 
-        public CallMethodILCode(IVariable instance, MethodInfo method, params Parameter[] parameters)
+        public CallMethodILCode(ILCodeVariable instance, MethodInfo method, params ILCodeParameter[] parameters)
         {
             if (instance == null && !method.IsStatic)
                 throw new ArgumentException("Instance must be provided for instance methods");
@@ -27,13 +27,17 @@ namespace Enigma.Reflection.Emit
 
         void IILCode.Generate(ILExpressed il)
         {
-            if (_instance != null)
-                il.LoadVar(_instance);
+            if (_instance != null) {
+                if (_instance.VariableType.IsValueType)
+                    il.Var.LoadAddress(_instance);
+                else
+                    il.Var.Load(_instance);
+            }
 
             foreach (var parameter in _parameters)
                 il.Generate(parameter);
 
-            if (_method.IsStatic)
+            if (_method.IsStatic || _instance.VariableType.IsValueType)
                 il.Call(_method);
             else
                 il.CallVirt(_method);

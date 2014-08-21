@@ -12,19 +12,33 @@ namespace Enigma.Reflection.Emit
             _il = il;
         }
 
-        public void GetPropertyValue(IVariable instance, PropertyInfo property)
+        public void GetField(ILCodeVariable instance, FieldInfo field)
+        {
+            _il.Var.Load(instance);
+            _il.LoadField(field);
+        }
+
+        public void GetPropertyValue(ILCodeVariable instance, PropertyInfo property)
         {
             if (!property.CanRead) throw new InvalidOperationException("Can not get value from a property with no getter");
             var getMethod = property.GetGetMethod();
             InvokeMethod(instance, getMethod);
         }
 
-        public void InvokeMethod(IVariable instance, MethodInfo method, params Parameter[] parameters)
+        public void SetPropertyValue(ILCodeVariable instance, PropertyInfo property, ILCodeParameter value)
+        {
+            if (!property.CanWrite) throw new InvalidOperationException("Can not set value from a property with no setter");
+
+            var setMethod = property.GetSetMethod();
+            InvokeMethod(instance, setMethod, value);
+        }
+
+        public void InvokeMethod(ILCodeVariable instance, MethodInfo method, params ILCodeParameter[] parameters)
         {
             _il.Generate(new CallMethodILCode(instance, method, parameters));
         }
 
-        public void InvokeMethod(MethodInfo method, params Parameter[] parameters)
+        public void InvokeMethod(MethodInfo method, params ILCodeParameter[] parameters)
         {
             _il.Generate(new CallMethodILCode(method, parameters));
         }

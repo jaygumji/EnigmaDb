@@ -73,8 +73,8 @@ namespace Enigma.Serialization.Reflection.Emit
             var untypedMethodBuilder = _classBuilder.DefineOverloadMethod("Travel", typeof(void), new[] { typeof(IWriteVisitor), typeof(object) });
             var il = untypedMethodBuilder.IL;
             il.LoadThis();
-            il.LoadVar(new MethodArgVariable(1, typeof(IWriteVisitor)));
-            il.LoadVar(new MethodArgVariable(2, typeof(object)));
+            il.Var.Load(new MethodArgILCodeVariable(1, typeof(IWriteVisitor)));
+            il.Var.Load(new MethodArgILCodeVariable(2, typeof(object)));
             il.Cast(context.Type);
             il.Call(typedMethodBuilder.Method);
             il.Return();
@@ -89,8 +89,8 @@ namespace Enigma.Serialization.Reflection.Emit
             var untypedMethodBuilder = _classBuilder.DefineOverloadMethod("Travel", typeof(void), new[] { typeof(IReadVisitor), typeof(object) });
             var il = untypedMethodBuilder.IL;
             il.LoadThis();
-            il.LoadVar(new MethodArgVariable(1, typeof(IReadVisitor)));
-            il.LoadVar(new MethodArgVariable(2, typeof(object)));
+            il.Var.Load(new MethodArgILCodeVariable(1, typeof(IReadVisitor)));
+            il.Var.Load(new MethodArgILCodeVariable(2, typeof(object)));
             il.Cast(context.Type);
             il.Call(typedMethodBuilder.Method);
             il.Return();

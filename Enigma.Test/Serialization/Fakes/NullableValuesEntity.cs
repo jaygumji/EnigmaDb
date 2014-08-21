@@ -1,4 +1,5 @@
 ﻿using System;
+using Enigma.Test.Fakes;
 
 namespace Enigma.Test.Serialization.Fakes
 {
@@ -9,5 +10,6 @@ namespace Enigma.Test.Serialization.Fakes
         public int? MayInt { get; set; }
         public DateTime? MayDateTime { get; set; }
         public TimeSpan? MayTimeSpan { get; set; }
+        public ApplicationType? Type { get; set; }
     }
 }

@@ -137,19 +137,40 @@
     <Compile Include="IO\StreamProviderSourceState.cs" />
     <Compile Include="IO\WriteReservation.cs" />
     <Compile Include="Reflection\Emit\CallMethodILCode.cs" />
-    <Compile Include="Reflection\Emit\Constant.cs" />
     <Compile Include="Reflection\Emit\ConstructorBuilder.cs" />
-    <Compile Include="Reflection\Emit\IConstant.cs" />
-    <Compile Include="Reflection\Emit\IILCode.cs" />
+    <Compile Include="Reflection\Emit\IILCode.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Reflection\Emit\IILCodeVariable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Reflection\Emit\ILCodeParameter.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Reflection\Emit\ILCodeSnippets.cs" />
+    <Compile Include="Reflection\Emit\ILCodeVariable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Reflection\Emit\ILCodeVariableGenerator.cs" />
+    <Compile Include="Reflection\Emit\ILEnumerateCode.cs" />
     <Compile Include="Reflection\Emit\ILExpressed.cs" />
-    <Compile Include="Reflection\Emit\IVariable.cs" />
     <Compile Include="Binary\BinaryPacker.cs" />
     <Compile Include="Reflection\Emit\AssemblyBuilder.cs" />
     <Compile Include="Reflection\Emit\ClassBuilder.cs" />
+    <Compile Include="Reflection\Emit\InstanceFieldILCodeVariable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Reflection\Emit\InstancePropertyILCodeVariable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Reflection\Emit\LocalILCodeVariable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Reflection\Emit\MethodArgILCodeVariable.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Reflection\Emit\MethodBuilder.cs" />
     <Compile Include="Reflection\Emit\OpCodesLookups.cs" />
-    <Compile Include="Reflection\Emit\Parameter.cs" />
     <Compile Include="Reflection\TypeCache.cs" />
     <Compile Include="Scheduling\DailyConfiguration.cs" />
     <Compile Include="Scheduling\DateTimeQueue.cs" />
@@ -212,11 +233,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Serialization\SerializationEngine.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Serialization\Travellers\CollectionTraveller.cs" />
-    <Compile Include="Serialization\Travellers\ElementTravellerInt16.cs" />
-    <Compile Include="Serialization\Travellers\IElementTraveller.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Serialization\UnexpectedLengthException.cs">

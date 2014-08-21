@@ -26,7 +26,7 @@ namespace Enigma.Threading
         /// <para>This is to ensure that the queue never misses anything.
         /// The event should make sure that we actually take care of everything
         /// without forcing a control, but call us paranoid.</para>
-        /// <para>Set this to Times.Infinite to have it wait indefinetly</para>
+        /// <para>OnSet this to Times.Infinite to have it wait indefinetly</para>
         /// </remarks>
         public TimeSpan MaxIdleTime { get; set; }
 

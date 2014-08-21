@@ -65,7 +65,7 @@ namespace Enigma.Reflection
             return dictionaryTypeInfo != null;
         }
 
-        #region Get VariableType Class
+        #region OnGet VariableType Class
 
         private static TypeClass GetTypeClass(Type type, IContainerTypeInfo containerInfo)
         {

@@ -12,7 +12,7 @@ namespace Enigma.Serialization.Reflection.Emit
         private static readonly DynamicWriteTravellerMembers Members = new DynamicWriteTravellerMembers();
 
         private readonly TypeReflectionContext _context;
-        private readonly IVariable _visitorVariable;
+        private readonly ILCodeVariable _visitorVariable;
         private readonly Dictionary<Type, ChildTravellerInfo> _childTravellers;
         private readonly ILExpressed _il;
 
@@ -21,19 +21,19 @@ namespace Enigma.Serialization.Reflection.Emit
             _context = context;
             _childTravellers = childTravellers;
             _il = builder.IL;
-            _visitorVariable = new MethodArgVariable(1, typeof(IWriteVisitor));
+            _visitorVariable = new MethodArgILCodeVariable(1, typeof(IWriteVisitor));
         }
 
         public void BuildTravelWriteMethod()
         {
-            var graphArgument = new MethodArgVariable(2, _context.Type);
+            var graphArgument = new MethodArgILCodeVariable(2, _context.Type);
             foreach (var property in _context.SerializableProperties) {
                 GeneratePropertyCode(graphArgument, property);
             }
             _il.Return();
         }
 
-        private void GeneratePropertyCode(IVariable graphVariable, PropertyReflectionContext context)
+        private void GeneratePropertyCode(ILCodeVariable graphVariable, PropertyReflectionContext context)
         {
             var extPropertyType = context.PropertyTypeContext.Extended;
             //if (extPropertyType.Class == TypeClass.Dictionary) return;
@@ -47,7 +47,7 @@ namespace Enigma.Serialization.Reflection.Emit
 
                 var valueType = extPropertyType.Inner;
 
-                _il.LoadVar(_visitorVariable);
+                _il.Var.Load(_visitorVariable);
                 _il.Snippets.GetPropertyValue(graphVariable, context.Property);
 
                 if (isEnum) {
@@ -67,8 +67,8 @@ namespace Enigma.Serialization.Reflection.Emit
                 else if (isNullable) {
                     _il.Snippets.GetPropertyValue(graphVariable, context.Property);
                     var local = _il.DeclareLocal("nullableValue", valueType);
-                    _il.SetLocal(local);
-                    _il.LoadLocalAddress(local);
+                    _il.Var.Set(local);
+                    _il.Var.LoadAddress(local);
                     _il.Call(extPropertyType.Container.AsNullable().GetHasValueMethod);
                     _il.Call(Members.VisitArgsNullableValue);
                 }
@@ -86,14 +86,14 @@ namespace Enigma.Serialization.Reflection.Emit
                 var cLocal = _il.DeclareLocal("dictionary", dictionaryType);
                 if (dictionaryType != extPropertyType.Inner)
                     _il.Cast(dictionaryType);
-                _il.SetLocal(cLocal);
+                _il.Var.Set(cLocal);
 
                 var visitArgsDictionaryMethod = Members.VisitArgsDictionary.MakeGenericMethod(container.KeyType, container.ValueType);
                 var callVisitArgsDictionaryMethod = new CallMethodILCode(visitArgsDictionaryMethod, context.Property.Name, context.Index, cLocal);
 
                 _il.Snippets.InvokeMethod(_visitorVariable, Members.VisitorVisit, callVisitArgsDictionaryMethod);
 
-                GenerateDictionaryCode(new LocalVariable(cLocal), container.ElementType);
+                GenerateDictionaryCode(cLocal, container.ElementType);
 
                 _il.Snippets.InvokeMethod(_visitorVariable, Members.VisitorLeave);
             }
@@ -105,29 +105,28 @@ namespace Enigma.Serialization.Reflection.Emit
                 var cLocal = _il.DeclareLocal("collection", collectionType);
                 if (collectionType != extPropertyType.Inner)
                     _il.Cast(collectionType);
-                _il.SetLocal(cLocal);
+                _il.Var.Set(cLocal);
 
                 var visitArgsCollectionMethod = Members.VisitArgsCollection.MakeGenericMethod(container.ElementType);
                 var callVisitArgsCollectionMethod = new CallMethodILCode(visitArgsCollectionMethod, context.Property.Name, context.Index, cLocal);
                 _il.Snippets.InvokeMethod(_visitorVariable, Members.VisitorVisit, callVisitArgsCollectionMethod);
 
-                GenerateCollectionCode(new LocalVariable(cLocal));
+                GenerateCollectionCode(cLocal);
 
                 _il.Snippets.InvokeMethod(_visitorVariable, Members.VisitorLeave);
             }
             else {
                 var singleLocal = _il.DeclareLocal("single", context.Property.PropertyType);
                 _il.Snippets.GetPropertyValue(graphVariable, context.Property);
-                _il.SetLocal(singleLocal);
+                _il.Var.Set(singleLocal);
 
                 var callVisitArgsMethod = new CallMethodILCode(Members.VisitArgsSingle, context.Property.Name, context.Index, singleLocal);
                 _il.Snippets.InvokeMethod(_visitorVariable, Members.VisitorVisit, callVisitArgsMethod);
 
-                var localVar = new LocalVariable(singleLocal);
                 var checkIfNullLabel = _il.DefineLabel();
-                _il.TransferIfNull(localVar, checkIfNullLabel);
+                _il.TransferIfNull(singleLocal, checkIfNullLabel);
 
-                GenerateChildCall(localVar);
+                GenerateChildCall(singleLocal);
 
                 _il.MarkLabel(checkIfNullLabel);
 
@@ -135,21 +134,21 @@ namespace Enigma.Serialization.Reflection.Emit
             }
         }
 
-        private void GenerateDictionaryCode(IVariable dictionary, Type elementType)
+        private void GenerateDictionaryCode(ILCodeVariable dictionary, Type elementType)
         {
             var transferIfNullLabel = _il.DefineLabel();
             _il.TransferIfNull(dictionary, transferIfNullLabel);
 
             var enumerateCode = new ILEnumerateCode(dictionary, (il, it) => {
-                GenerateEnumerateContentCode(new InstancePropertyVariable(it, elementType.GetProperty("Key")), Members.VisitArgsDictionaryKey);
-                GenerateEnumerateContentCode(new InstancePropertyVariable(it, elementType.GetProperty("Value")), Members.VisitArgsDictionaryValue);
+                GenerateEnumerateContentCode(new InstancePropertyILCodeVariable(it, elementType.GetProperty("Key")), Members.VisitArgsDictionaryKey);
+                GenerateEnumerateContentCode(new InstancePropertyILCodeVariable(it, elementType.GetProperty("Value")), Members.VisitArgsDictionaryValue);
             });
             _il.Generate(enumerateCode);
 
             _il.MarkLabel(transferIfNullLabel);
         }
 
-        private void GenerateCollectionCode(IVariable collection)
+        private void GenerateCollectionCode(ILCodeVariable collection)
         {
             var transferIfNullLabel = _il.DefineLabel();
             _il.TransferIfNull(collection, transferIfNullLabel);
@@ -160,15 +159,15 @@ namespace Enigma.Serialization.Reflection.Emit
             _il.MarkLabel(transferIfNullLabel);
         }
 
-        private void GenerateEnumerateContentCode(IVariable variable, FieldInfo staticVisitArgsField)
+        private void GenerateEnumerateContentCode(ILCodeVariable variable, FieldInfo staticVisitArgsField)
         {
             var type = variable.VariableType;
             var extType = _il.TypeCache.Extend(type);
 
             if (extType.IsValueOrNullableOfValue()) {
                 var isNullable = extType.Class == TypeClass.Nullable;
-                _il.LoadVar(_visitorVariable);
-                _il.LoadVar(variable);
+                _il.Var.Load(_visitorVariable);
+                _il.Var.Load(variable);
                 if (!isNullable && type.IsValueType) {
                     var container = _il.TypeCache.Extend(type.AsNullable())
                         .Container.AsNullable();
@@ -187,20 +186,20 @@ namespace Enigma.Serialization.Reflection.Emit
 
                 if (type == dictionaryType) {
                     var enumerableCode = new ILEnumerateCode(variable, (il, it) => {
-                        GenerateEnumerateContentCode(new InstancePropertyVariable(it, elementType.GetProperty("Key")), Members.VisitArgsDictionaryKey);
-                        GenerateEnumerateContentCode(new InstancePropertyVariable(it, elementType.GetProperty("Value")), Members.VisitArgsDictionaryValue);
+                        GenerateEnumerateContentCode(new InstancePropertyILCodeVariable(it, elementType.GetProperty("Key")), Members.VisitArgsDictionaryKey);
+                        GenerateEnumerateContentCode(new InstancePropertyILCodeVariable(it, elementType.GetProperty("Value")), Members.VisitArgsDictionaryValue);
                     });
                     _il.Generate(enumerableCode);
                 }
                 else {
-                    _il.LoadVar(variable);
+                    _il.Var.Load(variable);
                     _il.Cast(dictionaryType);
                     var dictionaryLocal = _il.DeclareLocal("dictionary", dictionaryType);
-                    _il.SetLocal(dictionaryLocal);
+                    _il.Var.Set(dictionaryLocal);
 
-                    var part = new ILEnumerateCode(new LocalVariable(dictionaryLocal), (il, it) => {
-                        GenerateEnumerateContentCode(new InstancePropertyVariable(it, elementType.GetProperty("Key")), Members.VisitArgsDictionaryKey);
-                        GenerateEnumerateContentCode(new InstancePropertyVariable(it, elementType.GetProperty("Value")), Members.VisitArgsDictionaryValue);
+                    var part = new ILEnumerateCode(dictionaryLocal, (il, it) => {
+                        GenerateEnumerateContentCode(new InstancePropertyILCodeVariable(it, elementType.GetProperty("Key")), Members.VisitArgsDictionaryKey);
+                        GenerateEnumerateContentCode(new InstancePropertyILCodeVariable(it, elementType.GetProperty("Value")), Members.VisitArgsDictionaryValue);
                     });
                     _il.Generate(part);
                 }
@@ -213,38 +212,35 @@ namespace Enigma.Serialization.Reflection.Emit
                     _il.Generate(part);
                 }
                 else {
-                    _il.LoadVar(variable);
+                    _il.Var.Load(variable);
                     _il.Cast(collectionType);
                     var collectionLocal = _il.DeclareLocal("collection", collectionType);
-                    _il.SetLocal(collectionLocal);
+                    _il.Var.Set(collectionLocal);
 
-                    var part = new ILEnumerateCode(new LocalVariable(collectionLocal), (il, it) => GenerateEnumerateContentCode(it, Members.VisitArgsCollectionItem));
+                    var part = new ILEnumerateCode(collectionLocal, (il, it) => GenerateEnumerateContentCode(it, Members.VisitArgsCollectionItem));
                     _il.Generate(part);
                 }
             }
             else {
-                _il.LoadVar(_visitorVariable);
+                _il.Var.Load(_visitorVariable);
                 _il.LoadStaticField(staticVisitArgsField);
                 _il.CallVirt(Members.VisitorVisit);
 
                 GenerateChildCall(variable);
 
-                _il.LoadVar(_visitorVariable);
+                _il.Var.Load(_visitorVariable);
                 _il.CallVirt(Members.VisitorLeave);
             }
         }
 
-        private void GenerateChildCall(IVariable child)
+        private void GenerateChildCall(ILCodeVariable child)
         {
             ChildTravellerInfo childTravellerInfo;
             if (!_childTravellers.TryGetValue(child.VariableType, out childTravellerInfo))
                 throw InvalidGraphException.ComplexTypeWithoutTravellerDefined(child.VariableType);
 
-            _il.LoadThis();
-            _il.LoadField(childTravellerInfo.Field);
-            _il.LoadVar(_visitorVariable);
-            _il.LoadVar(child);
-            _il.CallVirt(childTravellerInfo.TravelWriteMethod);
+            var field = _il.Var.Field(_il.Var.This(), childTravellerInfo.Field);
+            _il.Snippets.InvokeMethod(field, childTravellerInfo.TravelWriteMethod, _visitorVariable, child);
         }
 
         

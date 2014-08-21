@@ -4,11 +4,12 @@ using System.Reflection.Emit;
 
 namespace Enigma.Reflection.Emit
 {
-    public class ILExpressed
+    public sealed class ILExpressed
     {
         private readonly ILGenerator _il;
         private readonly TypeCache _typeCache;
         private readonly ILCodeSnippets _snippets;
+        private readonly ILCodeVariableGenerator _var;
 
         public ILExpressed(ILGenerator il) : this(il, new TypeCache())
         {
@@ -19,26 +20,13 @@ namespace Enigma.Reflection.Emit
             _il = il;
             _typeCache = typeCache;
             _snippets = new ILCodeSnippets(this);
+            _var = new ILCodeVariableGenerator(this);
         }
 
         public ILGenerator Gen { get { return _il; } }
         public TypeCache TypeCache { get { return _typeCache; } }
         public ILCodeSnippets Snippets { get { return _snippets; } }
-
-        private void LoadArg(int index)
-        {
-            OpCode opCode;
-            if (OpCodesLookups.LoadArg.TryGetValue(index, out opCode))
-                _il.Emit(opCode);
-            else
-                _il.Emit(OpCodes.Ldarg_S, index);
-        }
-
-        public void LoadArgsAddress(params int[] indexes)
-        {
-            foreach (var index in indexes)
-                _il.Emit(OpCodes.Ldarga_S, index);
-        }
+        public ILCodeVariableGenerator Var { get { return _var; } }
 
         public void LoadValue(int value)
         {
@@ -61,56 +49,6 @@ namespace Enigma.Reflection.Emit
             _il.Emit(OpCodes.Ldstr, value);
         }
 
-        public void LoadVar(IVariable variable)
-        {
-            if (variable == null) throw new ArgumentNullException("variable");
-
-            var local = variable as LocalVariable;
-            if (local != null) {
-                LoadLocal(local.Local);
-                return;
-            }
-            var arg = variable as MethodArgVariable;
-            if (arg != null) {
-                LoadArg(arg.Index);
-                return;
-            }
-            var property = variable as InstancePropertyVariable;
-            if (property != null) {
-                if (property.Instance.VariableType.IsValueType)
-                    LoadVarAddress(property.Instance);
-                else
-                    LoadVar(property.Instance);
-
-                if (property.VariableType.IsValueType)
-                    Call(property.Info.GetGetMethod());
-                else
-                    CallVirt(property.Info.GetGetMethod());
-                return;
-            }
-
-            throw new InvalidOperationException("Invalid variable " + variable.GetType());
-        }
-
-        public void LoadVarAddress(IVariable variable)
-        {
-            if (variable == null) throw new ArgumentNullException("variable");
-
-            var local = variable as LocalVariable;
-            if (local != null) {
-                LoadLocalAddress(local.Local);
-                return;
-            }
-            var arg = variable as MethodArgVariable;
-            if (arg != null) {
-                _il.Emit(OpCodes.Ldarga_S, arg.Index);
-                LoadArgsAddress(arg.Index);
-                return;
-            }
-
-            throw new InvalidOperationException("Invalid variable " + variable.GetType());
-        }
-
         public void Call(MethodInfo method)
         {
             _il.EmitCall(OpCodes.Call, method, null);
@@ -131,7 +69,7 @@ namespace Enigma.Reflection.Emit
             _il.Emit(OpCodes.Castclass, type);
         }
 
-        public LocalBuilder DeclareLocal(string name, Type type)
+        public LocalILCodeVariable DeclareLocal(string name, Type type)
         {
             //int index;
             //if (_locals.TryGetValue(name, out index)) {
@@ -143,32 +81,6 @@ namespace Enigma.Reflection.Emit
             //}
             var local = _il.DeclareLocal(type);
             return local;
-        }
-
-        public void SetLocal(LocalBuilder local)
-        {
-            OpCode opCode;
-            if (OpCodesLookups.SetLocal.TryGetValue(local.LocalIndex, out opCode)) {
-                _il.Emit(opCode);
-                return;
-            }
-
-            _il.Emit(OpCodes.Stloc_S, local.LocalIndex);
-        }
-
-        public void LoadLocalAddress(LocalBuilder local)
-        {
-            _il.Emit(OpCodes.Ldloca_S, local.LocalIndex);
-        }
-
-        public void LoadLocal(LocalBuilder local)
-        {
-            OpCode opCode;
-            if (OpCodesLookups.GetLocal.TryGetValue(local.LocalIndex, out opCode)) {
-                _il.Emit(opCode);
-                return;
-            }
-            _il.Emit(OpCodes.Ldloc_S, local.LocalIndex);
         }
 
         public Label DefineLabel()
@@ -221,17 +133,17 @@ namespace Enigma.Reflection.Emit
             _il.Emit(OpCodes.Brtrue_S, label);
         }
 
-        public void TransferIfNull(IVariable reference, Label label)
+        public void TransferIfNull(ILCodeVariable reference, Label label)
         {
-            LoadVar(reference);
+            _var.Load(reference);
             LoadNull();
             CompareEquals();
             TransferLongIfTrue(label);
         }
 
-        public void TransferIfNotNull(IVariable reference, Label label)
+        public void TransferIfNotNull(ILCodeVariable reference, Label label)
         {
-            LoadVar(reference);
+            _var.Load(reference);
             LoadNull();
             CompareEquals();
             TransferLongIfFalse(label);
@@ -269,14 +181,14 @@ namespace Enigma.Reflection.Emit
 
         public void SetFieldWithDefaultConstructor(FieldInfo field, ConstructorInfo constructor)
         {
-            LoadArg(0);
+            LoadThis();
             _il.Emit(OpCodes.Newobj, constructor);
             _il.Emit(OpCodes.Stfld, field);
         }
 
         public void LoadThis()
         {
-            LoadArg(0);
+            _il.Emit(OpCodes.Ldarg_0);
         }
 
         public void Construct(ConstructorInfo constructor)
@@ -297,6 +209,12 @@ namespace Enigma.Reflection.Emit
         public void Generate(IILCode code)
         {
             code.Generate(this);
+        }
+
+        public void Negate()
+        {
+            LoadValue(0);
+            CompareEquals();
         }
 
     }
