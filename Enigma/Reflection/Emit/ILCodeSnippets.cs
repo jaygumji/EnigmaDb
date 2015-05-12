@@ -43,6 +43,16 @@ namespace Enigma.Reflection.Emit
             _il.Generate(new CallMethodILCode(method, parameters));
         }
 
+        public void ConstructInstance(ConstructorInfo constructor, params ILCodeParameter[] parameters)
+        {
+            _il.Generate(new CallConstructorILCode(constructor, parameters));
+        }
+
+        public void WhileLoop(ILGenerationHandler conditionHandler, ILGenerationHandler bodyHandler)
+        {
+            _il.Generate(new WhileLoopILCode(conditionHandler,  bodyHandler));
+        }
+
         public void AsNullable(Type type)
         {
             var container = _il.TypeCache.Extend(type.AsNullable())
@@ -51,5 +61,11 @@ namespace Enigma.Reflection.Emit
             _il.Construct(container.Constructor);
         }
 
+        public void AreEqual(ILCodeParameter left, ILCodeParameter right)
+        {
+            _il.Generate(left);
+            _il.Generate(right);
+            _il.CompareEquals();
+        }
     }
 }

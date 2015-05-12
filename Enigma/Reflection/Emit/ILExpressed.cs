@@ -6,6 +6,9 @@ namespace Enigma.Reflection.Emit
 {
     public sealed class ILExpressed
     {
+
+        private static readonly MethodInfo MethodGetTypeFromHandleToken = typeof (Type).GetMethod("GetTypeFromHandle", new[] {typeof (RuntimeTypeHandle)});
+
         private readonly ILGenerator _il;
         private readonly TypeCache _typeCache;
         private readonly ILCodeSnippets _snippets;
@@ -57,6 +60,11 @@ namespace Enigma.Reflection.Emit
         public void CallVirt(MethodInfo method)
         {
             _il.EmitCall(OpCodes.Callvirt, method, null);
+        }
+
+        public void CallBaseConstructor(ConstructorInfo constructor)
+        {
+            _il.Emit(OpCodes.Call, constructor);
         }
 
         public void Return()
@@ -179,6 +187,13 @@ namespace Enigma.Reflection.Emit
             _il.Emit(OpCodes.Ceq);
         }
 
+        public void SetField(FieldInfo field, IILCode value)
+        {
+            LoadThis();
+            value.Generate(this);
+            _il.Emit(OpCodes.Stfld, field);
+        }
+
         public void SetFieldWithDefaultConstructor(FieldInfo field, ConstructorInfo constructor)
         {
             LoadThis();
@@ -215,6 +230,12 @@ namespace Enigma.Reflection.Emit
         {
             LoadValue(0);
             CompareEquals();
+        }
+
+        public void LoadRef(Type type)
+        {
+            _il.Emit(OpCodes.Ldtoken, type);
+            Call(MethodGetTypeFromHandleToken);
         }
 
     }

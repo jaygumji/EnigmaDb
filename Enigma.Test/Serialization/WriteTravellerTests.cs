@@ -34,15 +34,9 @@ namespace Enigma.Test.Serialization
         [TestMethod]
         public void WriteDynamicTravelTest()
         {
-            var stream = new MemoryStream();
-            var writer = new BinaryDataWriter(stream);
-            var visitor = new PackedDataWriteVisitor(writer);
+            var context = new SerializationTestContext();
 
-            var context = new DynamicTravellerContext();
-            var traveller = context.GetInstance<DataBlock>();
-            traveller.Travel(visitor, DataBlock.Filled());
-
-            var bytes = stream.ToArray();
+            var bytes = context.Pack(DataBlock.Filled());
             Assert.IsNotNull(bytes);
             Assert.IsTrue(bytes.Length > 0);
             var hex = "0x" + string.Join("", bytes.Select(b => b.ToString("X")));

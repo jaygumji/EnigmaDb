@@ -51,6 +51,11 @@ namespace Enigma.Reflection.Emit
             return new ILCodeParameter(il => il.LoadValue(value));
         }
 
+        public static ILCodeParameter Of(Type type)
+        {
+            return new ILCodeParameter(il => il.LoadRef(type));
+        }
+
         public static implicit operator ILCodeParameter(LocalBuilder local)
         {
             return Of(local);
@@ -79,6 +84,11 @@ namespace Enigma.Reflection.Emit
         public static implicit operator ILCodeParameter(uint value)
         {
             return Of(value);
+        }
+
+        public static implicit operator ILCodeParameter(Type type)
+        {
+            return Of(type);
         }
     }
 }

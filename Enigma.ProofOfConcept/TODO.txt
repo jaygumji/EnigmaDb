@@ -1,23 +1,32 @@
 ﻿-----------------------------------------
+-- To be done
+-----------------------------------------
+
+The main db files will be simple entry lists. Still divided in sections to provide possibility of truncating deleted entries.
+	Treat the primary id as another index, makes it searchable
+
+Text Search algorithm
+
+Standalone service
+	Includes generation of proxy classes at runtime
+
+Indexes needs a rework
+	The current memory part of the indexes is not very efficient
+
+Enable modelbuilding when the connection changes
+
+-----------------------------------------
 -- Work in progress
 -----------------------------------------
-Handle Lists and dictionaries in Model.ByConvention
-Indexes
-	Must treat every item in a list or dictionary as an index to the root object
 
-Allow linq to use indexes
-Standalone service
-	Includes generation of proxy classes at runtime using the Castle project
+Protobuf will be removed as dependency, it will be using my own serialization engine instead
+	The main reason being, I wanted to make my own serialization engine, purely for fun
 
 Ability to add jobs that runs at a scheduled time
 Predefined jobs
 	Maintainance job that truncates database at night and rebuilds indexes
 
 Acknowledge EnigmaDbSet at model building
-Enable modelbuilding when the connection changes
-
-Indexes
-	Add index when model updates with new indexes
 
 -----------------------------------------
 -- Implemented features
@@ -27,6 +36,7 @@ Readonly/maintainance mode
 Linq
 Using ISet
 Embedded Memory Db
+Indexes
 
 -----------------------------------------
 -- Features to consider (NOT on road map)
@@ -34,4 +44,3 @@ Embedded Memory Db
 Replication
 Triggers
 Treat sub class as an entity and create a relation instead
-Consider forking Protobuf.NET and change it to suit this model better to enhance performance

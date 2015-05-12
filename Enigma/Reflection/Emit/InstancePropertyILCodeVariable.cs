@@ -20,7 +20,7 @@ namespace Enigma.Reflection.Emit
             else
                 il.Var.Load(_instance);
 
-            if (VariableType.IsValueType)
+            if (_instance.VariableType.IsValueType)
                 il.Call(_info.GetGetMethod());
             else
                 il.CallVirt(_info.GetGetMethod());

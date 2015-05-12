@@ -10,12 +10,6 @@ namespace Enigma.Serialization.Reflection.Emit
     public sealed class DynamicReadTravellerMembers
     {
 
-        public readonly MethodInfo VisitArgsRoot;
-        public readonly MethodInfo VisitArgsValue;
-        public readonly MethodInfo VisitArgsNullableValue;
-        public readonly MethodInfo VisitArgsSingle;
-        public readonly MethodInfo VisitArgsCollection;
-        public readonly MethodInfo VisitArgsDictionary;
         public readonly FieldInfo VisitArgsItemField;
         public readonly FieldInfo VisitArgsDictionaryKey;
         public readonly FieldInfo VisitArgsDictionaryValue;
@@ -33,14 +27,8 @@ namespace Enigma.Serialization.Reflection.Emit
 
         public DynamicReadTravellerMembers()
         {
-            var visitArgsType = typeof(ReadVisitArgs);
-            VisitArgsRoot = visitArgsType.GetMethod("Root");
-            VisitArgsValue = visitArgsType.GetMethod("Value");
-            VisitArgsNullableValue = visitArgsType.GetMethod("NullableValue");
-            VisitArgsSingle = visitArgsType.GetMethod("Single");
-            VisitArgsCollection = visitArgsType.GetMethod("Collection");
+            var visitArgsType = typeof(VisitArgs);
             VisitArgsItemField = visitArgsType.GetField("CollectionItem");
-            VisitArgsDictionary = visitArgsType.GetMethod("Dictionary");
             VisitArgsDictionaryKey = visitArgsType.GetField("DictionaryKey");
             VisitArgsDictionaryValue = visitArgsType.GetField("DictionaryValue");
 
@@ -65,7 +53,7 @@ namespace Enigma.Serialization.Reflection.Emit
 
                     var nullableMembers = new NullableMembers(innerType);
                     Nullable.Add(innerType, nullableMembers);
-                    //Nullable.Add(valueType, nullableMembers);
+                    Nullable.Add(valueType, nullableMembers);
                 }
             }
 

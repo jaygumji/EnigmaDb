@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 
 namespace Enigma.Reflection.Emit
@@ -15,5 +16,6 @@ namespace Enigma.Reflection.Emit
 
         public ILExpressed IL { get { return _il; } }
         public ConstructorInfo Reference { get { return _builder; } }
+
     }
 }

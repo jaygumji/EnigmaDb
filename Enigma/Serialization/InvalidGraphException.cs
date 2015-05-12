@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace Enigma.Serialization
 {
@@ -26,6 +27,11 @@ namespace Enigma.Serialization
         public static InvalidGraphException NoDictionaryValue(string name)
         {
             return new InvalidGraphException(string.Format("Failed to read the value of a dictionary key value pair of property {0}", name));
+        }
+
+        public static InvalidGraphException DuplicateProperties(Type type, PropertyInfo property)
+        {
+            return new InvalidGraphException(string.Format("Duplicate properties with name {0} found on type {1}", property.Name, type.FullName));
         }
     }
 }

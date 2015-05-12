@@ -25,6 +25,7 @@ namespace Enigma.Test.Serialization
             };
 
             ValueDictionary actual;
+
             var serializer = new PackedDataSerializer<ValueDictionary>();
             using (var stream = new MemoryStream()) {
                 serializer.Serialize(stream, graph);

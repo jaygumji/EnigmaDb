@@ -10,14 +10,7 @@ namespace Enigma.Serialization.Reflection.Emit
     public sealed class DynamicWriteTravellerMembers
     {
 
-        public readonly MethodInfo VisitArgsRoot;
-        public readonly MethodInfo VisitArgsValue;
-        public readonly MethodInfo VisitArgsNullableValue;
-        public readonly MethodInfo VisitArgsEnumValue;
-        public readonly MethodInfo VisitArgsSingle;
-        public readonly MethodInfo VisitArgsCollection;
         public readonly FieldInfo VisitArgsCollectionItem;
-        public readonly MethodInfo VisitArgsDictionary;
         public readonly FieldInfo VisitArgsDictionaryKey;
         public readonly FieldInfo VisitArgsDictionaryValue;
 
@@ -32,15 +25,8 @@ namespace Enigma.Serialization.Reflection.Emit
 
         public DynamicWriteTravellerMembers()
         {
-            var visitArgsType = typeof (WriteVisitArgs);
-            VisitArgsRoot = visitArgsType.GetMethod("Root");
-            VisitArgsValue = visitArgsType.GetMethod("Value");
-            VisitArgsNullableValue = visitArgsType.GetMethod("NullableValue");
-            VisitArgsEnumValue = visitArgsType.GetMethod("EnumValue");
-            VisitArgsSingle = visitArgsType.GetMethod("Single");
-            VisitArgsCollection = visitArgsType.GetMethod("Collection");
+            var visitArgsType = typeof (VisitArgs);
             VisitArgsCollectionItem = visitArgsType.GetField("CollectionItem");
-            VisitArgsDictionary = visitArgsType.GetMethod("Dictionary");
             VisitArgsDictionaryKey = visitArgsType.GetField("DictionaryKey");
             VisitArgsDictionaryValue = visitArgsType.GetField("DictionaryValue");
 

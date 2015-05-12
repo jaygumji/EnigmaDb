@@ -20,6 +20,11 @@ namespace Enigma.Reflection.Emit
             return new InstanceFieldILCodeVariable(instance, field);
         }
 
+        public StaticFieldILCodeVariable Field(FieldInfo field)
+        {
+            return new StaticFieldILCodeVariable(field);
+        }
+
         public InstancePropertyILCodeVariable Property(ILCodeVariable instance, PropertyInfo property)
         {
             return new InstancePropertyILCodeVariable(instance, property);

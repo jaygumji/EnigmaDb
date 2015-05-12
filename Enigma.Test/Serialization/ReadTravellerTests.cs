@@ -3,6 +3,7 @@ using System.Linq;
 using Enigma.IO;
 using Enigma.Serialization;
 using Enigma.Serialization.PackedBinary;
+using Enigma.Serialization.Reflection;
 using Enigma.Serialization.Reflection.Emit;
 using Enigma.Test.Fakes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -60,7 +61,7 @@ namespace Enigma.Test.Serialization
             var reader = new BinaryDataReader(stream);
             var visitor = new PackedDataReadVisitor(reader);
 
-            var traveller = new DataBlockHardCodedTraveller();
+            var traveller = DataBlockHardCodedTraveller.Create();
 
             var graph = new DataBlock();
             traveller.Travel(visitor, graph);

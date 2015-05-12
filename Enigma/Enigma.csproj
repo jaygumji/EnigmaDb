@@ -45,6 +45,8 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArgumentNotFoundException.cs" />
+    <Compile Include="Arguments.cs" />
     <Compile Include="Binary\Algorithm\BinarySearch.cs" />
     <Compile Include="Binary\BinaryInformation.cs" />
     <Compile Include="Binary\BufferOverflowException.cs" />
@@ -136,6 +138,7 @@
     <Compile Include="IO\PooledMemoryStream.cs" />
     <Compile Include="IO\StreamProviderSourceState.cs" />
     <Compile Include="IO\WriteReservation.cs" />
+    <Compile Include="Reflection\Emit\CallConstructorILCode.cs" />
     <Compile Include="Reflection\Emit\CallMethodILCode.cs" />
     <Compile Include="Reflection\Emit\ConstructorBuilder.cs" />
     <Compile Include="Reflection\Emit\IILCode.cs">
@@ -157,6 +160,7 @@
     <Compile Include="Binary\BinaryPacker.cs" />
     <Compile Include="Reflection\Emit\AssemblyBuilder.cs" />
     <Compile Include="Reflection\Emit\ClassBuilder.cs" />
+    <Compile Include="Reflection\Emit\ILGenerationHandler.cs" />
     <Compile Include="Reflection\Emit\InstanceFieldILCodeVariable.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -171,6 +175,8 @@
     </Compile>
     <Compile Include="Reflection\Emit\MethodBuilder.cs" />
     <Compile Include="Reflection\Emit\OpCodesLookups.cs" />
+    <Compile Include="Reflection\Emit\StaticFieldILCodeVariable.cs" />
+    <Compile Include="Reflection\Emit\WhileLoopILCode.cs" />
     <Compile Include="Reflection\TypeCache.cs" />
     <Compile Include="Scheduling\DailyConfiguration.cs" />
     <Compile Include="Scheduling\DateTimeQueue.cs" />
@@ -187,14 +193,15 @@
     <Compile Include="Serialization\IGenericSerializer.cs" />
     <Compile Include="Serialization\IReadVisitor.cs" />
     <Compile Include="Serialization\ITypedSerializer.cs" />
+    <Compile Include="Serialization\IVisitArgsFactory.cs" />
     <Compile Include="Serialization\PackedBinary\PackedDataReadVisitor.cs" />
     <Compile Include="Serialization\PackedBinary\PackedDataSerializer.cs" />
-    <Compile Include="Serialization\ReadVisitArgs.cs" />
     <Compile Include="Serialization\IGraphTraveller.cs" />
     <Compile Include="Serialization\IWriteVisitor.cs" />
     <Compile Include="Serialization\LevelType.cs" />
     <Compile Include="Serialization\PackedBinary\PackedDataWriteVisitor.cs" />
     <Compile Include="Serialization\InvalidGraphException.cs" />
+    <Compile Include="Serialization\Reflection\AcquirePropertyMetadataArgs.cs" />
     <Compile Include="Serialization\Reflection\Emit\ChildTravellerInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -217,6 +224,7 @@
     <Compile Include="Serialization\Reflection\Emit\DynamicTravellerContext.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Serialization\Reflection\Emit\DynamicTravellerMembers.cs" />
     <Compile Include="Serialization\Reflection\Emit\DynamicWriteTravellerBuilder.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -229,9 +237,27 @@
     <Compile Include="Serialization\Reflection\Emit\ReflectionAnalyzer.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Serialization\Reflection\Emit\TravellerContext.cs" />
+    <Compile Include="Serialization\Reflection\Graph\ComplexGraphProperty.cs" />
+    <Compile Include="Serialization\Reflection\Graph\ComplexGraphType.cs" />
+    <Compile Include="Serialization\Reflection\Graph\IGraphProperty.cs" />
+    <Compile Include="Serialization\Reflection\Graph\IGraphTravellerCollection.cs" />
+    <Compile Include="Serialization\Reflection\Graph\IGraphType.cs" />
+    <Compile Include="Serialization\Reflection\Graph\Int16GraphType.cs" />
+    <Compile Include="Serialization\Reflection\Graph\IReflectionGraphManager.cs" />
+    <Compile Include="Serialization\Reflection\IPropertyMetadataProvider.cs" />
+    <Compile Include="Serialization\Reflection\SerializationMetadata.cs" />
+    <Compile Include="Serialization\Reflection\PropertyValidArgs.cs" />
+    <Compile Include="Serialization\Reflection\Graph\ReflectionGraphTraveller.cs" />
+    <Compile Include="Serialization\Reflection\Graph\GraphTypeFactory.cs" />
+    <Compile Include="Serialization\Reflection\SerializableTypeProvider.cs" />
+    <Compile Include="Serialization\Reflection\SerializableProperty.cs" />
+    <Compile Include="Serialization\Reflection\SerializationReflectionInspector.cs" />
+    <Compile Include="Serialization\Reflection\SerializableType.cs" />
     <Compile Include="Serialization\Reflection\TypeReflectionContext.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Serialization\Reflection\TypeValidArgs.cs" />
     <Compile Include="Serialization\SerializationEngine.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -239,9 +265,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Serialization\ValueState.cs" />
-    <Compile Include="Serialization\WriteVisitArgs.cs">
+    <Compile Include="Serialization\VisitArgs.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Serialization\VisitArgsFactory.cs" />
     <Compile Include="Store\Indexes\IIndexAlgorithm.cs" />
     <Compile Include="ProtocolBuffer\TypeModelBuilder.cs" />
     <Compile Include="Reflection\CollectionContainerTypeInfo.cs" />

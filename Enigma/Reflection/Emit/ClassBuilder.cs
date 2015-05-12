@@ -30,6 +30,12 @@ namespace Enigma.Reflection.Emit
             return new ConstructorBuilder(constructorBuilder);
         }
 
+        public ConstructorBuilder DefineConstructor(params Type[] parameterTypes)
+        {
+            var constructorBuilder = _typeBuilder.DefineConstructor(MethodAttributes.Public, CallingConventions.Standard, parameterTypes);
+            return new ConstructorBuilder(constructorBuilder);
+        }
+
         public MethodBuilder DefineMethod(string name, Type returnType, Type[] parameterTypes)
         {
             const MethodAttributes attributes = MethodAttributes.Public | MethodAttributes.HideBySig;

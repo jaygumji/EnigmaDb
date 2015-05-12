@@ -33,8 +33,9 @@ namespace Enigma.Serialization
         {
             if (visitor == null) throw new ArgumentNullException("visitor");
             if (type == null) throw new ArgumentNullException("type");
-            
-            if (visitor.TryVisit(ReadVisitArgs.Root(type.Name)) != ValueState.Found)
+
+            var args = VisitArgs.Root(type.Name);
+            if (visitor.TryVisit(args) != ValueState.Found)
                 return null;
 
             var constructor = type.GetConstructor(Type.EmptyTypes);
@@ -45,7 +46,7 @@ namespace Enigma.Serialization
             var traveller = Context.GetInstance(type);
             traveller.Travel(visitor, graph);
 
-            visitor.Leave();
+            visitor.Leave(args);
 
             return graph;
         }
@@ -55,7 +56,8 @@ namespace Enigma.Serialization
             var type = typeof (T);
             if (visitor == null) throw new ArgumentNullException("visitor");
 
-            if (visitor.TryVisit(ReadVisitArgs.Root(type.Name)) != ValueState.Found)
+            var args = VisitArgs.Root(type.Name);
+            if (visitor.TryVisit(args) != ValueState.Found)
                 return default(T);
 
             var constructor = type.GetConstructor(Type.EmptyTypes);
@@ -66,7 +68,7 @@ namespace Enigma.Serialization
             var traveller = Context.GetInstance<T>();
             traveller.Travel(visitor, graph);
 
-            visitor.Leave();
+            visitor.Leave(args);
 
             return graph;
         }

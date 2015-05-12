@@ -85,7 +85,7 @@ namespace Enigma.Test.Fakes
             var stream = new MemoryStream();
             var writer = new BinaryDataWriter(stream);
             var visitor = new PackedDataWriteVisitor(writer);
-            var traveller = new DataBlockHardCodedTraveller();
+            var traveller = DataBlockHardCodedTraveller.Create();
             traveller.Travel(visitor, Filled());
 
             var bytes = stream.ToArray();

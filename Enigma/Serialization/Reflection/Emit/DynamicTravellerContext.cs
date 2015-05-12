@@ -6,17 +6,26 @@ namespace Enigma.Serialization.Reflection.Emit
 {
     public class DynamicTravellerContext
     {
+        private readonly SerializableTypeProvider _typeProvider;
         private readonly Dictionary<Type, DynamicTraveller> _travellers;
         private readonly AssemblyBuilder _assemblyBuilder;
+        private readonly DynamicTravellerMembers _members;
 
-        public DynamicTravellerContext() : this(false)
+        public DynamicTravellerContext() : this(new SerializableTypeProvider(new SerializationReflectionInspector()), false)
         {
         }
 
-        public DynamicTravellerContext(bool canSaveAssembly)
+        public DynamicTravellerContext(SerializableTypeProvider typeProvider, bool canSaveAssembly)
         {
+            _typeProvider = typeProvider;
             _travellers = new Dictionary<Type, DynamicTraveller>();
             _assemblyBuilder = new AssemblyBuilder(canSaveAssembly);
+            _members = new DynamicTravellerMembers();
+        }
+
+        public DynamicTravellerMembers Members
+        {
+            get { return _members; }
         }
 
         public DynamicTraveller Get(Type graphType)
@@ -30,7 +39,7 @@ namespace Enigma.Serialization.Reflection.Emit
                 if (_travellers.TryGetValue(graphType, out traveller))
                     return traveller;
 
-                builder = new DynamicTravellerBuilder(this, CreateClassBuilder(graphType), graphType);
+                builder = new DynamicTravellerBuilder(this, CreateClassBuilder(graphType), _typeProvider, graphType);
                 traveller = builder.DynamicTraveller;
                 _travellers.Add(graphType, traveller);
             }
@@ -47,7 +56,9 @@ namespace Enigma.Serialization.Reflection.Emit
         public IGraphTraveller<T> GetInstance<T>()
         {
             var dyn = Get(typeof (T));
-            return (IGraphTraveller<T>) dyn.GetInstance();
+            var instance = (IGraphTraveller<T>) dyn.GetInstance();
+            //_assemblyBuilder.Save();
+            return instance;
         }
 
         private ClassBuilder CreateClassBuilder(Type graphType)

@@ -48,7 +48,7 @@ namespace Enigma.Reflection.Emit
 
             var itHeadLabel = il.DefineLabel();
             var itBodyLabel = il.DefineLabel();
-            il.TransferShort(itHeadLabel);
+            il.TransferLong(itHeadLabel);
             var itVarLocal = il.DeclareLocal("cv", elementType);
             var getCurrentMethod = enumeratorType.GetProperty("Current").GetGetMethod();
             il.MarkLabel(itBodyLabel);
@@ -62,7 +62,7 @@ namespace Enigma.Reflection.Emit
             il.Var.Load(itLocal);
             il.CallVirt(EnumeratorMoveNext);
 
-            il.TransferShortIfTrue(itBodyLabel);
+            il.TransferLongIfTrue(itBodyLabel);
 
             il.Finally();
             il.Var.Load(itLocal);
@@ -70,7 +70,7 @@ namespace Enigma.Reflection.Emit
             il.CompareEquals();
 
             var endLabel = il.DefineLabel();
-            il.TransferShortIfTrue(endLabel);
+            il.TransferLongIfTrue(endLabel);
 
             il.Var.Load(itLocal);
             il.CallVirt(DisposableDispose);
