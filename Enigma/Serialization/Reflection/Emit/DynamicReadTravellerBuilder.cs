@@ -60,13 +60,13 @@ namespace Enigma.Serialization.Reflection.Emit
 
                 if (isValueType && !isNullable) {
                     var labelValueNotFound = _il.DefineLabel();
-                    _il.TransferShortIfFalse(labelValueNotFound);
+                    _il.TransferLongIfFalse(labelValueNotFound);
 
                     _il.Snippets.InvokeMethod(valueLocal, Members.Nullable[mediatorPropertyType].GetHasValue);
                     _il.Negate();
 
                     var nullableHasValueLabel = _il.DefineLabel();
-                    _il.TransferShort(nullableHasValueLabel);
+                    _il.TransferLong(nullableHasValueLabel);
 
                     _il.MarkLabel(labelValueNotFound);
                     _il.LoadValue(1);
@@ -77,7 +77,7 @@ namespace Enigma.Serialization.Reflection.Emit
                 }
 
                 var skipSetValueLabel = _il.DefineLabel();
-                _il.TransferShortIfTrue(skipSetValueLabel);
+                _il.TransferLongIfTrue(skipSetValueLabel);
 
                 _il.Var.Load(graphVariable);
                 if (isValueType && !isNullable)
@@ -95,20 +95,15 @@ namespace Enigma.Serialization.Reflection.Emit
                 _il.Snippets.InvokeMethod(_visitorVariable, Members.VisitorTryVisit, argsFieldVariable);
                 var stateLocal = _il.DeclareLocal("state", typeof(ValueState));
                 _il.Var.Set(stateLocal);
-                _il.Var.Load(stateLocal);
-                _il.LoadValue((int)ValueState.NotFound);
-                _il.CompareEquals();
+                _il.Snippets.AreEqual(stateLocal, (int) ValueState.NotFound);
 
                 var endLabel = _il.DefineLabel();
                 _il.TransferLongIfTrue(endLabel);
 
-                _il.Var.Load(stateLocal);
-                _il.LoadValue((int)ValueState.Found);
-                _il.CompareEquals();
+                _il.Snippets.AreEqual(stateLocal, (int) ValueState.Found);
 
-                _il.Negate();
                 var nullLabel = _il.DefineLabel();
-                _il.TransferLongIfTrue(nullLabel);
+                _il.TransferLongIfFalse(nullLabel);
 
                 var dictionaryLocal = _il.DeclareLocal("dictionary", dictionaryMembers.VariableType);
                 _il.Construct(dictionaryMembers.Constructor);
@@ -119,48 +114,49 @@ namespace Enigma.Serialization.Reflection.Emit
                 GenerateEnumerateCode(keyLocal, Members.VisitArgsDictionaryKey, () => {
                     var throwExceptionLabel = _il.DefineLabel();
                     var endBodyLabel = _il.DefineLabel();
+                    var argsDictValueVariable = _il.Var.Field(Members.VisitArgsDictionaryValue);
 
                     NullableMembers valueNullableMembers;
                     var hasNullableMembers = Members.Nullable.TryGetValue(dictionaryMembers.ValueType, out valueNullableMembers);
                     var valueLocal = _il.DeclareLocal("cv", hasNullableMembers ? valueNullableMembers.NullableType : dictionaryMembers.ValueType);
                     var valueType = dictionaryMembers.ValueType;
-                    _il.Var.Load(_visitorVariable);
-                    _il.LoadStaticField(Members.VisitArgsDictionaryValue);
                     var extValueType = valueType.Extend();
 
                     if (extValueType.IsValueOrNullableOfValue()) {
                         var loadOneLabel = _il.DefineLabel();
                         var checkConditionLabel = _il.DefineLabel();
 
+                        _il.Var.Load(_visitorVariable);
+                        _il.LoadStaticField(Members.VisitArgsDictionaryValue);
                         _il.Var.LoadAddress(valueLocal);
                         _il.CallVirt(Members.VisitorTryVisitValue[dictionaryMembers.ValueType]);
-                        _il.TransferShortIfFalse(loadOneLabel);
+                        _il.TransferLongIfFalse(loadOneLabel);
 
                         if (hasNullableMembers) {
                             _il.Var.LoadAddress(valueLocal);
                             _il.Call(valueNullableMembers.GetHasValue);
+                            _il.Negate();
                         }
                         else {
-                            _il.Var.Load(valueLocal);
-                            _il.LoadNull();
-                            _il.CompareEquals();
+                            _il.Snippets.AreEqual(valueLocal, ILCodeParameter.Null);
                         }
-                        _il.Negate();
-                        _il.TransferShort(checkConditionLabel);
+                        _il.TransferLong(checkConditionLabel);
                         _il.MarkLabel(loadOneLabel);
                         _il.LoadValue(1);
                         _il.MarkLabel(checkConditionLabel);
-                        _il.TransferShortIfTrue(throwExceptionLabel);
+                        _il.TransferLongIfTrue(throwExceptionLabel);
                     }
                     else {
+                        _il.Var.Load(_visitorVariable);
+                        _il.LoadStaticField(Members.VisitArgsDictionaryValue);
                         _il.CallVirt(Members.VisitorTryVisit);
                         _il.LoadValue((int) ValueState.Found);
                         _il.CompareEquals();
                         _il.Negate();
-                        _il.TransferShortIfTrue(throwExceptionLabel);
+                        _il.TransferLongIfTrue(throwExceptionLabel);
 
                         GenerateCreateAndChildCallCode(valueLocal);
-                        _il.Snippets.InvokeMethod(_visitorVariable, Members.VisitorLeave, argsFieldVariable);
+                        _il.Snippets.InvokeMethod(_visitorVariable, Members.VisitorLeave, argsDictValueVariable);
                     }
 
                     _il.Var.Load(dictionaryLocal);
@@ -168,7 +164,7 @@ namespace Enigma.Serialization.Reflection.Emit
                     GenerateLoadLocalValueCode(valueLocal);
 
                     _il.CallVirt(dictionaryMembers.Add);
-                    _il.TransferShort(endBodyLabel);
+                    _il.TransferLong(endBodyLabel);
 
                     _il.MarkLabel(throwExceptionLabel);
                     _il.LoadValue(target.Ref.Name);
@@ -186,7 +182,7 @@ namespace Enigma.Serialization.Reflection.Emit
 
                 _il.Snippets.InvokeMethod(_visitorVariable, Members.VisitorLeave, argsFieldVariable);
 
-                _il.TransferShort(endLabel);
+                _il.TransferLong(endLabel);
 
                 _il.MarkLabel(nullLabel);
                 _il.Var.Load(graphVariable);
@@ -198,6 +194,7 @@ namespace Enigma.Serialization.Reflection.Emit
             else if (extPropertyType.Class == TypeClass.Collection) {
                 var collectionMembers = new CollectionMembers(extPropertyType);
                 var isValueType = collectionMembers.ElementType.IsValueType;
+                var argsColItemVariable = _il.Var.Field(Members.VisitArgsCollectionItemField);
 
                 _il.Snippets.InvokeMethod(_visitorVariable, Members.VisitorTryVisit, argsFieldVariable);
                 var stateLocal = _il.DeclareLocal("state", typeof(ValueState));
@@ -218,54 +215,66 @@ namespace Enigma.Serialization.Reflection.Emit
                 _il.Cast(collectionMembers.VariableType);
                 _il.Var.Set(collectionLocal);
 
-                var loopLabel = _il.DefineLabel();
-                _il.TransferLong(loopLabel);
+                var loopConditionLabel = _il.DefineLabel();
+                _il.TransferLong(loopConditionLabel);
 
-                var addValueLabel = _il.DefineLabel();
-                _il.MarkLabel(addValueLabel);
-                _il.Var.Load(collectionLocal);
-
-                var valueLocal = DeclareAndLoadLocal("cv", collectionMembers.ElementType);
-                _il.CallVirt(collectionMembers.Add);
-
-                _il.MarkLabel(loopLabel);
+                var loopBodyLabel = _il.DefineLabel();
+                _il.MarkLabel(loopBodyLabel);
 
                 if (collectionMembers.ElementTypeRef.IsValueOrNullableOfValue()) {
+                    _il.Var.Load(collectionLocal);
+
+                    var valueLocal = DeclareAndLoadLocal("cv", collectionMembers.ElementType);
+                    
+                    _il.CallVirt(collectionMembers.Add);
+
+                    _il.MarkLabel(loopConditionLabel);
+
                     _il.Var.Load(_visitorVariable);
-                    _il.LoadStaticField(Members.VisitArgsItemField);
+                    _il.LoadStaticField(Members.VisitArgsCollectionItemField);
                     _il.Var.LoadAddress(valueLocal);
 
                     _il.CallVirt(Members.VisitorTryVisitValue[collectionMembers.ElementType]);
-                }
-                else {
+
+                    // Begin if logic section
+                    var valueNotFoundLabel = _il.DefineLabel();
+                    _il.TransferLongIfFalse(valueNotFoundLabel);
+
+                    if (isValueType) {
+                        _il.Snippets.InvokeMethod(valueLocal, Members.Nullable[collectionMembers.ElementType].GetHasValue);
+                    }
+                    else {
+                        _il.Snippets.AreEqual(valueLocal, ILCodeParameter.Null);
+                        _il.Negate();
+                    }
+
+                    var isNullLabel = _il.DefineLabel();
+                    _il.TransferLong(isNullLabel);
+
+                    _il.MarkLabel(valueNotFoundLabel);
                     _il.LoadValue(0);
-                }
+                    _il.MarkLabel(isNullLabel);
 
-                // Begin if logic section
-                var valueNotFoundLabel = _il.DefineLabel();
-                _il.TransferShortIfFalse(valueNotFoundLabel);
-
-                if (isValueType) {
-                    _il.Snippets.InvokeMethod(valueLocal, Members.Nullable[collectionMembers.ElementType].GetHasValue);
+                    _il.TransferLongIfTrue(loopBodyLabel);
+                    // End if logic section
                 }
                 else {
-                    _il.Snippets.AreEqual(valueLocal, ILCodeParameter.Null);
-                    _il.Negate();
+                    var valueLocal = _il.DeclareLocal("cv", collectionMembers.ElementType);
+                    GenerateCreateAndChildCallCode(valueLocal);
+                    _il.Snippets.InvokeMethod(_visitorVariable, Members.VisitorLeave, argsColItemVariable);
+                    _il.Snippets.InvokeMethod(collectionLocal, collectionMembers.Add, valueLocal);
+
+                    _il.MarkLabel(loopConditionLabel);
+
+                    var callTryVisit = new CallMethodILCode(_visitorVariable, Members.VisitorTryVisit, argsColItemVariable);
+                    _il.Snippets.AreEqual(callTryVisit, (int)ValueState.Found);
+
+                    _il.TransferLongIfTrue(loopBodyLabel);
                 }
-
-                var isNullLabel = _il.DefineLabel();
-                _il.TransferShort(isNullLabel);
-
-                _il.MarkLabel(valueNotFoundLabel);
-                _il.LoadValue(0);
-                _il.MarkLabel(isNullLabel);
-
-                _il.TransferShortIfTrue(addValueLabel);
-                // End if logic section
 
                 _il.Snippets.SetPropertyValue(graphVariable, target.Ref, collectionLocal);
                 _il.Snippets.InvokeMethod(_visitorVariable, Members.VisitorLeave, argsFieldVariable);
-                _il.TransferShort(endLabel);
+                _il.TransferLong(endLabel);
 
                 _il.MarkLabel(nullLabel);
                 _il.Snippets.SetPropertyValue(graphVariable, target.Ref, ILCodeParameter.Null);
@@ -281,7 +290,7 @@ namespace Enigma.Serialization.Reflection.Emit
                 _il.CompareEquals();
 
                 var endLabel = _il.DefineLabel();
-                _il.TransferShortIfTrue(endLabel);
+                _il.TransferLongIfTrue(endLabel);
 
                 _il.Var.Load(stateLocal);
                 _il.LoadValue((int) ValueState.Found);
@@ -289,7 +298,7 @@ namespace Enigma.Serialization.Reflection.Emit
 
                 _il.Negate();
                 var nullLabel = _il.DefineLabel();
-                _il.TransferShortIfTrue(nullLabel);
+                _il.TransferLongIfTrue(nullLabel);
 
                 var singleLocal = _il.DeclareLocal("single", extPropertyType.Inner);
                 GenerateCreateAndChildCallCode(singleLocal);
@@ -297,7 +306,7 @@ namespace Enigma.Serialization.Reflection.Emit
                 _il.Snippets.SetPropertyValue(graphVariable, target.Ref, singleLocal);
                 _il.Snippets.InvokeMethod(_visitorVariable, Members.VisitorLeave, argsFieldVariable);
 
-                _il.TransferShort(endLabel);
+                _il.TransferLong(endLabel);
 
                 _il.MarkLabel(nullLabel);
                 _il.Snippets.SetPropertyValue(graphVariable, target.Ref, ILCodeParameter.Null);
@@ -337,19 +346,19 @@ namespace Enigma.Serialization.Reflection.Emit
                 _il.Var.LoadAddress(local);
 
                 _il.CallVirt(Members.VisitorTryVisitValue[type]);
-                _il.TransferShortIfFalse(loadZeroLabel);
+                _il.TransferLongIfFalse(loadZeroLabel);
 
                 if (type.IsValueType) {
                     _il.Var.LoadAddress(local);
                     _il.Call(Members.Nullable[type].GetHasValue);
-                    _il.TransferShort(checkConditionLabel);
+                    _il.TransferLong(checkConditionLabel);
                 }
                 else {
                     _il.Var.Load(local);
                     _il.LoadNull();
                     _il.CompareEquals();
                     _il.Negate();
-                    _il.TransferShort(checkConditionLabel);
+                    _il.TransferLong(checkConditionLabel);
                 }
 
                 _il.MarkLabel(loadZeroLabel);

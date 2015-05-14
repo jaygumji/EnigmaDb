@@ -10,7 +10,7 @@ namespace Enigma.Serialization.Reflection.Emit
     public sealed class DynamicReadTravellerMembers
     {
 
-        public readonly FieldInfo VisitArgsItemField;
+        public readonly FieldInfo VisitArgsCollectionItemField;
         public readonly FieldInfo VisitArgsDictionaryKey;
         public readonly FieldInfo VisitArgsDictionaryValue;
 
@@ -28,7 +28,7 @@ namespace Enigma.Serialization.Reflection.Emit
         public DynamicReadTravellerMembers()
         {
             var visitArgsType = typeof(VisitArgs);
-            VisitArgsItemField = visitArgsType.GetField("CollectionItem");
+            VisitArgsCollectionItemField = visitArgsType.GetField("CollectionItem");
             VisitArgsDictionaryKey = visitArgsType.GetField("DictionaryKey");
             VisitArgsDictionaryValue = visitArgsType.GetField("DictionaryValue");
 

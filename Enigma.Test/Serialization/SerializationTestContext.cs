@@ -58,7 +58,12 @@ namespace Enigma.Test.Serialization
 
         public void AssertRead<T>(int expectedValueReadCount) where T : new()
         {
-            var visitor = new FakeReadVisitor();
+            AssertRead<T>(expectedValueReadCount, -1);
+        }
+
+        public void AssertRead<T>(int expectedValueReadCount, int allowedVisitCount) where T : new()
+        {
+            var visitor = new FakeReadVisitor(allowedVisitCount);
             var traveller = CreateTraveller<T>();
 
             var graph = new T();
@@ -67,5 +72,6 @@ namespace Enigma.Test.Serialization
             visitor.AssertHiearchy();
             Assert.AreEqual(expectedValueReadCount, visitor.VisitValueCount);
         }
+
     }
 }

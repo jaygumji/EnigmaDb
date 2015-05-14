@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Enigma.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -6,8 +7,20 @@ namespace Enigma.Test.Serialization.Fakes
 {
     public class FakeReadVisitor : IReadVisitor
     {
+
+        private readonly int _allowedVisitCount;
+        private readonly Dictionary<VisitArgs, int> _propertyVisitCounts;
+
+        private Int16 _nextInt16;
+        private Int32 _nextInt32;
+        private Int64 _nextInt64;
+        private UInt16 _nextUInt16;
+        private UInt32 _nextUInt32;
+        private UInt64 _nextUInt64;
+
         public int VisitCount { get; private set; }
         public int LeaveCount { get; private set; }
+        private int ExpectedLeaveCount { get; set; }
 
         public int VisitByteCount { get; private set; }
         public int VisitInt16Count { get; private set; }
@@ -26,6 +39,16 @@ namespace Enigma.Test.Serialization.Fakes
         public int VisitGuidCount { get; private set; }
         public int VisitBlobCount { get; private set; }
 
+        public FakeReadVisitor() : this(-1)
+        {
+        }
+
+        public FakeReadVisitor(int allowedVisitCount)
+        {
+            _allowedVisitCount = allowedVisitCount;
+            _propertyVisitCounts = new Dictionary<VisitArgs, int>();
+        }
+
         public int VisitValueCount
         {
             get
@@ -43,16 +66,25 @@ namespace Enigma.Test.Serialization.Fakes
         {
             VisitCount++;
 
-            return ShouldRead(args)
-                ? ValueState.Found
-                : ValueState.NotFound;
+            if (!ShouldRead(args)) return ValueState.NotFound;
+            
+            ExpectedLeaveCount++;
+            return ValueState.Found;
         }
 
         private bool ShouldRead(VisitArgs args)
         {
+            var visitCount = 0;
+            if (_propertyVisitCounts.ContainsKey(args))
+                visitCount = ++_propertyVisitCounts[args];
+            else
+                _propertyVisitCounts.Add(args, ++visitCount);
+
             if (args.Type == LevelType.CollectionItem || args.Type == LevelType.DictionaryKey ||
                 args.Type == LevelType.DictionaryValue)
-                return false;
+                return _allowedVisitCount < 0
+                    ? (visitCount % 2) == 1
+                    : visitCount <= _allowedVisitCount;
 
             return true;
         }
@@ -72,42 +104,42 @@ namespace Enigma.Test.Serialization.Fakes
         public bool TryVisitValue(VisitArgs args, out short? value)
         {
             VisitInt16Count++;
-            value = 42;
+            value = ++_nextInt16;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out int? value)
         {
             VisitInt32Count++;
-            value = 42;
+            value = ++_nextInt32;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out long? value)
         {
             VisitInt64Count++;
-            value = 42;
+            value = ++_nextInt64;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out ushort? value)
         {
             VisitUInt16Count++;
-            value = 42;
+            value = ++_nextUInt16;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out uint? value)
         {
             VisitUInt32Count++;
-            value = 42;
+            value = ++_nextUInt32;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out ulong? value)
         {
             VisitUInt64Count++;
-            value = 42;
+            value = ++_nextUInt64;
             return ShouldRead(args);
         }
 
@@ -176,7 +208,7 @@ namespace Enigma.Test.Serialization.Fakes
 
         public void AssertHiearchy()
         {
-            Assert.AreEqual(VisitCount, LeaveCount);
+            Assert.AreEqual(ExpectedLeaveCount, LeaveCount);
         }
 
     }

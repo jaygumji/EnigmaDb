@@ -130,35 +130,42 @@ namespace Enigma.Test.Serialization
         public void ReadDictionaryTest()
         {
             var context = new SerializationTestContext();
-            context.AssertRead<DictionaryGraph>(2);
+            context.AssertRead<DictionaryGraph>(3);
         }
 
         [TestMethod]
         public void ReadDictionaryWithComplexValueTest()
         {
             var context = new SerializationTestContext();
-            context.AssertRead<DictionaryWithComplexValueGraph>(12);
+            context.AssertRead<DictionaryWithComplexValueGraph>(5);
         }
 
         [TestMethod]
         public void ReadDictionaryWithComplexKeyAndValueTest()
         {
             var context = new SerializationTestContext();
-            context.AssertRead<DictionaryWithComplexKeyAndValueGraph>(15);
+            context.AssertRead<DictionaryWithComplexKeyAndValueGraph>(5);
+        }
+
+        [TestMethod]
+        public void ReadDictionaryCount3WithComplexKeyAndValueTest()
+        {
+            var context = new SerializationTestContext();
+            context.AssertRead<DictionaryWithComplexKeyAndValueGraph>(15, 3);
         }
 
         [TestMethod]
         public void ReadDictionaryWithComplexKeyTest()
         {
             var context = new SerializationTestContext();
-            context.AssertRead<DictionaryWithComplexKeyGraph>(9);
+            context.AssertRead<DictionaryWithComplexKeyGraph>(3);
         }
 
         [TestMethod]
         public void ReadCollectionTest()
         {
             var context = new SerializationTestContext();
-            context.AssertRead<CollectionGraph>(1);
+            context.AssertRead<CollectionGraph>(2);
         }
 
         [TestMethod]

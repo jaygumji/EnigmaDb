@@ -35,6 +35,7 @@ namespace Enigma.Test.Fakes
 
         public Relation Relation { get; set; }
         public Relation DummyRelation { get; set; }
+        public List<Relation> SecondaryRelations { get; set; }
 
         public Dictionary<string, int> IndexedValues { get; set; }
         public Dictionary<Identifier, Category> Categories { get; set; }
@@ -65,6 +66,15 @@ namespace Enigma.Test.Fakes
                     Name = "Connection",
                     Description = "Generic connection between relations",
                     Value = 77
+                },
+                DummyRelation = null,
+                SecondaryRelations = new List<Relation> {
+                    new Relation {
+                        Id = Guid.Parse("C9EDB616-26EC-44BB-9E70-3F38C7C18C91"),
+                        Name = "Line1",
+                        Description = "First line of cascade",
+                        Value = 187
+                    }
                 },
                 IndexedValues = new Dictionary<string, int> {
                     {"V1", 1},

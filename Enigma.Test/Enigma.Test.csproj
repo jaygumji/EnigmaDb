@@ -65,8 +65,8 @@
     <Compile Include="Linq\IndexFilterTests.cs" />
     <Compile Include="Modelling\EntityBuilderTests.cs" />
     <Compile Include="Serialization\BinaryPackerTests.cs" />
-    <Compile Include="Serialization\CategoryHardCodedTraveller.cs" />
-    <Compile Include="Serialization\DataBlockHardCodedTraveller.cs" />
+    <Compile Include="Serialization\HardCoded\CategoryHardCodedTraveller.cs" />
+    <Compile Include="Serialization\HardCoded\DataBlockHardCodedTraveller.cs" />
     <Compile Include="Serialization\Fakes\ComplexDictionary.cs" />
     <Compile Include="Serialization\Fakes\FakeReadVisitor.cs" />
     <Compile Include="Serialization\Fakes\FakeWriteVisitor.cs" />
@@ -110,12 +110,12 @@
     <Compile Include="Serialization\Graphs\UInt64Graph.cs" />
     <Compile Include="Serialization\ReadValuePropertyTests.cs" />
     <Compile Include="Serialization\WriteNullableValuePropertyTests.cs" />
-    <Compile Include="Serialization\NullableValuesEntityHardCodedTraveller.cs" />
+    <Compile Include="Serialization\HardCoded\NullableValuesEntityHardCodedTraveller.cs" />
     <Compile Include="Serialization\NullableValuesTests.cs" />
     <Compile Include="Serialization\Fakes\ValueDictionary.cs" />
-    <Compile Include="Serialization\IdentifierHardCodedTraveller.cs" />
+    <Compile Include="Serialization\HardCoded\IdentifierHardCodedTraveller.cs" />
     <Compile Include="Serialization\ReadTravellerTests.cs" />
-    <Compile Include="Serialization\RelationHardCodedTraveller.cs" />
+    <Compile Include="Serialization\HardCoded\RelationHardCodedTraveller.cs" />
     <Compile Include="Serialization\Sandbox\DictionaryIlSandbox.cs" />
     <Compile Include="Serialization\SerializationTestContext.cs" />
     <Compile Include="Serialization\WriteNullableValuePropertyWithNullTests.cs" />

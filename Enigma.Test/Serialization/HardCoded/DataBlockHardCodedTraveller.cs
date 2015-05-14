@@ -13,28 +13,29 @@ namespace Enigma.Test.Serialization
         private readonly IGraphTraveller<Identifier> _travellerIdentifier1;
         private readonly IGraphTraveller<Category> _travellerCategory2;
 
-        private readonly VisitArgs _argsId0;
-        private readonly VisitArgs _argsString1;
-        private readonly VisitArgs _argsInt162;
-        private readonly VisitArgs _argsInt323;
-        private readonly VisitArgs _argsInt644;
-        private readonly VisitArgs _argsUInt165;
-        private readonly VisitArgs _argsUInt326;
-        private readonly VisitArgs _argsUInt647;
-        private readonly VisitArgs _argsSingle8;
-        private readonly VisitArgs _argsDouble9;
-        private readonly VisitArgs _argsTimeSpan10;
-        private readonly VisitArgs _argsDecimal11;
-        private readonly VisitArgs _argsDateTime12;
-        private readonly VisitArgs _argsByte13;
-        private readonly VisitArgs _argsBoolean14;
-        private readonly VisitArgs _argsBlob15;
-        private readonly VisitArgs _argsMessages16;
-        private readonly VisitArgs _argsStamps17;
-        private readonly VisitArgs _argsRelation18;
-        private readonly VisitArgs _argsDummyRelation19;
-        private readonly VisitArgs _argsIndexedValues20;
-        private readonly VisitArgs _argsCategories21;
+        private readonly VisitArgs _argsId;
+        private readonly VisitArgs _argsString;
+        private readonly VisitArgs _argsInt16;
+        private readonly VisitArgs _argsInt32;
+        private readonly VisitArgs _argsInt64;
+        private readonly VisitArgs _argsUInt16;
+        private readonly VisitArgs _argsUInt32;
+        private readonly VisitArgs _argsUInt64;
+        private readonly VisitArgs _argsSingle;
+        private readonly VisitArgs _argsDouble;
+        private readonly VisitArgs _argsTimeSpan;
+        private readonly VisitArgs _argsDecimal;
+        private readonly VisitArgs _argsDateTime;
+        private readonly VisitArgs _argsByte;
+        private readonly VisitArgs _argsBoolean;
+        private readonly VisitArgs _argsBlob;
+        private readonly VisitArgs _argsMessages;
+        private readonly VisitArgs _argsStamps;
+        private readonly VisitArgs _argsRelation;
+        private readonly VisitArgs _argsDummyRelation;
+        private readonly VisitArgs _argsSecondaryRelations;
+        private readonly VisitArgs _argsIndexedValues;
+        private readonly VisitArgs _argsCategories;
 
         public DataBlockHardCodedTraveller(IVisitArgsFactory factory)
         {
@@ -42,102 +43,117 @@ namespace Enigma.Test.Serialization
             _travellerIdentifier1 = new IdentifierHardCodedTraveller(factory.ConstructWith(typeof(Identifier)));
             _travellerCategory2 = new CategoryHardCodedTraveller(factory.ConstructWith(typeof(Category)));
 
-            _argsId0 = factory.Construct("Id");
-            _argsString1 = factory.Construct("String");
-            _argsInt162 = factory.Construct("Int16");
-            _argsInt323 = factory.Construct("Int32");
-            _argsInt644 = factory.Construct("Int64");
-            _argsUInt165 = factory.Construct("UInt16");
-            _argsUInt326 = factory.Construct("UInt32");
-            _argsUInt647 = factory.Construct("UInt64");
-            _argsSingle8 = factory.Construct("Single");
-            _argsDouble9 = factory.Construct("Double");
-            _argsTimeSpan10 = factory.Construct("TimeSpan");
-            _argsDecimal11 = factory.Construct("Decimal");
-            _argsDateTime12 = factory.Construct("DateTime");
-            _argsByte13 = factory.Construct("Byte");
-            _argsBoolean14 = factory.Construct("Boolean");
-            _argsBlob15 = factory.Construct("Blob");
-            _argsMessages16 = factory.Construct("Messages");
-            _argsStamps17 = factory.Construct("Stamps");
-            _argsRelation18 = factory.Construct("Relation");
-            _argsDummyRelation19 = factory.Construct("DummyRelation");
-            _argsIndexedValues20 = factory.Construct("IndexedValues");
-            _argsCategories21 = factory.Construct("Categories");
+            _argsId = factory.Construct("Id");
+            _argsString = factory.Construct("String");
+            _argsInt16 = factory.Construct("Int16");
+            _argsInt32 = factory.Construct("Int32");
+            _argsInt64 = factory.Construct("Int64");
+            _argsUInt16 = factory.Construct("UInt16");
+            _argsUInt32 = factory.Construct("UInt32");
+            _argsUInt64 = factory.Construct("UInt64");
+            _argsSingle = factory.Construct("Single");
+            _argsDouble = factory.Construct("Double");
+            _argsTimeSpan = factory.Construct("TimeSpan");
+            _argsDecimal = factory.Construct("Decimal");
+            _argsDateTime = factory.Construct("DateTime");
+            _argsByte = factory.Construct("Byte");
+            _argsBoolean = factory.Construct("Boolean");
+            _argsBlob = factory.Construct("Blob");
+            _argsMessages = factory.Construct("Messages");
+            _argsStamps = factory.Construct("Stamps");
+            _argsRelation = factory.Construct("Relation");
+            _argsDummyRelation = factory.Construct("DummyRelation");
+            _argsSecondaryRelations = factory.Construct("SecondaryRelations");
+            _argsIndexedValues = factory.Construct("IndexedValues");
+            _argsCategories = factory.Construct("Categories");
         }
 
         public void Travel(IWriteVisitor visitor, DataBlock graph)
         {
-            visitor.VisitValue(graph.Id, _argsId0);
-            visitor.VisitValue(graph.String, _argsString1);
-            visitor.VisitValue(graph.Int16, _argsInt162);
-            visitor.VisitValue(graph.Int32, _argsInt323);
-            visitor.VisitValue(graph.Int64, _argsInt644);
-            visitor.VisitValue(graph.UInt16, _argsUInt165);
-            visitor.VisitValue(graph.UInt32, _argsUInt326);
-            visitor.VisitValue(graph.UInt64, _argsUInt647);
-            visitor.VisitValue(graph.Single, _argsSingle8);
-            visitor.VisitValue(graph.Double, _argsDouble9);
-            visitor.VisitValue(graph.TimeSpan, _argsTimeSpan10);
-            visitor.VisitValue(graph.Decimal, _argsDecimal11);
-            visitor.VisitValue(graph.DateTime, _argsDateTime12);
-            visitor.VisitValue(graph.Byte, _argsByte13);
-            visitor.VisitValue(graph.Boolean, _argsBoolean14);
-            visitor.VisitValue(graph.Blob, _argsBlob15);
+            visitor.VisitValue(graph.Id, _argsId);
+            visitor.VisitValue(graph.String, _argsString);
+            visitor.VisitValue(graph.Int16, _argsInt16);
+            visitor.VisitValue(graph.Int32, _argsInt32);
+            visitor.VisitValue(graph.Int64, _argsInt64);
+            visitor.VisitValue(graph.UInt16, _argsUInt16);
+            visitor.VisitValue(graph.UInt32, _argsUInt32);
+            visitor.VisitValue(graph.UInt64, _argsUInt64);
+            visitor.VisitValue(graph.Single, _argsSingle);
+            visitor.VisitValue(graph.Double, _argsDouble);
+            visitor.VisitValue(graph.TimeSpan, _argsTimeSpan);
+            visitor.VisitValue(graph.Decimal, _argsDecimal);
+            visitor.VisitValue(graph.DateTime, _argsDateTime);
+            visitor.VisitValue(graph.Byte, _argsByte);
+            visitor.VisitValue(graph.Boolean, _argsBoolean);
+            visitor.VisitValue(graph.Blob, _argsBlob);
 
             {
                 var c = graph.Messages;
-                visitor.Visit(c, _argsMessages16);
+                visitor.Visit(c, _argsMessages);
 
                 if (c != null) {
                     foreach (var cv in c)
                         visitor.VisitValue(cv, VisitArgs.CollectionItem);
                 }
 
-                visitor.Leave(c, _argsMessages16);
+                visitor.Leave(c, _argsMessages);
             }
 
             {
                 var c = (ICollection<DateTime>) graph.Stamps;
-                visitor.Visit(c, _argsStamps17);
+                visitor.Visit(c, _argsStamps);
                 if (c != null)
                     foreach (var cv in c)
                         visitor.VisitValue(cv, VisitArgs.CollectionItem);
 
-                visitor.Leave(c, _argsStamps17);
+                visitor.Leave(c, _argsStamps);
             }
 
             {
                 var c = graph.Relation;
-                visitor.Visit(c, _argsRelation18);
+                visitor.Visit(c, _argsRelation);
                 if (c != null)
                     _travellerRelation0.Travel(visitor, c);
-                visitor.Leave(c, _argsRelation18);
+                visitor.Leave(c, _argsRelation);
             }
 
             {
                 var c = graph.DummyRelation;
-                visitor.Visit(c, _argsDummyRelation19);
+                visitor.Visit(c, _argsDummyRelation);
                 if (c != null)
                     _travellerRelation0.Travel(visitor, c);
-                visitor.Leave(c, _argsDummyRelation19);
+                visitor.Leave(c, _argsDummyRelation);
+            }
+
+            {
+                var c = (ICollection<Relation>)graph.SecondaryRelations;
+                visitor.Visit(c, _argsSecondaryRelations);
+                if (c != null) {
+                    foreach (var cv in c) {
+                        visitor.Visit(cv, VisitArgs.CollectionItem);
+                        _travellerRelation0.Travel(visitor, cv);
+                        visitor.Leave(cv, VisitArgs.CollectionItem);
+                    }
+                }
+
+                visitor.Leave(c, _argsSecondaryRelations);
             }
 
             {
                 var c = (IDictionary<string, int>) graph.IndexedValues;
-                visitor.Visit(c, _argsIndexedValues20);
+                visitor.Visit(c, _argsIndexedValues);
                 if (c != null) {
                     foreach (var ckv in c) {
                         visitor.VisitValue(ckv.Key, VisitArgs.DictionaryKey);
                         visitor.VisitValue(ckv.Value, VisitArgs.DictionaryValue);
                     }
                 }
-                visitor.Leave(c, _argsIndexedValues20);
+                visitor.Leave(c, _argsIndexedValues);
             }
 
             {
                 var c = (IDictionary<Identifier, Category>)graph.Categories;
-                visitor.Visit(c, _argsCategories21);
+                visitor.Visit(c, _argsCategories);
                 if (c != null) {
                     foreach (var ckv in c) {
                         visitor.Visit(ckv.Key, VisitArgs.DictionaryKey);
@@ -149,7 +165,7 @@ namespace Enigma.Test.Serialization
                         visitor.Leave(ckv.Value, VisitArgs.DictionaryValue);
                     }
                 }
-                visitor.Leave(c, _argsCategories21);
+                visitor.Leave(c, _argsCategories);
             }
         }
 
@@ -166,71 +182,71 @@ namespace Enigma.Test.Serialization
         public void Travel(IReadVisitor visitor, DataBlock graph)
         {
             Guid? v0;
-            if (visitor.TryVisitValue(_argsId0, out v0) && v0.HasValue)
+            if (visitor.TryVisitValue(_argsId, out v0) && v0.HasValue)
                 graph.Id = v0.Value;
 
             String v1;
-            if (visitor.TryVisitValue(_argsString1, out v1))
+            if (visitor.TryVisitValue(_argsString, out v1))
                 graph.String = v1;
 
             Int16? v2;
-            if (visitor.TryVisitValue(_argsInt162, out v2) && v2.HasValue)
+            if (visitor.TryVisitValue(_argsInt16, out v2) && v2.HasValue)
                 graph.Int16 = v2.Value;
 
             Int32? v3;
-            if (visitor.TryVisitValue(_argsInt323, out v3) && v3.HasValue)
+            if (visitor.TryVisitValue(_argsInt32, out v3) && v3.HasValue)
                 graph.Int32 = v3.Value;
 
             Int64? v4;
-            if (visitor.TryVisitValue(_argsInt644, out v4) && v4.HasValue)
+            if (visitor.TryVisitValue(_argsInt64, out v4) && v4.HasValue)
                 graph.Int64 = v4.Value;
 
             UInt16? v5;
-            if (visitor.TryVisitValue(_argsUInt165, out v5) && v5.HasValue)
+            if (visitor.TryVisitValue(_argsUInt16, out v5) && v5.HasValue)
                 graph.UInt16 = v5.Value;
 
             UInt32? v6;
-            if (visitor.TryVisitValue(_argsUInt326, out v6) && v6.HasValue)
+            if (visitor.TryVisitValue(_argsUInt32, out v6) && v6.HasValue)
                 graph.UInt32 = v6.Value;
 
             UInt64? v7;
-            if (visitor.TryVisitValue(_argsUInt647, out v7) && v7.HasValue)
+            if (visitor.TryVisitValue(_argsUInt64, out v7) && v7.HasValue)
                 graph.UInt64 = v7.Value;
 
             Single? v8;
-            if (visitor.TryVisitValue(_argsSingle8, out v8) && v8.HasValue)
+            if (visitor.TryVisitValue(_argsSingle, out v8) && v8.HasValue)
                 graph.Single = v8.Value;
 
             Double? v9;
-            if (visitor.TryVisitValue(_argsDouble9, out v9) && v9.HasValue)
+            if (visitor.TryVisitValue(_argsDouble, out v9) && v9.HasValue)
                 graph.Double = v9.Value;
 
             TimeSpan? v10;
-            if (visitor.TryVisitValue(_argsTimeSpan10, out v10) && v10.HasValue)
+            if (visitor.TryVisitValue(_argsTimeSpan, out v10) && v10.HasValue)
                 graph.TimeSpan = v10.Value;
 
             Decimal? v11;
-            if (visitor.TryVisitValue(_argsDecimal11, out v11) && v11.HasValue)
+            if (visitor.TryVisitValue(_argsDecimal, out v11) && v11.HasValue)
                 graph.Decimal = v11.Value;
 
             DateTime? v12;
-            if (visitor.TryVisitValue(_argsDateTime12, out v12) && v12.HasValue)
+            if (visitor.TryVisitValue(_argsDateTime, out v12) && v12.HasValue)
                 graph.DateTime = v12.Value;
 
             Byte? v13;
-            if (visitor.TryVisitValue(_argsByte13, out v13) && v13.HasValue)
+            if (visitor.TryVisitValue(_argsByte, out v13) && v13.HasValue)
                 graph.Byte = v13.Value;
 
             Boolean? v14;
-            if (visitor.TryVisitValue(_argsBoolean14, out v14) && v14.HasValue)
+            if (visitor.TryVisitValue(_argsBoolean, out v14) && v14.HasValue)
                 graph.Boolean = v14.Value;
 
             Byte[] v15;
-            if (visitor.TryVisitValue(_argsBlob15, out v15))
+            if (visitor.TryVisitValue(_argsBlob, out v15))
                 graph.Blob = v15;
 
             ValueState state;
-            state = visitor.TryVisit(_argsMessages16);
+            state = visitor.TryVisit(_argsMessages);
             if (state != ValueState.NotFound) {
                 if (state == ValueState.Found) {
                     var c = new List<string>();
@@ -239,13 +255,13 @@ namespace Enigma.Test.Serialization
                         c.Add(cv);
                     graph.Messages = c;
 
-                    visitor.Leave(_argsMessages16);
+                    visitor.Leave(_argsMessages);
                 }
                 else
                     graph.Messages = null;
             }
 
-            state = visitor.TryVisit(_argsStamps17);
+            state = visitor.TryVisit(_argsStamps);
             if (state != ValueState.NotFound) {
                 if (state == ValueState.Found) {
                     var c = new List<DateTime>();
@@ -254,39 +270,57 @@ namespace Enigma.Test.Serialization
                         c.Add(cv.Value);
                     graph.Stamps = c;
 
-                    visitor.Leave(_argsStamps17);
+                    visitor.Leave(_argsStamps);
                 }
                 else
                     graph.Stamps = null;
             }
 
-            state = visitor.TryVisit(_argsRelation18);
+            state = visitor.TryVisit(_argsRelation);
             if (state != ValueState.NotFound) {
                 if (state == ValueState.Found) {
                     var c = new Relation();
                     _travellerRelation0.Travel(visitor, c);
                     graph.Relation = c;
 
-                    visitor.Leave(_argsRelation18);
+                    visitor.Leave(_argsRelation);
                 }
                 else
                     graph.Relation = null;
             }
 
-            state = visitor.TryVisit(_argsDummyRelation19);
+            state = visitor.TryVisit(_argsDummyRelation);
             if (state != ValueState.NotFound) {
                 if (state == ValueState.Found) {
                     var c = new Relation();
                     _travellerRelation0.Travel(visitor, c);
                     graph.DummyRelation = c;
 
-                    visitor.Leave(_argsDummyRelation19);
+                    visitor.Leave(_argsDummyRelation);
                 }
                 else
                     graph.DummyRelation = null;
             }
 
-            state = visitor.TryVisit(_argsIndexedValues20);
+            state = visitor.TryVisit(_argsSecondaryRelations);
+            if (state != ValueState.NotFound) {
+                if (state == ValueState.Found) {
+                    var c = new List<Relation>();
+                    while (visitor.TryVisit(VisitArgs.CollectionItem) == ValueState.Found) {
+                        var cv = new Relation();
+                        _travellerRelation0.Travel(visitor, cv);
+                        visitor.Leave(VisitArgs.CollectionItem);
+                        c.Add(cv);
+                    }
+                    graph.SecondaryRelations = c;
+
+                    visitor.Leave(_argsSecondaryRelations);
+                }
+                else
+                    graph.SecondaryRelations = null;
+            }
+
+            state = visitor.TryVisit(_argsIndexedValues);
             if (state != ValueState.NotFound) {
                 if (state == ValueState.Found) {
                     IDictionary<string, int> c = new Dictionary<string, int>();
@@ -300,13 +334,13 @@ namespace Enigma.Test.Serialization
                     }
                     graph.IndexedValues = (Dictionary<string, int>) c;
 
-                    visitor.Leave(_argsIndexedValues20);
+                    visitor.Leave(_argsIndexedValues);
                 }
                 else
                     graph.IndexedValues = null;
             }
 
-            state = visitor.TryVisit(_argsCategories21);
+            state = visitor.TryVisit(_argsCategories);
             if (state != ValueState.NotFound) {
                 if (state == ValueState.Found) {
                     IDictionary<Identifier, Category> c = new Dictionary<Identifier, Category>();
@@ -327,7 +361,7 @@ namespace Enigma.Test.Serialization
                     }
                     graph.Categories = (Dictionary<Identifier, Category>) c;
 
-                    visitor.Leave(_argsCategories21);
+                    visitor.Leave(_argsCategories);
                 }
                 else
                     graph.IndexedValues = null;
