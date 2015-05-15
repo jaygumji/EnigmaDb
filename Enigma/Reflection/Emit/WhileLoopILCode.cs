@@ -13,11 +13,17 @@ namespace Enigma.Reflection.Emit
 
         public void Generate(ILExpressed il)
         {
+            var loopConditionLabel = il.DefineLabel();
+            var loopBodyLabel = il.DefineLabel();
+
+            il.TransferLong(loopConditionLabel);
+            il.MarkLabel(loopBodyLabel);
+            _bodyHandler.Invoke(il);
+
+            il.MarkLabel(loopConditionLabel);
             _conditionHandler.Invoke(il);
 
-            var endLabel = il.DefineLabel();
-            il.TransferLongIfTrue(endLabel);
-
+            il.TransferLongIfTrue(loopBodyLabel);
         }
     }
 }

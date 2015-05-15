@@ -8,6 +8,7 @@ namespace Enigma.Reflection.Emit
         private readonly ILCodeVariable _instance;
         private readonly MethodInfo _method;
         private readonly ILCodeParameter[] _parameters;
+        private readonly ParameterInfo[] _methodParameters;
 
         public CallMethodILCode(MethodInfo method, params ILCodeParameter[] parameters) : this(null, method, parameters)
         {
@@ -19,6 +20,11 @@ namespace Enigma.Reflection.Emit
                 throw new ArgumentException("Instance must be provided for instance methods");
             if (instance != null && method.IsStatic)
                 throw new ArgumentException("Static method may not be invoked with an instance");
+
+            _methodParameters = method.GetParameters();
+
+            if (_methodParameters.Length < parameters.Length)
+                throw new ArgumentException("The parameter length supplied is greater than the method supports");
 
             _instance = instance;
             _method = method;
@@ -34,8 +40,15 @@ namespace Enigma.Reflection.Emit
                     il.Var.Load(_instance);
             }
 
-            foreach (var parameter in _parameters)
-                il.Generate(parameter);
+            for (var i = 0; i < _parameters.Length; i++) {
+                var parameter = (IILCodeParameter) _parameters[i];
+                var methodParameter = _methodParameters[i];
+
+                if (methodParameter.IsOut)
+                    parameter.LoadAddress(il);
+                else
+                    parameter.Load(il);
+            }
 
             if (_method.IsStatic || _instance.VariableType.IsValueType)
                 il.Call(_method);

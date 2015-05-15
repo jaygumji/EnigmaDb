@@ -42,6 +42,11 @@ namespace Enigma.Reflection.Emit
             _il.Emit(OpCodes.Ldc_I4_S, value);
         }
 
+        public void LoadValue(bool value)
+        {
+            LoadValue(value ? 1 : 0);
+        }
+
         public void LoadValue(uint value)
         {
             LoadValue((int)value);

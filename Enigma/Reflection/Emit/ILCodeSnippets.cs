@@ -29,6 +29,7 @@ namespace Enigma.Reflection.Emit
         {
             if (!property.CanWrite) throw new InvalidOperationException("Can not set value from a property with no setter");
 
+            if (value == null) value = ILCodeParameter.Null;
             var setMethod = property.GetSetMethod();
             InvokeMethod(instance, setMethod, value);
         }
@@ -63,8 +64,8 @@ namespace Enigma.Reflection.Emit
 
         public void AreEqual(ILCodeParameter left, ILCodeParameter right)
         {
-            _il.Generate(left);
-            _il.Generate(right);
+            ((IILCodeParameter) left).Load(_il);
+            ((IILCodeParameter) right).Load(_il);
             _il.CompareEquals();
         }
     }

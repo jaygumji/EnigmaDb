@@ -3,32 +3,46 @@ using System.Reflection.Emit;
 
 namespace Enigma.Reflection.Emit
 {
-    public class ILCodeParameter : IILCode
+    public class ILCodeParameter : IILCodeParameter
     {
 
         public static readonly ILCodeParameter This = new ILCodeParameter(il => il.LoadThis());
         public static readonly ILCodeParameter Null = new ILCodeParameter(il => il.LoadNull());
 
-        private readonly Action<ILExpressed> _valueLoader;
+        private readonly ILGenerationHandler _valueLoader;
+        private readonly ILGenerationHandler _valueAddressLoader;
 
-        private ILCodeParameter(Action<ILExpressed> valueLoader)
+        private ILCodeParameter(ILGenerationHandler valueLoader) : this(valueLoader, null)
         {
-            _valueLoader = valueLoader;
         }
 
-        void IILCode.Generate(ILExpressed il)
+        private ILCodeParameter(ILGenerationHandler valueLoader, ILGenerationHandler valueAddressLoader)
+        {
+            _valueLoader = valueLoader;
+            _valueAddressLoader = valueAddressLoader;
+        }
+
+        void IILCodeParameter.Load(ILExpressed il)
         {
             _valueLoader.Invoke(il);
         }
 
+        void IILCodeParameter.LoadAddress(ILExpressed il)
+        {
+            if (_valueAddressLoader == null)
+                throw new NotSupportedException("This parameter does not support address loading");
+
+            _valueAddressLoader.Invoke(il);
+        }
+
         public static ILCodeParameter Of(LocalBuilder local)
         {
-            return new ILCodeParameter(il => il.Var.Load(local));
+            return new ILCodeParameter(il => il.Var.Load(local), il => il.Var.LoadAddress(local));
         }
 
         public static ILCodeParameter Of(ILCodeVariable variable)
         {
-            return new ILCodeParameter(il => il.Var.Load(variable));
+            return new ILCodeParameter(il => il.Var.Load(variable), il => il.Var.LoadAddress(variable));
         }
 
         public static ILCodeParameter Of(IILCode code)

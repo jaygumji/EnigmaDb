@@ -240,20 +240,20 @@
     <Compile Include="Serialization\Reflection\Emit\TravellerContext.cs" />
     <Compile Include="Serialization\Reflection\Graph\ComplexGraphProperty.cs" />
     <Compile Include="Serialization\Reflection\Graph\ComplexGraphType.cs" />
+    <Compile Include="Serialization\Reflection\Graph\GraphTypeFactory.cs" />
     <Compile Include="Serialization\Reflection\Graph\IGraphProperty.cs" />
     <Compile Include="Serialization\Reflection\Graph\IGraphTravellerCollection.cs" />
     <Compile Include="Serialization\Reflection\Graph\IGraphType.cs" />
     <Compile Include="Serialization\Reflection\Graph\Int16GraphType.cs" />
     <Compile Include="Serialization\Reflection\Graph\IReflectionGraphManager.cs" />
-    <Compile Include="Serialization\Reflection\IPropertyMetadataProvider.cs" />
-    <Compile Include="Serialization\Reflection\SerializationMetadata.cs" />
-    <Compile Include="Serialization\Reflection\PropertyValidArgs.cs" />
     <Compile Include="Serialization\Reflection\Graph\ReflectionGraphTraveller.cs" />
-    <Compile Include="Serialization\Reflection\Graph\GraphTypeFactory.cs" />
-    <Compile Include="Serialization\Reflection\SerializableTypeProvider.cs" />
+    <Compile Include="Serialization\Reflection\IPropertyMetadataProvider.cs" />
+    <Compile Include="Serialization\Reflection\PropertyValidArgs.cs" />
     <Compile Include="Serialization\Reflection\SerializableProperty.cs" />
-    <Compile Include="Serialization\Reflection\SerializationReflectionInspector.cs" />
     <Compile Include="Serialization\Reflection\SerializableType.cs" />
+    <Compile Include="Serialization\Reflection\SerializableTypeProvider.cs" />
+    <Compile Include="Serialization\Reflection\SerializationMetadata.cs" />
+    <Compile Include="Serialization\Reflection\SerializationReflectionInspector.cs" />
     <Compile Include="Serialization\Reflection\TypeReflectionContext.cs">
       <SubType>Code</SubType>
     </Compile>

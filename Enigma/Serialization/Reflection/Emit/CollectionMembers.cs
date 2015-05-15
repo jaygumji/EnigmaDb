@@ -11,12 +11,12 @@ namespace Enigma.Serialization.Reflection.Emit
         public readonly Type ElementType;
         public readonly MethodInfo Add;
         public readonly ConstructorInfo Constructor;
-        public readonly ExtendedType ElementTypeRef;
+        public readonly ExtendedType ElementTypeExt;
 
         public CollectionMembers(ExtendedType collectionType)
         {
             ElementType = collectionType.Container.AsCollection().ElementType;
-            ElementTypeRef = ElementType.Extend();
+            ElementTypeExt = ElementType.Extend();
             VariableType = typeof(ICollection<>).MakeGenericType(ElementType);
 
             Add = VariableType.GetMethod("Add", new[] { ElementType });

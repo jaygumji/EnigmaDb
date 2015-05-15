@@ -6,4 +6,13 @@
         void Generate(ILExpressed il);
 
     }
+
+    public interface IILCodeParameter
+    {
+
+        void Load(ILExpressed il);
+        void LoadAddress(ILExpressed il);
+
+    }
+
 }
