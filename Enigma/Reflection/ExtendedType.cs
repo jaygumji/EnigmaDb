@@ -21,7 +21,7 @@ namespace Enigma.Reflection
             _class = new Lazy<TypeClass>(() => GetTypeClass(type, _containerTypeInfo.Value));
         }
 
-        public Type Inner { get { return _type; } }
+        public Type Ref { get { return _type; } }
         public TypeClass Class { get { return _class.Value; } }
         public IContainerTypeInfo Container { get { return _containerTypeInfo.Value; } }
         public bool ImplementsCollection { get { return Class == TypeClass.Collection || Class == TypeClass.Dictionary; } }

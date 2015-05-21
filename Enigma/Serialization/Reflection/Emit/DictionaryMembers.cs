@@ -23,11 +23,11 @@ namespace Enigma.Serialization.Reflection.Emit
             VariableType = typeof (IDictionary<,>).MakeGenericType(KeyType, ValueType);
 
             Add = VariableType.GetMethod("Add", new[] {KeyType, ValueType});
-            var instanceType = dictionaryType.Inner.IsInterface
+            var instanceType = dictionaryType.Ref.IsInterface
                 ? typeof (Dictionary<,>).MakeGenericType(KeyType, ValueType)
-                : dictionaryType.Inner;
+                : dictionaryType.Ref;
             Constructor = instanceType.GetConstructor(Type.EmptyTypes);
-            if (Constructor == null) throw InvalidGraphException.NoParameterLessConstructor(dictionaryType.Inner);
+            if (Constructor == null) throw InvalidGraphException.NoParameterLessConstructor(dictionaryType.Ref);
         }
 
     }

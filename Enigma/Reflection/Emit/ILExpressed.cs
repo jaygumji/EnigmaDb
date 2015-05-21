@@ -243,5 +243,17 @@ namespace Enigma.Reflection.Emit
             Call(MethodGetTypeFromHandleToken);
         }
 
+        public ILChainIfCondition IfEqual(ILCodeParameter left, ILCodeParameter right)
+        {
+            return new ILChainIfCondition(this, () => Snippets.AreEqual(left, right));
+        }
+
+        public ILChainIfCondition IfNotEqual(ILCodeParameter left, ILCodeParameter right)
+        {
+            return new ILChainIfCondition(this, () => {
+                Snippets.AreEqual(left, right);
+                Negate();
+            });
+        }
     }
 }

@@ -65,6 +65,17 @@
     <Compile Include="Linq\IndexFilterTests.cs" />
     <Compile Include="Modelling\EntityBuilderTests.cs" />
     <Compile Include="Serialization\BinaryPackerTests.cs" />
+    <Compile Include="Serialization\Graphs\CollectionOfCollectionGraph.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serialization\Graphs\CollectionOfDictionaryGraph.cs" />
+    <Compile Include="Serialization\Graphs\DictionaryWithCollectionKeyAndValueGraph.cs" />
+    <Compile Include="Serialization\Graphs\DictionaryWithCollectionKeyGraph.cs" />
+    <Compile Include="Serialization\Graphs\DictionaryWithCollectionValueGraph.cs" />
+    <Compile Include="Serialization\Graphs\DictionaryWithDictionaryKeyAndValueGraph.cs" />
+    <Compile Include="Serialization\Graphs\DictionaryWithDictionaryKeyGraph.cs" />
+    <Compile Include="Serialization\Graphs\DictionaryWithDictionaryValueGraph.cs" />
+    <Compile Include="Serialization\Graphs\JaggedArrayGraph.cs" />
     <Compile Include="Serialization\HardCoded\CategoryHardCodedTraveller.cs" />
     <Compile Include="Serialization\HardCoded\DataBlockHardCodedTraveller.cs" />
     <Compile Include="Serialization\Fakes\ComplexDictionary.cs" />
@@ -108,6 +119,8 @@
     <Compile Include="Serialization\Graphs\UInt16Graph.cs" />
     <Compile Include="Serialization\Graphs\UInt32Graph.cs" />
     <Compile Include="Serialization\Graphs\UInt64Graph.cs" />
+    <Compile Include="Serialization\ReadNullableValuePropertyTests.cs" />
+    <Compile Include="Serialization\ReadNullableValuePropertyWithNullTests.cs" />
     <Compile Include="Serialization\ReadValuePropertyTests.cs" />
     <Compile Include="Serialization\WriteNullableValuePropertyTests.cs" />
     <Compile Include="Serialization\HardCoded\NullableValuesEntityHardCodedTraveller.cs" />

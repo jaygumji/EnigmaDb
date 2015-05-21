@@ -4,15 +4,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Enigma.Reflection;
+using Enigma.Reflection.Emit;
 
 namespace Enigma.Serialization.Reflection.Emit
 {
     public sealed class DynamicWriteTravellerMembers
     {
 
-        public readonly FieldInfo VisitArgsCollectionItem;
-        public readonly FieldInfo VisitArgsDictionaryKey;
-        public readonly FieldInfo VisitArgsDictionaryValue;
+        public readonly ILCodeParameter VisitArgsCollectionItem;
+        public readonly ILCodeParameter VisitArgsDictionaryKey;
+        public readonly ILCodeParameter VisitArgsDictionaryValue;
 
         public readonly MethodInfo VisitorVisit;
         public readonly MethodInfo VisitorLeave;
@@ -26,9 +27,9 @@ namespace Enigma.Serialization.Reflection.Emit
         public DynamicWriteTravellerMembers()
         {
             var visitArgsType = typeof (VisitArgs);
-            VisitArgsCollectionItem = visitArgsType.GetField("CollectionItem");
-            VisitArgsDictionaryKey = visitArgsType.GetField("DictionaryKey");
-            VisitArgsDictionaryValue = visitArgsType.GetField("DictionaryValue");
+            VisitArgsCollectionItem = new StaticFieldILCodeVariable(visitArgsType.GetField("CollectionItem"));
+            VisitArgsDictionaryKey = new StaticFieldILCodeVariable(visitArgsType.GetField("DictionaryKey"));
+            VisitArgsDictionaryValue = new StaticFieldILCodeVariable(visitArgsType.GetField("DictionaryValue"));
 
             var writeVisitorType = typeof (IWriteVisitor);
             VisitorVisit = writeVisitorType.GetMethod("Visit");

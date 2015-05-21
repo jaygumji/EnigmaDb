@@ -10,7 +10,7 @@ namespace Enigma.Serialization.Reflection.Emit
         public static bool TryGetComplexTypes(ExtendedType type, out Type[] types)
         {
             if (type.Class == TypeClass.Complex) {
-                types = new[] { type.Inner };
+                types = new[] { type.Ref };
                 return true;
             }
             if (type.Class == TypeClass.Nullable) {

@@ -174,6 +174,72 @@ namespace Enigma.Test.Serialization
         }
 
         [TestMethod]
+        public void WriteDictionaryWithDictionaryKeyTest()
+        {
+            var context = new SerializationTestContext();
+            context.AssertWrite(3, new DictionaryWithDictionaryKeyGraph {
+                Value = new Dictionary<Dictionary<int, string>, string> {
+                    {new Dictionary<int, string> {{42, "No 42"}}, "Hello World"}
+                }
+            });
+        }
+
+        [TestMethod]
+        public void WriteDictionaryWithDictionaryValueTest()
+        {
+            var context = new SerializationTestContext();
+            context.AssertWrite(3, new DictionaryWithDictionaryValueGraph {
+                Value = new Dictionary<string, Dictionary<int, string>> {
+                    {"X", new Dictionary<int, string> {{42, "No 42"}}}
+                }
+            });
+        }
+
+        [TestMethod]
+        public void WriteDictionaryWithDictionaryKeyAndValueTest()
+        {
+            var context = new SerializationTestContext();
+            context.AssertWrite(4, new DictionaryWithDictionaryKeyAndValueGraph {
+                Value = new Dictionary<Dictionary<string, int>, Dictionary<int, string>> {
+                    {new Dictionary<string, int> {{"No 42", 42}}, new Dictionary<int, string> {{42, "No 42"}}}
+                }
+            });
+        }
+
+        [TestMethod]
+        public void WriteDictionaryWithCollectionKeyTest()
+        {
+            var context = new SerializationTestContext();
+            context.AssertWrite(2, new DictionaryWithCollectionKeyGraph {
+                Value = new Dictionary<List<int>, string> {
+                    {new List<int> {42}, "Hello World"}
+                }
+            });
+        }
+
+        [TestMethod]
+        public void WriteDictionaryWithCollectionValueTest()
+        {
+            var context = new SerializationTestContext();
+            context.AssertWrite(2, new DictionaryWithCollectionValueGraph {
+                Value = new Dictionary<string, List<int>> {
+                    {"X", new List<int> {42}}
+                }
+            });
+        }
+
+        [TestMethod]
+        public void WriteDictionaryWithCollectionKeyAndValueTest()
+        {
+            var context = new SerializationTestContext();
+            context.AssertWrite(2, new DictionaryWithCollectionKeyAndValueGraph {
+                Value = new Dictionary<List<int>, List<string>> {
+                    {new List<int> {42}, new List<string> {"No 42"}}
+                }
+            });
+        }
+
+        [TestMethod]
         public void WriteCollectionTest()
         {
             var context = new SerializationTestContext();
@@ -185,6 +251,37 @@ namespace Enigma.Test.Serialization
         {
             var context = new SerializationTestContext();
             context.AssertWrite(4, new CollectionOfComplexGraph { Value = new List<Relation> { new Relation { Id = Guid.Empty, Name = "Test", Value = 1 } } });
+        }
+
+        [TestMethod]
+        public void WriteCollectionOfDictionaryTest()
+        {
+            var context = new SerializationTestContext();
+            context.AssertWrite(2, new CollectionOfDictionaryGraph {
+                Value = new List<Dictionary<string, int>> {
+                    new Dictionary<string, int> {{"Test", 42}}
+                }
+            });
+        }
+
+        [TestMethod]
+        public void WriteCollectionOfCollectionTest()
+        {
+            var context = new SerializationTestContext();
+            context.AssertWrite(1, new CollectionOfCollectionGraph {
+                Value = new List<List<string>> {
+                    new List<string> {"Test"}
+                }
+            });
+        }
+
+        [TestMethod]
+        public void WriteJaggedArrayTest()
+        {
+            var context = new SerializationTestContext();
+            context.AssertWrite(6, new JaggedArrayGraph {
+                Value = new[] { new []{5, 2, 3}, new []{1, 2, 3} }
+            });
         }
 
     }

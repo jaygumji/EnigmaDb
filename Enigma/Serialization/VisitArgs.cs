@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Enigma.Serialization.Reflection;
 
 namespace Enigma.Serialization
@@ -9,6 +7,12 @@ namespace Enigma.Serialization
         public static readonly VisitArgs CollectionItem = new VisitArgs("CollectionItem", SerializationMetadata.Item, LevelType.CollectionItem);
         public static readonly VisitArgs DictionaryKey = new VisitArgs("DictionaryKey", SerializationMetadata.Item, LevelType.DictionaryKey);
         public static readonly VisitArgs DictionaryValue = new VisitArgs("DictionaryValue", SerializationMetadata.Item, LevelType.DictionaryValue);
+        public static readonly VisitArgs CollectionInCollection = new VisitArgs("Collection in Collection", SerializationMetadata.Item, LevelType.CollectionInCollection);
+        public static readonly VisitArgs DictionaryInCollection = new VisitArgs("Dictionary in Collection", SerializationMetadata.Item, LevelType.DictionaryInCollection);
+        public static readonly VisitArgs DictionaryInDictionaryKey = new VisitArgs("Dictionary in Dictionary Key", SerializationMetadata.Item, LevelType.DictionaryInDictionaryKey);
+        public static readonly VisitArgs DictionaryInDictionaryValue = new VisitArgs("Dictionary in Dictionary Value", SerializationMetadata.Item, LevelType.DictionaryInDictionaryValue);
+        public static readonly VisitArgs CollectionInDictionaryKey = new VisitArgs("Collection in Dictionary Key", SerializationMetadata.Item, LevelType.CollectionInDictionaryKey);
+        public static readonly VisitArgs CollectionInDictionaryValue = new VisitArgs("Collection in Dictionary Value", SerializationMetadata.Item, LevelType.CollectionInDictionaryValue);
 
         private readonly string _name;
         private readonly SerializationMetadata _metadata;
@@ -34,6 +38,11 @@ namespace Enigma.Serialization
         public SerializationMetadata Metadata
         {
             get { return _metadata; }
+        }
+
+        public override string ToString()
+        {
+            return string.Concat(Type, " args ", Name, " with index ", Metadata.Index);
         }
 
         public static VisitArgs Value(string name, SerializationMetadata metadata)

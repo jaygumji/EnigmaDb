@@ -12,20 +12,27 @@ namespace Enigma.Serialization.Reflection.Emit
         public readonly MethodInfo Add;
         public readonly ConstructorInfo Constructor;
         public readonly ExtendedType ElementTypeExt;
+        public readonly MethodInfo ToArray;
 
         public CollectionMembers(ExtendedType collectionType)
         {
             ElementType = collectionType.Container.AsCollection().ElementType;
             ElementTypeExt = ElementType.Extend();
-            VariableType = typeof(ICollection<>).MakeGenericType(ElementType);
+            VariableType = collectionType.Ref.IsInterface || collectionType.Ref.IsArray
+                ? typeof (List<>).MakeGenericType(ElementType)
+                : typeof (ICollection<>).MakeGenericType(ElementType);
 
             Add = VariableType.GetMethod("Add", new[] { ElementType });
-            var instanceType = collectionType.Inner.IsInterface
-                ? typeof(List<>).MakeGenericType(ElementType)
-                : collectionType.Inner;
+            var instanceType = collectionType.Ref.IsInterface || collectionType.Ref.IsArray
+                ? VariableType
+                : collectionType.Ref;
 
             Constructor = instanceType.GetConstructor(Type.EmptyTypes);
-            if (Constructor == null) throw InvalidGraphException.NoParameterLessConstructor(collectionType.Inner);
+            if (Constructor == null) throw InvalidGraphException.NoParameterLessConstructor(collectionType.Ref);
+
+            if (collectionType.Ref.IsArray) {
+                ToArray = VariableType.GetMethod("ToArray");
+            }
         }
     }
 }

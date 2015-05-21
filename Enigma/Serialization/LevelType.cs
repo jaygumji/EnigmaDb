@@ -4,10 +4,16 @@ namespace Enigma.Serialization
     {
         Value,
         Single,
-        Collection,
-        Dictionary,
         Root,
+        Collection,
+        CollectionInCollection,
+        DictionaryInCollection,
         CollectionItem,
+        Dictionary,
+        DictionaryInDictionaryKey,
+        DictionaryInDictionaryValue,
+        CollectionInDictionaryKey,
+        CollectionInDictionaryValue,
         DictionaryKey,
         DictionaryValue
     }

@@ -107,4 +107,5 @@ namespace Enigma.Test.Serialization
         }
 
     }
+
 }

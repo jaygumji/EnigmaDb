@@ -46,6 +46,11 @@ namespace Enigma.Test.Serialization
             AssertRead<T>(1);
         }
 
+        public void AssertReadSinglePropertyWithNull<T>() where T : new()
+        {
+            AssertRead<T>(1, -1, readOnlyNull: true);
+        }
+
         public void AssertWrite<T>(int expectedValueWriteCount, T graph)
         {
             var visitor = new FakeWriteVisitor();
@@ -63,7 +68,12 @@ namespace Enigma.Test.Serialization
 
         public void AssertRead<T>(int expectedValueReadCount, int allowedVisitCount) where T : new()
         {
-            var visitor = new FakeReadVisitor(allowedVisitCount);
+            AssertRead<T>(expectedValueReadCount, allowedVisitCount, readOnlyNull: false);
+        }
+
+        public void AssertRead<T>(int expectedValueReadCount, int allowedVisitCount, bool readOnlyNull) where T : new()
+        {
+            var visitor = new FakeReadVisitor {AllowedVisitCount = allowedVisitCount, ReadOnlyNull = readOnlyNull};
             var traveller = CreateTraveller<T>();
 
             var graph = new T();

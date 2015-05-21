@@ -140,6 +140,9 @@
     <Compile Include="IO\WriteReservation.cs" />
     <Compile Include="Reflection\Emit\CallConstructorILCode.cs" />
     <Compile Include="Reflection\Emit\CallMethodILCode.cs" />
+    <Compile Include="Reflection\Emit\CastILCodeParameter.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Reflection\Emit\ConstructorBuilder.cs" />
     <Compile Include="Reflection\Emit\IILCode.cs">
       <SubType>Code</SubType>
@@ -147,7 +150,17 @@
     <Compile Include="Reflection\Emit\IILCodeVariable.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Reflection\Emit\ILChainIf.cs" />
+    <Compile Include="Reflection\Emit\ILChainIfCondition.cs" />
+    <Compile Include="Reflection\Emit\ILChainIfElse.cs" />
+    <Compile Include="Reflection\Emit\ILChainIfThen.cs" />
     <Compile Include="Reflection\Emit\ILCodeParameter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Reflection\Emit\ILCodeParameterDelegatable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Reflection\Emit\ILCodeParameterExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Reflection\Emit\ILCodeSnippets.cs" />
@@ -161,6 +174,8 @@
     <Compile Include="Reflection\Emit\AssemblyBuilder.cs" />
     <Compile Include="Reflection\Emit\ClassBuilder.cs" />
     <Compile Include="Reflection\Emit\ILGenerationHandler.cs" />
+    <Compile Include="Reflection\Emit\ILMethod.cs" />
+    <Compile Include="Reflection\Emit\ILStaticMethod.cs" />
     <Compile Include="Reflection\Emit\InstanceFieldILCodeVariable.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -174,6 +189,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Reflection\Emit\MethodBuilder.cs" />
+    <Compile Include="Reflection\Emit\NullableILCodeParameter.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Reflection\Emit\OpCodesLookups.cs" />
     <Compile Include="Reflection\Emit\StaticFieldILCodeVariable.cs" />
     <Compile Include="Reflection\Emit\WhileLoopILCode.cs" />

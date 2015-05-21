@@ -1,4 +1,6 @@
-﻿namespace Enigma.Reflection.Emit
+﻿using System;
+
+namespace Enigma.Reflection.Emit
 {
     public interface IILCode
     {
@@ -9,6 +11,8 @@
 
     public interface IILCodeParameter
     {
+
+        Type ParameterType { get; }
 
         void Load(ILExpressed il);
         void LoadAddress(ILExpressed il);

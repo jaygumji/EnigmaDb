@@ -17,8 +17,10 @@ namespace Enigma.Reflection.Emit
 
         void IILCode.Generate(ILExpressed il)
         {
-            foreach (var parameter in _parameters.Cast<IILCodeParameter>())
+            for (var i = 0; i < _parameters.Length; i++) {
+                var parameter = (IILCodeParameter) _parameters[i] ?? ILCodeParameter.Null;
                 parameter.Load(il);
+            }
 
             il.Gen.Emit(OpCodes.Newobj, _constructor);
         }

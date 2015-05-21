@@ -5,7 +5,7 @@ namespace Enigma.Reflection.Emit
 {
     public class CallMethodILCode : IILCode
     {
-        private readonly ILCodeVariable _instance;
+        private readonly IILCodeParameter _instance;
         private readonly MethodInfo _method;
         private readonly ILCodeParameter[] _parameters;
         private readonly ParameterInfo[] _methodParameters;
@@ -14,7 +14,7 @@ namespace Enigma.Reflection.Emit
         {
         }
 
-        public CallMethodILCode(ILCodeVariable instance, MethodInfo method, params ILCodeParameter[] parameters)
+        public CallMethodILCode(ILCodeParameter instance, MethodInfo method, params ILCodeParameter[] parameters)
         {
             if (instance == null && !method.IsStatic)
                 throw new ArgumentException("Instance must be provided for instance methods");
@@ -33,15 +33,17 @@ namespace Enigma.Reflection.Emit
 
         void IILCode.Generate(ILExpressed il)
         {
+            var instanceIsValueType = _instance != null && _instance.ParameterType != null && _instance.ParameterType.IsValueType;
             if (_instance != null) {
-                if (_instance.VariableType.IsValueType)
-                    il.Var.LoadAddress(_instance);
+                if (instanceIsValueType)
+                    _instance.LoadAddress(il);
                 else
-                    il.Var.Load(_instance);
+                    _instance.Load(il);
             }
 
             for (var i = 0; i < _parameters.Length; i++) {
-                var parameter = (IILCodeParameter) _parameters[i];
+                var parameter = (IILCodeParameter) _parameters[i] ?? ILCodeParameter.Null;
+
                 var methodParameter = _methodParameters[i];
 
                 if (methodParameter.IsOut)
@@ -50,7 +52,7 @@ namespace Enigma.Reflection.Emit
                     parameter.Load(il);
             }
 
-            if (_method.IsStatic || _instance.VariableType.IsValueType)
+            if (_method.IsStatic || instanceIsValueType)
                 il.Call(_method);
             else
                 il.CallVirt(_method);

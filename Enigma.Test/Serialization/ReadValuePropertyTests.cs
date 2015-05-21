@@ -162,6 +162,48 @@ namespace Enigma.Test.Serialization
         }
 
         [TestMethod]
+        public void ReadDictionaryWithDictionaryKeyTest()
+        {
+            var context = new SerializationTestContext();
+            context.AssertRead<DictionaryWithDictionaryKeyGraph>(4);
+        }
+
+        [TestMethod]
+        public void ReadDictionaryWithDictionaryValueTest()
+        {
+            var context = new SerializationTestContext();
+            context.AssertRead<DictionaryWithDictionaryValueGraph>(5);
+        }
+
+        [TestMethod]
+        public void ReadDictionaryWithDictionaryKeyAndValueTest()
+        {
+            var context = new SerializationTestContext();
+            context.AssertRead<DictionaryWithDictionaryKeyAndValueGraph>(6);
+        }
+
+        [TestMethod]
+        public void ReadDictionaryWithCollectionKeyTest()
+        {
+            var context = new SerializationTestContext();
+            context.AssertRead<DictionaryWithCollectionKeyGraph>(3);
+        }
+
+        [TestMethod]
+        public void ReadDictionaryWithCollectionValueTest()
+        {
+            var context = new SerializationTestContext();
+            context.AssertRead<DictionaryWithCollectionValueGraph>(4);
+        }
+
+        [TestMethod]
+        public void ReadDictionaryWithCollectionKeyAndValueTest()
+        {
+            var context = new SerializationTestContext();
+            context.AssertRead<DictionaryWithCollectionKeyAndValueGraph>(4);
+        }
+
+        [TestMethod]
         public void ReadCollectionTest()
         {
             var context = new SerializationTestContext();
@@ -173,6 +215,27 @@ namespace Enigma.Test.Serialization
         {
             var context = new SerializationTestContext();
             context.AssertRead<CollectionOfComplexGraph>(4);
+        }
+
+        [TestMethod]
+        public void ReadCollectionOfDictionaryTest()
+        {
+            var context = new SerializationTestContext();
+            context.AssertRead<CollectionOfDictionaryGraph>(3);
+        }
+
+        [TestMethod]
+        public void ReadCollectionOfCollectionTest()
+        {
+            var context = new SerializationTestContext();
+            context.AssertRead<CollectionOfCollectionGraph>(2);
+        }
+
+        [TestMethod]
+        public void ReadJaggedArrayTest()
+        {
+            var context = new SerializationTestContext();
+            context.AssertRead<JaggedArrayGraph>(2);
         }
 
     }

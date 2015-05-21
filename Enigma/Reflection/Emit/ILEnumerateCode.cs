@@ -31,7 +31,7 @@ namespace Enigma.Reflection.Emit
             var collectionContainer = variableType.Container.AsCollection();
 
             if (collectionContainer == null)
-                throw new InvalidOperationException("Could not enumerate the type " + variableType.Inner.FullName);
+                throw new InvalidOperationException("Could not enumerate the type " + variableType.Ref.FullName);
 
             var elementType = collectionContainer.ElementType;
             il.Var.Load(_enumerable);

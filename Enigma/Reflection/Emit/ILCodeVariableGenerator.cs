@@ -56,10 +56,22 @@ namespace Enigma.Reflection.Emit
             ((IILCodeVariable)variable).Get(_il);
         }
 
+        public void Load(ILCodeParameter parameter)
+        {
+            if (parameter == null) throw new ArgumentNullException("parameter");
+            ((IILCodeParameter)parameter).Load(_il);
+        }
+
         public void LoadAddress(ILCodeVariable variable)
         {
             if (variable == null) throw new ArgumentNullException("variable");
             ((IILCodeVariable)variable).GetAddress(_il);
+        }
+
+        public void LoadAddress(ILCodeParameter parameter)
+        {
+            if (parameter == null) throw new ArgumentNullException("parameter");
+            ((IILCodeParameter)parameter).LoadAddress(_il);
         }
 
         public void Set(ILCodeVariable variable)

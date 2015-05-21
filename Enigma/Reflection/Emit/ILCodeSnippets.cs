@@ -34,7 +34,7 @@ namespace Enigma.Reflection.Emit
             InvokeMethod(instance, setMethod, value);
         }
 
-        public void InvokeMethod(ILCodeVariable instance, MethodInfo method, params ILCodeParameter[] parameters)
+        public void InvokeMethod(ILCodeParameter instance, MethodInfo method, params ILCodeParameter[] parameters)
         {
             _il.Generate(new CallMethodILCode(instance, method, parameters));
         }
@@ -56,6 +56,10 @@ namespace Enigma.Reflection.Emit
 
         public void AsNullable(Type type)
         {
+            if (type.IsEnum) {
+                type = _il.TypeCache.Extend(type).GetUnderlyingEnumType();
+            }
+
             var container = _il.TypeCache.Extend(type.AsNullable())
                 .Container.AsNullable();
 
@@ -64,9 +68,28 @@ namespace Enigma.Reflection.Emit
 
         public void AreEqual(ILCodeParameter left, ILCodeParameter right)
         {
+            if (left == null) left = ILCodeParameter.Null;
+            if (right == null) right = ILCodeParameter.Null;
+
             ((IILCodeParameter) left).Load(_il);
             ((IILCodeParameter) right).Load(_il);
             _il.CompareEquals();
+        }
+
+        public void SetVariable(ILCodeVariable variable, ILCodeParameter valueToSet)
+        {
+            if (valueToSet == null) valueToSet = ILCodeParameter.Null;
+
+            ((IILCodeParameter) valueToSet).Load(_il);
+            _il.Var.Set(variable);
+        }
+
+        public void Throw(ILCodeParameter exception)
+        {
+            if (exception == null) throw new ArgumentNullException("exception");
+
+            ((IILCodeParameter) exception).Load(_il);
+            _il.Throw();
         }
     }
 }

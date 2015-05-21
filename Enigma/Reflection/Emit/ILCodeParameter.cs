@@ -3,71 +3,64 @@ using System.Reflection.Emit;
 
 namespace Enigma.Reflection.Emit
 {
-    public class ILCodeParameter : IILCodeParameter
+    public abstract class ILCodeParameter : IILCodeParameter
     {
 
-        public static readonly ILCodeParameter This = new ILCodeParameter(il => il.LoadThis());
-        public static readonly ILCodeParameter Null = new ILCodeParameter(il => il.LoadNull());
+        public static readonly ILCodeParameter This = new ILCodeParameterDelegatable(null, il => il.LoadThis());
+        public static readonly ILCodeParameter Null = new ILCodeParameterDelegatable(null, il => il.LoadNull());
 
-        private readonly ILGenerationHandler _valueLoader;
-        private readonly ILGenerationHandler _valueAddressLoader;
-
-        private ILCodeParameter(ILGenerationHandler valueLoader) : this(valueLoader, null)
-        {
-        }
-
-        private ILCodeParameter(ILGenerationHandler valueLoader, ILGenerationHandler valueAddressLoader)
-        {
-            _valueLoader = valueLoader;
-            _valueAddressLoader = valueAddressLoader;
-        }
+        public abstract Type ParameterType { get; }
 
         void IILCodeParameter.Load(ILExpressed il)
         {
-            _valueLoader.Invoke(il);
+            Load(il);
         }
 
         void IILCodeParameter.LoadAddress(ILExpressed il)
         {
-            if (_valueAddressLoader == null)
-                throw new NotSupportedException("This parameter does not support address loading");
+            LoadAddress(il);
+        }
 
-            _valueAddressLoader.Invoke(il);
+        protected abstract void Load(ILExpressed il);
+
+        protected virtual void LoadAddress(ILExpressed il)
+        {
+            throw new NotSupportedException("This parameter does not support address loading, " + GetType().Name);
         }
 
         public static ILCodeParameter Of(LocalBuilder local)
         {
-            return new ILCodeParameter(il => il.Var.Load(local), il => il.Var.LoadAddress(local));
+            return new ILCodeParameterDelegatable(local.LocalType, il => il.Var.Load(local), il => il.Var.LoadAddress(local));
         }
 
         public static ILCodeParameter Of(ILCodeVariable variable)
         {
-            return new ILCodeParameter(il => il.Var.Load(variable), il => il.Var.LoadAddress(variable));
+            return new ILCodeParameterDelegatable(variable.VariableType, il => il.Var.Load(variable), il => il.Var.LoadAddress(variable));
         }
 
         public static ILCodeParameter Of(IILCode code)
         {
-            return new ILCodeParameter(il => il.Generate(code));
+            return new ILCodeParameterDelegatable(null, il => il.Generate(code));
         }
 
         public static ILCodeParameter Of(string value)
         {
-            return new ILCodeParameter(il => il.LoadValue(value));
+            return new ILCodeParameterDelegatable(typeof(string), il => il.LoadValue(value));
         }
 
         public static ILCodeParameter Of(int value)
         {
-            return new ILCodeParameter(il => il.LoadValue(value));
+            return new ILCodeParameterDelegatable(typeof(int), il => il.LoadValue(value));
         }
 
         public static ILCodeParameter Of(uint value)
         {
-            return new ILCodeParameter(il => il.LoadValue(value));
+            return new ILCodeParameterDelegatable(typeof(uint), il => il.LoadValue(value));
         }
 
         public static ILCodeParameter Of(Type type)
         {
-            return new ILCodeParameter(il => il.LoadRef(type));
+            return new ILCodeParameterDelegatable(typeof(Type), il => il.LoadRef(type));
         }
 
         public static implicit operator ILCodeParameter(LocalBuilder local)

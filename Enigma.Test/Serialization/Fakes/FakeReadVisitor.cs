@@ -8,8 +8,7 @@ namespace Enigma.Test.Serialization.Fakes
     public class FakeReadVisitor : IReadVisitor
     {
 
-        private readonly int _allowedVisitCount;
-        private readonly Dictionary<VisitArgs, int> _propertyVisitCounts;
+        private readonly Dictionary<string, int> _propertyVisitCounts;
 
         private Int16 _nextInt16;
         private Int32 _nextInt32;
@@ -17,6 +16,11 @@ namespace Enigma.Test.Serialization.Fakes
         private UInt16 _nextUInt16;
         private UInt32 _nextUInt32;
         private UInt64 _nextUInt64;
+
+        private readonly Stack<VisitArgs> _args; 
+
+        public int AllowedVisitCount { get; set; }
+        public bool ReadOnlyNull { get; set; }
 
         public int VisitCount { get; private set; }
         public int LeaveCount { get; private set; }
@@ -39,14 +43,11 @@ namespace Enigma.Test.Serialization.Fakes
         public int VisitGuidCount { get; private set; }
         public int VisitBlobCount { get; private set; }
 
-        public FakeReadVisitor() : this(-1)
+        public FakeReadVisitor()
         {
-        }
-
-        public FakeReadVisitor(int allowedVisitCount)
-        {
-            _allowedVisitCount = allowedVisitCount;
-            _propertyVisitCounts = new Dictionary<VisitArgs, int>();
+            AllowedVisitCount = -1;
+            _propertyVisitCounts = new Dictionary<string, int>();
+            _args = new Stack<VisitArgs>();
         }
 
         public int VisitValueCount
@@ -69,140 +70,176 @@ namespace Enigma.Test.Serialization.Fakes
             if (!ShouldRead(args)) return ValueState.NotFound;
             
             ExpectedLeaveCount++;
+            _args.Push(args);
             return ValueState.Found;
         }
 
+        private static readonly HashSet<LevelType> EnumerationLevelTypes = new HashSet<LevelType> {
+            LevelType.CollectionItem,
+            LevelType.CollectionInCollection,
+            LevelType.CollectionInDictionaryKey,
+            LevelType.CollectionInDictionaryValue,
+            LevelType.DictionaryKey,
+            LevelType.DictionaryValue,
+            LevelType.DictionaryInCollection,
+            LevelType.DictionaryInDictionaryKey,
+            LevelType.DictionaryInDictionaryValue
+        }; 
         private bool ShouldRead(VisitArgs args)
         {
+            var key = _args.Count == 0 ? args.Name : string.Concat(_args.Peek().Name, "---", args.Name);
             var visitCount = 0;
-            if (_propertyVisitCounts.ContainsKey(args))
-                visitCount = ++_propertyVisitCounts[args];
+            if (_propertyVisitCounts.ContainsKey(key))
+                visitCount = ++_propertyVisitCounts[key];
             else
-                _propertyVisitCounts.Add(args, ++visitCount);
+                _propertyVisitCounts.Add(key, ++visitCount);
 
-            if (args.Type == LevelType.CollectionItem || args.Type == LevelType.DictionaryKey ||
-                args.Type == LevelType.DictionaryValue)
-                return _allowedVisitCount < 0
-                    ? (visitCount % 2) == 1
-                    : visitCount <= _allowedVisitCount;
+            if (EnumerationLevelTypes.Contains(args.Type)) {
+
+                if (AllowedVisitCount < 0) {
+                    var isValid = (visitCount % 2) == 1;
+                    //if (ParentIsNestedCollection())
+                    //    isValid = !isValid;
+                    return isValid;
+                }
+
+                return visitCount <= AllowedVisitCount;
+            }
 
             return true;
         }
 
+        private bool ParentIsNestedCollection()
+        {
+            var parent = _args.Peek();
+            switch (parent.Type) {
+                case LevelType.CollectionInCollection:
+                case LevelType.CollectionInDictionaryKey:
+                case LevelType.CollectionInDictionaryValue:
+                case LevelType.DictionaryInCollection:
+                case LevelType.DictionaryInDictionaryKey:
+                case LevelType.DictionaryInDictionaryValue:
+                    return true;
+            }
+            return false;
+        }
+
         public void Leave(VisitArgs args)
         {
+            var expectedArgs = _args.Pop();
+            Assert.AreEqual(expectedArgs, args);
             LeaveCount++;
         }
 
         public bool TryVisitValue(VisitArgs args, out byte? value)
         {
             VisitByteCount++;
-            value = 42;
+            value = ReadOnlyNull ? (byte?) null : 42;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out short? value)
         {
             VisitInt16Count++;
-            value = ++_nextInt16;
+            value = ReadOnlyNull ? (short?)null : ++_nextInt16;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out int? value)
         {
             VisitInt32Count++;
-            value = ++_nextInt32;
+            value = ReadOnlyNull ? (int?)null : ++_nextInt32;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out long? value)
         {
             VisitInt64Count++;
-            value = ++_nextInt64;
+            value = ReadOnlyNull ? (long?)null : ++_nextInt64;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out ushort? value)
         {
             VisitUInt16Count++;
-            value = ++_nextUInt16;
+            value = ReadOnlyNull ? (ushort?)null : ++_nextUInt16;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out uint? value)
         {
             VisitUInt32Count++;
-            value = ++_nextUInt32;
+            value = ReadOnlyNull ? (uint?)null : ++_nextUInt32;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out ulong? value)
         {
             VisitUInt64Count++;
-            value = ++_nextUInt64;
+            value = ReadOnlyNull ? (ulong?)null : ++_nextUInt64;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out bool? value)
         {
             VisitBooleanCount++;
-            value = true;
+            value = ReadOnlyNull ? (bool?)null : true;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out float? value)
         {
             VisitSingleCount++;
-            value = 42.3f;
+            value = ReadOnlyNull ? (float?)null : 42.3f;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out double? value)
         {
             VisitDoubleCount++;
-            value = 42.7d;
+            value = ReadOnlyNull ? (double?)null : 42.7d;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out decimal? value)
         {
             VisitDecimalCount++;
-            value = 42.5563M;
+            value = ReadOnlyNull ? (decimal?)null : 42.5563M;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out TimeSpan? value)
         {
             VisitTimeSpanCount++;
-            value = new TimeSpan(12, 30, 00);
+            value = ReadOnlyNull ? (TimeSpan?)null : new TimeSpan(12, 30, 00);
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out DateTime? value)
         {
             VisitDateTimeCount++;
-            value = new DateTime(2001, 01, 07, 13, 30, 42);
+            value = ReadOnlyNull ? (DateTime?)null : new DateTime(2001, 01, 07, 13, 30, 42);
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out string value)
         {
             VisitStringCount++;
-            value = "Hello World";
+            value = ReadOnlyNull ? null : "Hello World - " + Guid.NewGuid();
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out Guid? value)
         {
             VisitGuidCount++;
-            value = Guid.Empty;
+            value = ReadOnlyNull ? (Guid?)null : Guid.Empty;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out byte[] value)
         {
             VisitBlobCount++;
-            value = new byte[] {1, 2, 3};
+            value = ReadOnlyNull ? null : new byte[] { 1, 2, 3 };
             return ShouldRead(args);
         }
 
