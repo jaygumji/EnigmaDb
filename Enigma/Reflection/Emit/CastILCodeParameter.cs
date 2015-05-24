@@ -21,7 +21,8 @@ namespace Enigma.Reflection.Emit
         protected override void Load(ILExpressed il)
         {
             _parameter.Load(il);
-            il.Cast(_toType);
+            if (_parameter.ParameterType != _toType)
+                il.Cast(_toType);
         }
 
     }

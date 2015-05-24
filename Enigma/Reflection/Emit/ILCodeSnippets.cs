@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.Reflection.Emit;
 
 namespace Enigma.Reflection.Emit
 {
@@ -49,7 +50,7 @@ namespace Enigma.Reflection.Emit
             _il.Generate(new CallConstructorILCode(constructor, parameters));
         }
 
-        public void WhileLoop(ILGenerationHandler conditionHandler, ILGenerationHandler bodyHandler)
+        public void WhileLoop(ILGenerationMethodHandler conditionHandler, ILGenerationMethodHandler bodyHandler)
         {
             _il.Generate(new WhileLoopILCode(conditionHandler,  bodyHandler));
         }
@@ -90,6 +91,27 @@ namespace Enigma.Reflection.Emit
 
             ((IILCodeParameter) exception).Load(_il);
             _il.Throw();
+        }
+
+        public void Increment(ILCodeVariable value, ILCodeParameter valueToAdd)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+            if (valueToAdd == null) throw new ArgumentNullException("valueToAdd");
+
+            _il.Var.Load(value);
+            ((IILCodeParameter) valueToAdd).Load(_il);
+            _il.Gen.Emit(OpCodes.Add);
+            _il.Var.Set(value);
+        }
+
+        public void ForLoop(ILCodeParameter initialValue, ILCodeParameter lesserThan, ILCodeParameter increment, ILGenerationHandler<ILCodeParameter> body)
+        {
+            var loop = new ForLoopILCode(initialValue, value => {
+                _il.Var.Load(value);
+                _il.Var.Load(lesserThan);
+                _il.Gen.Emit(OpCodes.Clt);
+            }, body, increment);
+            _il.Generate(loop);
         }
     }
 }

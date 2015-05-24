@@ -12,9 +12,9 @@ namespace Enigma.Reflection.Emit
             _il = il;
         }
 
-        public ILGenerationChainHandler Condition { get; set; }
-        public ILGenerationChainHandler Body { get; set; }
-        public ILGenerationChainHandler ElseBody { get; set; }
+        public ILGenerationHandler Condition { get; set; }
+        public ILGenerationHandler Body { get; set; }
+        public ILGenerationHandler ElseBody { get; set; }
 
         public void End()
         {

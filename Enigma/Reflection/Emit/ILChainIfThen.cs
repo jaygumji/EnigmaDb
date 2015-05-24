@@ -9,7 +9,7 @@ namespace Enigma.Reflection.Emit
             _chain = chain;
         }
 
-        public ILChainIfElse Else(ILGenerationChainHandler body)
+        public ILChainIfElse Else(ILGenerationHandler body)
         {
             _chain.ElseBody = body;
             return new ILChainIfElse(_chain);

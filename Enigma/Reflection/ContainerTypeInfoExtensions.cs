@@ -2,6 +2,12 @@
 {
     public static class ContainerTypeInfoExtensions
     {
+
+        public static ArrayContainerTypeInfo AsArray(this IContainerTypeInfo container)
+        {
+            return container as ArrayContainerTypeInfo;
+        }
+
         public static CollectionContainerTypeInfo AsCollection(this IContainerTypeInfo container)
         {
             return container as CollectionContainerTypeInfo;

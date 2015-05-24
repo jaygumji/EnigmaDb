@@ -17,59 +17,30 @@ namespace Enigma.Test.Serialization.Fakes
         private UInt32 _nextUInt32;
         private UInt64 _nextUInt64;
 
-        private readonly Stack<VisitArgs> _args; 
+        private readonly ReadStatistics _statistics;
+        private readonly Stack<VisitArgs> _args;
 
         public int AllowedVisitCount { get; set; }
         public bool ReadOnlyNull { get; set; }
-
-        public int VisitCount { get; private set; }
-        public int LeaveCount { get; private set; }
-        private int ExpectedLeaveCount { get; set; }
-
-        public int VisitByteCount { get; private set; }
-        public int VisitInt16Count { get; private set; }
-        public int VisitInt32Count { get; private set; }
-        public int VisitInt64Count { get; private set; }
-        public int VisitUInt16Count { get; private set; }
-        public int VisitUInt32Count { get; private set; }
-        public int VisitUInt64Count { get; private set; }
-        public int VisitBooleanCount { get; private set; }
-        public int VisitSingleCount { get; private set; }
-        public int VisitDoubleCount { get; private set; }
-        public int VisitDecimalCount { get; private set; }
-        public int VisitTimeSpanCount { get; private set; }
-        public int VisitDateTimeCount { get; private set; }
-        public int VisitStringCount { get; private set; }
-        public int VisitGuidCount { get; private set; }
-        public int VisitBlobCount { get; private set; }
 
         public FakeReadVisitor()
         {
             AllowedVisitCount = -1;
             _propertyVisitCounts = new Dictionary<string, int>();
             _args = new Stack<VisitArgs>();
+            _statistics = new ReadStatistics();
         }
 
-        public int VisitValueCount
-        {
-            get
-            {
-                return VisitByteCount
-                    + VisitInt16Count + VisitInt32Count + VisitInt64Count
-                    + VisitUInt16Count + VisitUInt32Count + VisitUInt64Count
-                    + VisitBooleanCount + VisitSingleCount + VisitDoubleCount
-                    + VisitDecimalCount + VisitTimeSpanCount + VisitDateTimeCount
-                    + VisitStringCount + VisitGuidCount + VisitBlobCount;
-            }
-        }
+        public ReadStatistics Statistics { get { return _statistics; } }
 
         public ValueState TryVisit(VisitArgs args)
         {
-            VisitCount++;
+            _statistics.VisitCount++;
+            _statistics.AckVisited(args);
 
             if (!ShouldRead(args)) return ValueState.NotFound;
             
-            ExpectedLeaveCount++;
+            _statistics.ExpectedLeaveCount++;
             _args.Push(args);
             return ValueState.Found;
         }
@@ -128,124 +99,135 @@ namespace Enigma.Test.Serialization.Fakes
         {
             var expectedArgs = _args.Pop();
             Assert.AreEqual(expectedArgs, args);
-            LeaveCount++;
+            _statistics.LeaveCount++;
         }
 
         public bool TryVisitValue(VisitArgs args, out byte? value)
         {
-            VisitByteCount++;
+            _statistics.AckVisited(args);
+            _statistics.VisitByteCount++;
             value = ReadOnlyNull ? (byte?) null : 42;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out short? value)
         {
-            VisitInt16Count++;
+            _statistics.AckVisited(args);
+            _statistics.VisitInt16Count++;
             value = ReadOnlyNull ? (short?)null : ++_nextInt16;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out int? value)
         {
-            VisitInt32Count++;
+            _statistics.AckVisited(args);
+            _statistics.VisitInt32Count++;
             value = ReadOnlyNull ? (int?)null : ++_nextInt32;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out long? value)
         {
-            VisitInt64Count++;
+            _statistics.AckVisited(args);
+            _statistics.VisitInt64Count++;
             value = ReadOnlyNull ? (long?)null : ++_nextInt64;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out ushort? value)
         {
-            VisitUInt16Count++;
+            _statistics.AckVisited(args);
+            _statistics.VisitUInt16Count++;
             value = ReadOnlyNull ? (ushort?)null : ++_nextUInt16;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out uint? value)
         {
-            VisitUInt32Count++;
+            _statistics.AckVisited(args);
+            _statistics.VisitUInt32Count++;
             value = ReadOnlyNull ? (uint?)null : ++_nextUInt32;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out ulong? value)
         {
-            VisitUInt64Count++;
+            _statistics.AckVisited(args);
+            _statistics.VisitUInt64Count++;
             value = ReadOnlyNull ? (ulong?)null : ++_nextUInt64;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out bool? value)
         {
-            VisitBooleanCount++;
+            _statistics.AckVisited(args);
+            _statistics.VisitBooleanCount++;
             value = ReadOnlyNull ? (bool?)null : true;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out float? value)
         {
-            VisitSingleCount++;
+            _statistics.AckVisited(args);
+            _statistics.VisitSingleCount++;
             value = ReadOnlyNull ? (float?)null : 42.3f;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out double? value)
         {
-            VisitDoubleCount++;
+            _statistics.AckVisited(args);
+            _statistics.VisitDoubleCount++;
             value = ReadOnlyNull ? (double?)null : 42.7d;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out decimal? value)
         {
-            VisitDecimalCount++;
+            _statistics.AckVisited(args);
+            _statistics.VisitDecimalCount++;
             value = ReadOnlyNull ? (decimal?)null : 42.5563M;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out TimeSpan? value)
         {
-            VisitTimeSpanCount++;
+            _statistics.AckVisited(args);
+            _statistics.VisitTimeSpanCount++;
             value = ReadOnlyNull ? (TimeSpan?)null : new TimeSpan(12, 30, 00);
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out DateTime? value)
         {
-            VisitDateTimeCount++;
+            _statistics.AckVisited(args);
+            _statistics.VisitDateTimeCount++;
             value = ReadOnlyNull ? (DateTime?)null : new DateTime(2001, 01, 07, 13, 30, 42);
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out string value)
         {
-            VisitStringCount++;
+            _statistics.AckVisited(args);
+            _statistics.VisitStringCount++;
             value = ReadOnlyNull ? null : "Hello World - " + Guid.NewGuid();
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out Guid? value)
         {
-            VisitGuidCount++;
+            _statistics.AckVisited(args);
+            _statistics.VisitGuidCount++;
             value = ReadOnlyNull ? (Guid?)null : Guid.Empty;
             return ShouldRead(args);
         }
 
         public bool TryVisitValue(VisitArgs args, out byte[] value)
         {
-            VisitBlobCount++;
+            _statistics.AckVisited(args);
+            _statistics.VisitBlobCount++;
             value = ReadOnlyNull ? null : new byte[] { 1, 2, 3 };
             return ShouldRead(args);
-        }
-
-        public void AssertHiearchy()
-        {
-            Assert.AreEqual(ExpectedLeaveCount, LeaveCount);
         }
 
     }

@@ -4,14 +4,14 @@ namespace Enigma.Reflection.Emit
     {
         private readonly ILChainIf _chain;
 
-        public ILChainIfCondition(ILExpressed il, ILGenerationChainHandler condition)
+        public ILChainIfCondition(ILExpressed il, ILGenerationHandler condition)
         {
             _chain = new ILChainIf(il) {
                 Condition = condition
             };
         }
 
-        public ILChainIfThen Then(ILGenerationChainHandler body)
+        public ILChainIfThen Then(ILGenerationHandler body)
         {
             _chain.Body = body;
             return new ILChainIfThen(_chain);

@@ -51,6 +51,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Algorithm\BinarySearchTests.cs" />
+    <Compile Include="ArrayProviderTests.cs" />
     <Compile Include="BlobComparerTests.cs" />
     <Compile Include="DualBinaryStoreTests.cs" />
     <Compile Include="Expressions\PropertySelectorTests.cs" />
@@ -65,6 +66,16 @@
     <Compile Include="Linq\IndexFilterTests.cs" />
     <Compile Include="Modelling\EntityBuilderTests.cs" />
     <Compile Include="Serialization\BinaryPackerTests.cs" />
+    <Compile Include="Serialization\Fakes\IReadStatistics.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serialization\Fakes\IWriteStatistics.cs" />
+    <Compile Include="Serialization\Fakes\ReadStatistics.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serialization\Fakes\WriteStatistics.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Serialization\Graphs\CollectionOfCollectionGraph.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -76,6 +87,9 @@
     <Compile Include="Serialization\Graphs\DictionaryWithDictionaryKeyGraph.cs" />
     <Compile Include="Serialization\Graphs\DictionaryWithDictionaryValueGraph.cs" />
     <Compile Include="Serialization\Graphs\JaggedArrayGraph.cs" />
+    <Compile Include="Serialization\Graphs\MultidimensionalArrayGraph.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Serialization\HardCoded\CategoryHardCodedTraveller.cs" />
     <Compile Include="Serialization\HardCoded\DataBlockHardCodedTraveller.cs" />
     <Compile Include="Serialization\Fakes\ComplexDictionary.cs" />
@@ -119,6 +133,7 @@
     <Compile Include="Serialization\Graphs\UInt16Graph.cs" />
     <Compile Include="Serialization\Graphs\UInt32Graph.cs" />
     <Compile Include="Serialization\Graphs\UInt64Graph.cs" />
+    <Compile Include="Serialization\HardCoded\MultidimensionalArrayGraphHardCodedTraveller.cs" />
     <Compile Include="Serialization\ReadNullableValuePropertyTests.cs" />
     <Compile Include="Serialization\ReadNullableValuePropertyWithNullTests.cs" />
     <Compile Include="Serialization\ReadValuePropertyTests.cs" />

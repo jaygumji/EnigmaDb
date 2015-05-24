@@ -53,6 +53,12 @@ namespace Enigma.Reflection
             throw new InvalidOperationException("The type is not an enum");
         }
 
+        public bool TryGetArrayTypeInfo(out ArrayContainerTypeInfo arrayTypeInfo)
+        {
+            arrayTypeInfo = _containerTypeInfo.Value as ArrayContainerTypeInfo;
+            return arrayTypeInfo != null;
+        }
+
         public bool TryGetCollectionTypeInfo(out CollectionContainerTypeInfo collectionTypeInfo)
         {
             collectionTypeInfo = _containerTypeInfo.Value as CollectionContainerTypeInfo;
@@ -65,7 +71,7 @@ namespace Enigma.Reflection
             return dictionaryTypeInfo != null;
         }
 
-        #region OnGet VariableType Class
+        #region Type Class
 
         private static TypeClass GetTypeClass(Type type, IContainerTypeInfo containerInfo)
         {

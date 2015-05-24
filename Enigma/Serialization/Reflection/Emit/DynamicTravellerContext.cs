@@ -57,7 +57,6 @@ namespace Enigma.Serialization.Reflection.Emit
         {
             var dyn = Get(typeof (T));
             var instance = (IGraphTraveller<T>) dyn.GetInstance();
-            //_assemblyBuilder.Save();
             return instance;
         }
 

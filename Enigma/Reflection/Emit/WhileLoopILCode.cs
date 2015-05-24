@@ -2,16 +2,22 @@ namespace Enigma.Reflection.Emit
 {
     public class WhileLoopILCode : IILCode
     {
-        private readonly ILGenerationHandler _conditionHandler;
-        private readonly ILGenerationHandler _bodyHandler;
+        private readonly DelegatedILHandler _conditionHandler;
+        private readonly DelegatedILHandler _bodyHandler;
+
+        public WhileLoopILCode(ILGenerationMethodHandler conditionHandler, ILGenerationMethodHandler bodyHandler)
+        {
+            _conditionHandler = new DelegatedILHandler(conditionHandler);
+            _bodyHandler = new DelegatedILHandler(bodyHandler);
+        }
 
         public WhileLoopILCode(ILGenerationHandler conditionHandler, ILGenerationHandler bodyHandler)
         {
-            _conditionHandler = conditionHandler;
-            _bodyHandler = bodyHandler;
+            _conditionHandler = new DelegatedILHandler(conditionHandler);
+            _bodyHandler = new DelegatedILHandler(bodyHandler);
         }
 
-        public void Generate(ILExpressed il)
+        void IILCode.Generate(ILExpressed il)
         {
             var loopConditionLabel = il.DefineLabel();
             var loopBodyLabel = il.DefineLabel();

@@ -12,6 +12,11 @@ namespace Enigma.Reflection
 
         public static IContainerTypeInfo GetContainerTypeInfo(this Type type)
         {
+            if (type.IsArray) {
+                var ranks = type.GetArrayRank();
+                var elementType = type.GetElementType();
+                return new ArrayContainerTypeInfo(elementType, ranks);
+            }
             if (type.IsGenericType) {
                 var genericTypeDefinition = type.GetGenericTypeDefinition();
                 if (genericTypeDefinition == DictionaryType) {

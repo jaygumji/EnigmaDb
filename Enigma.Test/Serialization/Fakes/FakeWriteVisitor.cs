@@ -1,138 +1,124 @@
 ﻿using System;
 using Enigma.Serialization;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Enigma.Test.Serialization.Fakes
 {
+
+    
     public class FakeWriteVisitor : IWriteVisitor
     {
+        private readonly WriteStatistics _statistics = new WriteStatistics();
 
-        public int VisitCount { get; private set; }
-        public int LeaveCount { get; private set; }
-
-        public int VisitByteCount { get; private set; }
-        public int VisitInt16Count { get; private set; }
-        public int VisitInt32Count { get; private set; }
-        public int VisitInt64Count { get; private set; }
-        public int VisitUInt16Count { get; private set; }
-        public int VisitUInt32Count { get; private set; }
-        public int VisitUInt64Count { get; private set; }
-        public int VisitBooleanCount { get; private set; }
-        public int VisitSingleCount { get; private set; }
-        public int VisitDoubleCount { get; private set; }
-        public int VisitDecimalCount { get; private set; }
-        public int VisitTimeSpanCount { get; private set; }
-        public int VisitDateTimeCount { get; private set; }
-        public int VisitStringCount { get; private set; }
-        public int VisitGuidCount { get; private set; }
-        public int VisitBlobCount { get; private set; }
-        
-        public int VisitValueCount
+        public WriteStatistics Statistics
         {
-            get
-            {
-                return VisitByteCount
-                    + VisitInt16Count + VisitInt32Count + VisitInt64Count
-                    + VisitUInt16Count + VisitUInt32Count + VisitUInt64Count
-                    + VisitBooleanCount + VisitSingleCount + VisitDoubleCount
-                    + VisitDecimalCount + VisitTimeSpanCount + VisitDateTimeCount
-                    + VisitStringCount + VisitGuidCount + VisitBlobCount;
-            }
+            get { return _statistics; }
         }
 
         public void Visit(object level, VisitArgs args)
         {
-            VisitCount++;
+            Statistics.VisitCount++;
+            _statistics.AckVisited(args);
         }
 
         public void Leave(object level, VisitArgs args)
         {
-            LeaveCount++;
+            Statistics.LeaveCount++;
         }
 
         public void VisitValue(byte? value, VisitArgs args)
         {
-            VisitByteCount++;
+            Statistics.VisitByteCount++;
+            _statistics.AckVisited(args);
         }
 
         public void VisitValue(short? value, VisitArgs args)
         {
-            VisitInt16Count++;
+            Statistics.VisitInt16Count++;
+            _statistics.AckVisited(args);
         }
 
         public void VisitValue(int? value, VisitArgs args)
         {
-            VisitInt32Count++;
+            Statistics.VisitInt32Count++;
+            _statistics.AckVisited(args);
         }
 
         public void VisitValue(long? value, VisitArgs args)
         {
-            VisitInt64Count++;
+            Statistics.VisitInt64Count++;
+            _statistics.AckVisited(args);
         }
 
         public void VisitValue(ushort? value, VisitArgs args)
         {
-            VisitUInt16Count++;
+            Statistics.VisitUInt16Count++;
+            _statistics.AckVisited(args);
         }
 
         public void VisitValue(uint? value, VisitArgs args)
         {
-            VisitUInt32Count++;
+            Statistics.VisitUInt32Count++;
+            _statistics.AckVisited(args);
         }
 
         public void VisitValue(ulong? value, VisitArgs args)
         {
-            VisitUInt64Count++;
+            Statistics.VisitUInt64Count++;
+            _statistics.AckVisited(args);
         }
 
         public void VisitValue(bool? value, VisitArgs args)
         {
-            VisitBooleanCount++;
+            Statistics.VisitBooleanCount++;
+            _statistics.AckVisited(args);
         }
 
         public void VisitValue(float? value, VisitArgs args)
         {
-            VisitSingleCount++;
+            Statistics.VisitSingleCount++;
+            _statistics.AckVisited(args);
         }
 
         public void VisitValue(double? value, VisitArgs args)
         {
-            VisitDoubleCount++;
+            Statistics.VisitDoubleCount++;
+            _statistics.AckVisited(args);
         }
 
         public void VisitValue(decimal? value, VisitArgs args)
         {
-            VisitDecimalCount++;
+            Statistics.VisitDecimalCount++;
+            _statistics.AckVisited(args);
         }
 
         public void VisitValue(TimeSpan? value, VisitArgs args)
         {
-            VisitTimeSpanCount++;
+            Statistics.VisitTimeSpanCount++;
+            _statistics.AckVisited(args);
         }
 
         public void VisitValue(DateTime? value, VisitArgs args)
         {
-            VisitDateTimeCount++;
+            Statistics.VisitDateTimeCount++;
+            _statistics.AckVisited(args);
         }
 
         public void VisitValue(string value, VisitArgs args)
         {
-            VisitStringCount++;
+            Statistics.VisitStringCount++;
+            _statistics.AckVisited(args);
         }
 
         public void VisitValue(Guid? value, VisitArgs args)
         {
-            VisitGuidCount++;
+            Statistics.VisitGuidCount++;
+            _statistics.AckVisited(args);
         }
 
         public void VisitValue(byte[] value, VisitArgs args)
         {
-            VisitBlobCount++;
-        }
-
-        public void AssertHiearchy()
-        {
-            Assert.AreEqual(VisitCount, LeaveCount);
+            Statistics.VisitBlobCount++;
+            _statistics.AckVisited(args);
         }
 
     }

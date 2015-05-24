@@ -6,7 +6,7 @@ namespace Enigma.Reflection.Emit
     public static class ILCodeParameterExtensions
     {
 
-        public static ILCodeParameter AsNullable(this ILCodeParameter parameter, Type type)
+        public static ILCodeParameter AsNullable(this ILCodeParameter parameter)
         {
             return new NullableILCodeParameter(parameter);
         }

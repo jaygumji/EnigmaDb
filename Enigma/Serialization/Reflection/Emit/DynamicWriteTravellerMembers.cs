@@ -14,6 +14,12 @@ namespace Enigma.Serialization.Reflection.Emit
         public readonly ILCodeParameter VisitArgsCollectionItem;
         public readonly ILCodeParameter VisitArgsDictionaryKey;
         public readonly ILCodeParameter VisitArgsDictionaryValue;
+        public readonly ILCodeParameter VisitArgsCollectionInCollection;
+        public readonly ILCodeParameter VisitArgsDictionaryInCollection;
+        public readonly ILCodeParameter VisitArgsDictionaryInDictionaryKey;
+        public readonly ILCodeParameter VisitArgsDictionaryInDictionaryValue;
+        public readonly ILCodeParameter VisitArgsCollectionInDictionaryKey;
+        public readonly ILCodeParameter VisitArgsCollectionInDictionaryValue;
 
         public readonly MethodInfo VisitorVisit;
         public readonly MethodInfo VisitorLeave;
@@ -24,12 +30,20 @@ namespace Enigma.Serialization.Reflection.Emit
         public readonly MethodInfo EnumeratorMoveNext;
         public readonly MethodInfo DisposableDispose;
 
+        public readonly MethodInfo ArrayGetLength;
+
         public DynamicWriteTravellerMembers()
         {
             var visitArgsType = typeof (VisitArgs);
             VisitArgsCollectionItem = new StaticFieldILCodeVariable(visitArgsType.GetField("CollectionItem"));
             VisitArgsDictionaryKey = new StaticFieldILCodeVariable(visitArgsType.GetField("DictionaryKey"));
             VisitArgsDictionaryValue = new StaticFieldILCodeVariable(visitArgsType.GetField("DictionaryValue"));
+            VisitArgsCollectionInCollection = new StaticFieldILCodeVariable(visitArgsType.GetField("CollectionInCollection"));
+            VisitArgsDictionaryInCollection = new StaticFieldILCodeVariable(visitArgsType.GetField("DictionaryInCollection"));
+            VisitArgsDictionaryInDictionaryKey = new StaticFieldILCodeVariable(visitArgsType.GetField("DictionaryInDictionaryKey"));
+            VisitArgsDictionaryInDictionaryValue = new StaticFieldILCodeVariable(visitArgsType.GetField("DictionaryInDictionaryValue"));
+            VisitArgsCollectionInDictionaryKey = new StaticFieldILCodeVariable(visitArgsType.GetField("CollectionInDictionaryKey"));
+            VisitArgsCollectionInDictionaryValue = new StaticFieldILCodeVariable(visitArgsType.GetField("CollectionInDictionaryValue"));
 
             var writeVisitorType = typeof (IWriteVisitor);
             VisitorVisit = writeVisitorType.GetMethod("Visit");
@@ -54,6 +68,7 @@ namespace Enigma.Serialization.Reflection.Emit
 
             EnumeratorMoveNext = typeof (IEnumerator).GetMethod("MoveNext");
             DisposableDispose = typeof (IDisposable).GetMethod("Dispose");
+            ArrayGetLength = typeof (Array).GetMethod("GetLength");
         }
 
     }

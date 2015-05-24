@@ -37,11 +37,6 @@ namespace Enigma.Serialization.Reflection.Emit
             var extPropertyType = target.Ext;
             var argsField = _context.GetArgsField(target);
             var argsFieldVariable = _il.Var.Field(_il.Var.This(), argsField);
-            //if (extPropertyType.Class == TypeClass.Dictionary) return;
-            //if (extPropertyType.Class == TypeClass.Complex) return;
-            //if (extPropertyType.Class == TypeClass.Collection) return;
-            //if (extPropertyType.Class == TypeClass.Nullable) return;
-            //if (extPropertyType.Class == TypeClass.Value) return;
             if (extPropertyType.IsValueOrNullableOfValue()) {
                 var isNullable = extPropertyType.Class == TypeClass.Nullable;
                 var isEnum = extPropertyType.IsEnum();
@@ -229,7 +224,7 @@ namespace Enigma.Serialization.Reflection.Emit
                 });
             }
             if (target.Ref.IsArray)
-                return collectionLocal.Call(collectionMembers.ToArray);
+                return new CallMethodILCode(collectionMembers.ToArray, collectionLocal);
 
             return collectionLocal;
         }

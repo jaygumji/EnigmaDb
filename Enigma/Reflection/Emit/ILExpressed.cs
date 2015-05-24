@@ -106,6 +106,13 @@ namespace Enigma.Reflection.Emit
             _il.MarkLabel(label);
         }
 
+        public Label DefineAndMarkLabel()
+        {
+            var label = _il.DefineLabel();
+            _il.MarkLabel(label);
+            return label;
+        }
+
         public void LoadField(FieldInfo field)
         {
             _il.Emit(OpCodes.Ldfld, field);

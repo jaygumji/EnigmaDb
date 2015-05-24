@@ -138,12 +138,17 @@
     <Compile Include="IO\PooledMemoryStream.cs" />
     <Compile Include="IO\StreamProviderSourceState.cs" />
     <Compile Include="IO\WriteReservation.cs" />
+    <Compile Include="Reflection\ArrayContainerTypeInfo.cs" />
     <Compile Include="Reflection\Emit\CallConstructorILCode.cs" />
     <Compile Include="Reflection\Emit\CallMethodILCode.cs" />
     <Compile Include="Reflection\Emit\CastILCodeParameter.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Reflection\Emit\ConstructorBuilder.cs" />
+    <Compile Include="Reflection\Emit\DelegatedILHandler.cs" />
+    <Compile Include="Reflection\Emit\ForLoopILCode.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Reflection\Emit\IILCode.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -173,7 +178,7 @@
     <Compile Include="Binary\BinaryPacker.cs" />
     <Compile Include="Reflection\Emit\AssemblyBuilder.cs" />
     <Compile Include="Reflection\Emit\ClassBuilder.cs" />
-    <Compile Include="Reflection\Emit\ILGenerationHandler.cs" />
+    <Compile Include="Reflection\Emit\ILGenerationMethodHandler.cs" />
     <Compile Include="Reflection\Emit\ILMethod.cs" />
     <Compile Include="Reflection\Emit\ILStaticMethod.cs" />
     <Compile Include="Reflection\Emit\InstanceFieldILCodeVariable.cs">
@@ -208,6 +213,7 @@
     <Compile Include="Scheduling\OncePerDayConfiguration.cs" />
     <Compile Include="Scheduling\ScheduleQueue.cs" />
     <Compile Include="Scheduling\IDateTimeConfiguration.cs" />
+    <Compile Include="ArrayProvider.cs" />
     <Compile Include="Serialization\IGenericSerializer.cs" />
     <Compile Include="Serialization\IReadVisitor.cs" />
     <Compile Include="Serialization\ITypedSerializer.cs" />

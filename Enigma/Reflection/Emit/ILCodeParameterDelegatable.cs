@@ -5,14 +5,14 @@ namespace Enigma.Reflection.Emit
     public class ILCodeParameterDelegatable : ILCodeParameter
     {
         private readonly Type _parameterType;
-        private readonly ILGenerationHandler _valueLoader;
-        private readonly ILGenerationHandler _valueAddressLoader;
+        private readonly ILGenerationMethodHandler _valueLoader;
+        private readonly ILGenerationMethodHandler _valueAddressLoader;
 
-        public ILCodeParameterDelegatable(Type parameterType, ILGenerationHandler valueLoader) : this(parameterType, valueLoader, null)
+        public ILCodeParameterDelegatable(Type parameterType, ILGenerationMethodHandler valueLoader) : this(parameterType, valueLoader, null)
         {
         }
 
-        public ILCodeParameterDelegatable(Type parameterType, ILGenerationHandler valueLoader, ILGenerationHandler valueAddressLoader)
+        public ILCodeParameterDelegatable(Type parameterType, ILGenerationMethodHandler valueLoader, ILGenerationMethodHandler valueAddressLoader)
         {
             _parameterType = parameterType;
             _valueLoader = valueLoader;

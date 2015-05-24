@@ -38,40 +38,46 @@ namespace Enigma.Test.Serialization
 
         public void AssertWriteSingleProperty<T>(T graph)
         {
-            AssertWrite(1, graph);
+            var stats = AssertWrite(1, graph);
+            stats.AssertVisitOrderExact(LevelType.Value);
         }
 
         public void AssertReadSingleProperty<T>() where T : new()
         {
-            AssertRead<T>(1);
+            var stats = AssertRead<T>(1);
+            stats.AssertVisitOrderExact(LevelType.Value);
         }
 
         public void AssertReadSinglePropertyWithNull<T>() where T : new()
         {
-            AssertRead<T>(1, -1, readOnlyNull: true);
+            var stats = AssertRead<T>(1, -1, readOnlyNull: true);
+            stats.AssertVisitOrderExact(LevelType.Value);
         }
 
-        public void AssertWrite<T>(int expectedValueWriteCount, T graph)
+        public IWriteStatistics AssertWrite<T>(int expectedValueWriteCount, T graph)
         {
             var visitor = new FakeWriteVisitor();
             var traveller = CreateTraveller<T>();
             traveller.Travel(visitor, graph);
 
-            visitor.AssertHiearchy();
-            Assert.AreEqual(expectedValueWriteCount, visitor.VisitValueCount);
+            //_travellerContext.Save();
+            visitor.Statistics.AssertHiearchy();
+            Assert.AreEqual(expectedValueWriteCount, visitor.Statistics.VisitValueCount);
+
+            return visitor.Statistics;
         }
 
-        public void AssertRead<T>(int expectedValueReadCount) where T : new()
+        public IReadStatistics AssertRead<T>(int expectedValueReadCount) where T : new()
         {
-            AssertRead<T>(expectedValueReadCount, -1);
+            return AssertRead<T>(expectedValueReadCount, -1);
         }
 
-        public void AssertRead<T>(int expectedValueReadCount, int allowedVisitCount) where T : new()
+        public IReadStatistics AssertRead<T>(int expectedValueReadCount, int allowedVisitCount) where T : new()
         {
-            AssertRead<T>(expectedValueReadCount, allowedVisitCount, readOnlyNull: false);
+            return AssertRead<T>(expectedValueReadCount, allowedVisitCount, readOnlyNull: false);
         }
 
-        public void AssertRead<T>(int expectedValueReadCount, int allowedVisitCount, bool readOnlyNull) where T : new()
+        public IReadStatistics AssertRead<T>(int expectedValueReadCount, int allowedVisitCount, bool readOnlyNull) where T : new()
         {
             var visitor = new FakeReadVisitor {AllowedVisitCount = allowedVisitCount, ReadOnlyNull = readOnlyNull};
             var traveller = CreateTraveller<T>();
@@ -79,8 +85,10 @@ namespace Enigma.Test.Serialization
             var graph = new T();
             traveller.Travel(visitor, graph);
 
-            visitor.AssertHiearchy();
-            Assert.AreEqual(expectedValueReadCount, visitor.VisitValueCount);
+            visitor.Statistics.AssertHiearchy();
+            Assert.AreEqual(expectedValueReadCount, visitor.Statistics.VisitValueCount);
+
+            return visitor.Statistics;
         }
 
     }

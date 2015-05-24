@@ -9,6 +9,7 @@ namespace Enigma.Reflection.Emit
         private readonly MethodInfo _method;
         private readonly ILCodeParameter[] _parameters;
         private readonly ParameterInfo[] _methodParameters;
+        private readonly Type _returnType;
 
         public CallMethodILCode(MethodInfo method, params ILCodeParameter[] parameters) : this(null, method, parameters)
         {
@@ -29,6 +30,12 @@ namespace Enigma.Reflection.Emit
             _instance = instance;
             _method = method;
             _parameters = parameters;
+            _returnType = method.ReturnType;
+        }
+
+        public Type ReturnType
+        {
+            get { return _returnType; }
         }
 
         void IILCode.Generate(ILExpressed il)

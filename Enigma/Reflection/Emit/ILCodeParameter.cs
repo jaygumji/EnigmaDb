@@ -38,6 +38,11 @@ namespace Enigma.Reflection.Emit
             return new ILCodeParameterDelegatable(variable.VariableType, il => il.Var.Load(variable), il => il.Var.LoadAddress(variable));
         }
 
+        public static ILCodeParameter Of(CallMethodILCode code)
+        {
+            return new ILCodeParameterDelegatable(code.ReturnType, il => il.Generate(code));
+        }
+
         public static ILCodeParameter Of(IILCode code)
         {
             return new ILCodeParameterDelegatable(null, il => il.Generate(code));

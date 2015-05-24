@@ -5,9 +5,10 @@ using System.Reflection;
 
 namespace Enigma.Reflection.Emit
 {
+
     public class ILEnumerateCode : IILCode
     {
-        private readonly ILCodeVariable _enumerable;
+        private readonly ILCodeParameter _enumerable;
         private readonly Action<ILExpressed, ILCodeVariable> _iterateBody;
 
         private static readonly MethodInfo EnumeratorMoveNext;
@@ -19,7 +20,7 @@ namespace Enigma.Reflection.Emit
             DisposableDispose = typeof(IDisposable).GetMethod("Dispose");
         }
 
-        public ILEnumerateCode(ILCodeVariable enumerable, Action<ILExpressed, ILCodeVariable> iterateBody)
+        public ILEnumerateCode(ILCodeParameter enumerable, Action<ILExpressed, ILCodeVariable> iterateBody)
         {
             _enumerable = enumerable;
             _iterateBody = iterateBody;
@@ -27,7 +28,7 @@ namespace Enigma.Reflection.Emit
 
         void IILCode.Generate(ILExpressed il)
         {
-            var variableType = il.TypeCache.Extend(_enumerable.VariableType);
+            var variableType = il.TypeCache.Extend(_enumerable.ParameterType);
             var collectionContainer = variableType.Container.AsCollection();
 
             if (collectionContainer == null)
