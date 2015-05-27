@@ -36,6 +36,16 @@ namespace Enigma.Test.Serialization
             return stream.ToArray();
         }
 
+        public T SerializeAndDeserialize<T>(T graph)
+        {
+            var serializer = new PackedDataSerializer<T>();
+            using (var stream = new MemoryStream()) {
+                serializer.Serialize(stream, graph);
+                stream.Seek(0, SeekOrigin.Begin);
+                return serializer.Deserialize(stream);
+            }
+        }
+
         public void AssertWriteSingleProperty<T>(T graph)
         {
             var stats = AssertWrite(1, graph);
@@ -91,5 +101,20 @@ namespace Enigma.Test.Serialization
             return visitor.Statistics;
         }
 
+        public T AssertBinarySingleProperty<T>(T graph)
+        {
+            var actual = SerializeAndDeserialize(graph);
+
+            var type = typeof (T);
+            var property = type.GetProperty("Value");
+            if (property != null) {
+                var expectedValue = property.GetValue(graph);
+                var actualValue = property.GetValue(actual);
+
+                Assert.AreEqual(expectedValue, actualValue);
+            }
+
+            return actual;
+        }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using Enigma.ProofOfConcept.Context;
+﻿using Enigma.ProofOfConcept.Context;
 
 namespace Enigma.ProofOfConcept
 {
@@ -12,6 +11,8 @@ namespace Enigma.ProofOfConcept
             ui.AddCommand(new StressTestMassiveInserts());
             ui.AddCommand(new InstrumentationProfiling());
             ui.AddCommand(new ResourceContentionProfiling());
+            ui.AddCommand(new SerializationProfilingAndTimesTest());
+            ui.AddCommand(new ProtoBufTimesTest());
             ui.Run();
         }
 

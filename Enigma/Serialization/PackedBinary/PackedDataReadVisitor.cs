@@ -54,26 +54,18 @@ namespace Enigma.Serialization.PackedBinary
 
         public ValueState TryVisit(VisitArgs args)
         {
-            if (args.Type != LevelType.Root)
-                if (args.Metadata.Index > 0 && !MoveToIndex(args.Metadata.Index))
-                    return ValueState.NotFound;
+            if (args.Type == LevelType.Root) return ValueState.Found;
 
-            switch (args.Type) {
-                case LevelType.Single:
-                case LevelType.Collection:
-                case LevelType.Dictionary:
-                case LevelType.DictionaryKey:
-                case LevelType.DictionaryValue:
-                case LevelType.CollectionItem:
-                    var byteLength = _reader.ReadByte();
-                    if (byteLength == BinaryPacker.Null) return ValueState.Null;
-                    if (byteLength != BinaryPacker.VariabelLength)
-                        throw new UnexpectedLengthException(args, byteLength);
+            if (args.Metadata.Index > 0 && !MoveToIndex(args.Metadata.Index))
+                return ValueState.NotFound;
 
-                    _reader.Skip(4);
+            var byteLength = _reader.ReadByte();
+            if (byteLength == BinaryPacker.Null) return ValueState.Null;
+            if (byteLength != BinaryPacker.VariabelLength)
+                throw new UnexpectedLengthException(args, byteLength);
 
-                    return ValueState.Found;
-            }
+            _reader.Skip(4);
+
             return ValueState.Found;
         }
 
@@ -84,15 +76,12 @@ namespace Enigma.Serialization.PackedBinary
                 return;
             }
 
-            switch (args.Type) {
-                case LevelType.Single:
-                case LevelType.DictionaryKey:
-                case LevelType.DictionaryValue:
-                case LevelType.CollectionItem:
-                    MoveToIndex(UInt32.MaxValue);
-                    _endOfLevel = false;
-                    break;
-            }
+            if (args.Type == LevelType.Root) return;
+            if (args.Type.IsCollection()) return;
+            if (args.Type.IsDictionary()) return;
+
+            MoveToIndex(UInt32.MaxValue);
+            _endOfLevel = false;
         }
 
         public bool TryVisitValue(VisitArgs args, out byte? value)

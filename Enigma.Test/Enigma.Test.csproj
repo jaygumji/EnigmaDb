@@ -65,7 +65,10 @@
     <Compile Include="Index\IndexStorageTests.cs" />
     <Compile Include="Linq\IndexFilterTests.cs" />
     <Compile Include="Modelling\EntityBuilderTests.cs" />
-    <Compile Include="Serialization\BinaryPackerTests.cs" />
+    <Compile Include="Serialization\Binary\BinaryPackerTests.cs" />
+    <Compile Include="Serialization\Binary\PackedDataSerializerGraphTests.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Serialization\Fakes\IReadStatistics.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -139,17 +142,16 @@
     <Compile Include="Serialization\ReadValuePropertyTests.cs" />
     <Compile Include="Serialization\WriteNullableValuePropertyTests.cs" />
     <Compile Include="Serialization\HardCoded\NullableValuesEntityHardCodedTraveller.cs" />
-    <Compile Include="Serialization\NullableValuesTests.cs" />
+    <Compile Include="Serialization\Binary\PackedDataSerializerDataTests.cs" />
     <Compile Include="Serialization\Fakes\ValueDictionary.cs" />
     <Compile Include="Serialization\HardCoded\IdentifierHardCodedTraveller.cs" />
-    <Compile Include="Serialization\ReadTravellerTests.cs" />
+    <Compile Include="Serialization\Binary\PackedDataReadVisitorTests.cs" />
     <Compile Include="Serialization\HardCoded\RelationHardCodedTraveller.cs" />
     <Compile Include="Serialization\Sandbox\DictionaryIlSandbox.cs" />
     <Compile Include="Serialization\SerializationTestContext.cs" />
     <Compile Include="Serialization\WriteNullableValuePropertyWithNullTests.cs" />
     <Compile Include="Serialization\WriteValuePropertyTests.cs" />
-    <Compile Include="Serialization\SpecificTests.cs" />
-    <Compile Include="Serialization\WriteTravellerTests.cs" />
+    <Compile Include="Serialization\Binary\PackedDataWriteVisitorTests.cs" />
     <Compile Include="Store\StorageTests.cs" />
     <Compile Include="TestDb\TheACars.cs" />
     <Compile Include="TestDb\Scenario.cs" />

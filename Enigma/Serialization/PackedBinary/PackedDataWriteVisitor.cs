@@ -18,45 +18,29 @@ namespace Enigma.Serialization.PackedBinary
 
         public void Visit(object level, VisitArgs args)
         {
-            if (args.Type != LevelType.Root)
-                if (args.Metadata.Index > 0)
-                    _writer.WriteZ(args.Metadata.Index);
+            if (args.Type == LevelType.Root) return;
 
-            switch (args.Type) {
-                case LevelType.Single:
-                case LevelType.Collection:
-                case LevelType.Dictionary:
-                case LevelType.DictionaryKey:
-                case LevelType.DictionaryValue:
-                case LevelType.CollectionItem:
-                    if (level != null) {
-                        _writer.Write(BinaryPacker.VariabelLength);
+            if (args.Metadata.Index > 0)
+                _writer.WriteZ(args.Metadata.Index);
 
-                        // Create a reservation to write the length of the entry
-                        _reservations.Push(_writer.Reserve());
-                    }
-                    else
-                        _writer.Write(BinaryPacker.Null);
+            if (level != null) {
+                _writer.Write(BinaryPacker.VariabelLength);
 
-                    break;
+                // Create a reservation to write the length of the entry
+                _reservations.Push(_writer.Reserve());
             }
+            else
+                _writer.Write(BinaryPacker.Null);
         }
 
         public void Leave(object level, VisitArgs args)
         {
-            switch (args.Type) {
-                case LevelType.Single:
-                case LevelType.Collection:
-                case LevelType.Dictionary:
-                case LevelType.DictionaryKey:
-                case LevelType.DictionaryValue:
-                case LevelType.CollectionItem:
-                    if (level != null) {
-                        _writer.WriteZ(0);
-                        // Updates the reservation with the length of this entry
-                        _writer.Write(_reservations.Pop());
-                    }
-                    break;
+            if (args.Type == LevelType.Root) return;
+
+            if (level != null) {
+                _writer.WriteZ(0);
+                // Updates the reservation with the length of this entry
+                _writer.Write(_reservations.Pop());
             }
         }
 

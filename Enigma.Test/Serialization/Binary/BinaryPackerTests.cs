@@ -8,7 +8,7 @@ namespace Enigma.Test.Serialization
     public class BinaryPackerTests
     {
         [TestMethod]
-        public void PackTest()
+        public void PackZTest()
         {
             const uint value = (uint) 0x0FC0D096;
             var buffer = BinaryPacker.PackZ(value);

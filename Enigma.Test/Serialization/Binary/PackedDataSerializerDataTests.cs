@@ -1,17 +1,37 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using Enigma.Serialization.PackedBinary;
 using Enigma.Test.Fakes;
 using Enigma.Test.Serialization.Fakes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Enigma.Test.Serialization
+namespace Enigma.Test.Serialization.Binary
 {
     [TestClass]
-    public class SpecificTests
+    public class PackedDataSerializerDataTests
     {
+        [TestMethod]
+        public void WriteAndReadNullableValuesTest()
+        {
+            var graph = new NullableValuesEntity {
+                Id = 1,
+                MayBool = null,
+                MayDateTime = null,
+                MayInt = 44,
+                MayTimeSpan = new TimeSpan(22, 30, 10)
+            };
+            var context = new SerializationTestContext();
+            var actual = context.SerializeAndDeserialize(graph);
+
+            Assert.IsNotNull(actual);
+            Assert.AreEqual(1, actual.Id);
+            Assert.IsNull(actual.MayBool);
+            Assert.IsNull(actual.MayDateTime);
+            Assert.AreEqual(44, actual.MayInt);
+            Assert.AreEqual(new TimeSpan(22, 30, 10), actual.MayTimeSpan);
+        }
 
         [TestMethod]
         public void ValueDictionaryTest()
@@ -24,21 +44,13 @@ namespace Enigma.Test.Serialization
                 }
             };
 
-            ValueDictionary actual;
-
-            var serializer = new PackedDataSerializer<ValueDictionary>();
-            using (var stream = new MemoryStream()) {
-                serializer.Serialize(stream, graph);
-
-                stream.Seek(0, SeekOrigin.Begin);
-
-                actual = serializer.Deserialize(stream);
-            }
+            var context = new SerializationTestContext();
+            var actual = context.SerializeAndDeserialize(graph);
 
             Assert.IsNotNull(actual);
             Assert.IsNotNull(actual.Test);
             Assert.AreEqual(3, actual.Test.Count);
-            
+
             Assert.IsTrue(graph.Test.SequenceEqual(actual.Test, new ValueDictionaryComparer()));
         }
 
@@ -54,15 +66,8 @@ namespace Enigma.Test.Serialization
                 }
             };
 
-            ComplexDictionary actual;
-            var serializer = new PackedDataSerializer<ComplexDictionary>();
-            using (var stream = new MemoryStream()) {
-                serializer.Serialize(stream, graph);
-
-                stream.Seek(0, SeekOrigin.Begin);
-
-                actual = serializer.Deserialize(stream);
-            }
+            var context = new SerializationTestContext();
+            var actual = context.SerializeAndDeserialize(graph);
 
             Assert.IsNotNull(actual);
             Assert.IsNotNull(actual.Test);
@@ -75,17 +80,10 @@ namespace Enigma.Test.Serialization
         [TestMethod]
         public void IdentifierTest()
         {
-            var graph = new Identifier {Id = 1, Type = ApplicationType.Api};
+            var graph = new Identifier { Id = 1, Type = ApplicationType.Api };
 
-            Identifier actual;
-            var serializer = new PackedDataSerializer<Identifier>();
-            using (var stream = new MemoryStream()) {
-                serializer.Serialize(stream, graph);
-
-                stream.Seek(0, SeekOrigin.Begin);
-
-                actual = serializer.Deserialize(stream);
-            }
+            var context = new SerializationTestContext();
+            var actual = context.SerializeAndDeserialize(graph);
 
             Assert.IsNotNull(actual);
             Assert.AreEqual(graph.Id, actual.Id);

@@ -21,4 +21,19 @@ namespace Enigma.Serialization
         CollectionInDictionaryKey = Collection | DictionaryKey,
         CollectionInDictionaryValue = Collection | DictionaryValue
     }
+
+    public static class LevelTypeExtensions
+    {
+
+        public static bool IsCollection(this LevelType type)
+        {
+            return (type & LevelType.Collection) == LevelType.Collection;
+        }
+
+        public static bool IsDictionary(this LevelType type)
+        {
+            return (type & LevelType.Dictionary) == LevelType.Dictionary;
+        }
+
+    }
 }
