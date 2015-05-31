@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
-using Enigma.ProofOfConcept.Entities;
 using Enigma.Serialization.PackedBinary;
+using Enigma.Testing.Fakes.Entities;
 
 namespace Enigma.ProofOfConcept
 {
@@ -12,28 +10,31 @@ namespace Enigma.ProofOfConcept
     {
         public void Invoke()
         {
-            var graph = BigGraph.Filled();
+            var graph = DataBlock.Filled();
 
             var watch = new Stopwatch();
             watch.Start();
             Console.WriteLine("Initializing enigma serialization test...");
 
             long length;
-            var serializer = new PackedDataSerializer<BigGraph>();
+            var serializer = new PackedDataSerializer<DataBlock>();
             using (var stream = new MemoryStream()) {
                 serializer.Serialize(stream, graph);
                 length = stream.Length;
             }
 
-            Console.WriteLine(watch.Elapsed + " >> Initialization completed, size of data: " + length);
-
-            Console.WriteLine(watch.Elapsed + " >> Running 10000 times...");
+            var initializationTime = watch.Elapsed;
 
             for (var i = 0; i < 10000; i++) {
                 serializer.Serialize(new MemoryStream(), graph);
             }
 
-            Console.WriteLine(watch.Elapsed + " >> Enigma serialization test completed");
+            var serializationTime = watch.Elapsed.Subtract(initializationTime);
+
+            Console.WriteLine("Enigma serialization test completed");
+            Console.WriteLine("Size of data: " + length);
+            Console.WriteLine("Initialization time: " + initializationTime);
+            Console.WriteLine("Serialization time: " + serializationTime);
         }
     }
 }

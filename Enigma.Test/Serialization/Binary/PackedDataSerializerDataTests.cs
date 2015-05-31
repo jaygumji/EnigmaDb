@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Enigma.Serialization.PackedBinary;
-using Enigma.Test.Fakes;
 using Enigma.Test.Serialization.Fakes;
+using Enigma.Testing.Fakes.Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Enigma.Test.Serialization.Binary

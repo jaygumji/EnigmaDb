@@ -91,7 +91,7 @@ namespace Enigma.Modelling
                 if (visitor.NodeType != XmlNodeType.Element) continue;
 
                 if (visitor.Name == "Type")
-                    entityType = Type.GetType(visitor.GetElementContentAsString());
+                    entityType = Type.GetType(visitor.GetElementContentAsString(), throwOnError: true);
                 else if (visitor.Name == "Name")
                     entityName = visitor.GetElementContentAsString();
                 else if (visitor.Name == "KeyName")

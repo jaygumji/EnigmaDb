@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Enigma.Expressions;
 using Enigma.Test.TestDb;
+using Enigma.Testing.Fakes.Entities.Cars;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Enigma.Test.Expressions

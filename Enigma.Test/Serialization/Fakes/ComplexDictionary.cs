@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Enigma.Test.Fakes;
+using Enigma.Testing.Fakes.Entities;
 
 namespace Enigma.Test.Serialization.Fakes
 {

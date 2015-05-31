@@ -16,65 +16,17 @@ namespace Enigma.IO
 
         public UInt32 ReadZ()
         {
-            return BinaryPacker.UnpackZ(_stream);
+            return BinaryZPacker.Unpack(_stream);
         }
 
         public UInt32 ReadV()
         {
-            var b = (UInt32)_stream.ReadByte();
-            var length = (byte)(b << 29 >> 29);
-
-            var result = b >> 3;
-
-            if (length == 0) return result;
-            b = (UInt32)_stream.ReadByte();
-            var part = b << 5;
-            result |= part;
-
-            if (length == 1) return result;
-            b = (UInt32)_stream.ReadByte();
-            part = b << 13;
-            result |= part;
-
-            if (length == 2) return result;
-            b = (UInt32)_stream.ReadByte();
-            part = b << 21;
-            result |= part;
-
-            if (length == 3) return result;
-            b = (UInt32)_stream.ReadByte();
-            part = b << 29;
-            return result | part;
+            return BinaryV32Packer.UnpackU(_stream) ?? 0;
         }
 
         public UInt32? ReadNV()
         {
-            var b = (UInt32)_stream.ReadByte();
-            if (b == 7) return null;
-
-            var length = (byte)(b << 29 >> 29);
-
-            var result = b >> 3;
-
-            if (length == 0) return result;
-            b = (UInt32)_stream.ReadByte();
-            var part = b << 5;
-            result |= part;
-
-            if (length == 1) return result;
-            b = (UInt32)_stream.ReadByte();
-            part = b << 13;
-            result |= part;
-
-            if (length == 2) return result;
-            b = (UInt32)_stream.ReadByte();
-            part = b << 21;
-            result |= part;
-
-            if (length == 3) return result;
-            b = (UInt32)_stream.ReadByte();
-            part = b << 29;
-            return result | part;
+            return BinaryV32Packer.UnpackU(_stream);
         }
 
         public void Skip(uint length)
@@ -158,6 +110,11 @@ namespace Enigma.IO
         public string ReadString()
         {
             var length = Read(BinaryInformation.UInt32);
+            return ReadString(length);
+        }
+
+        public string ReadString(uint length)
+        {
             var data = new byte[length];
             _stream.Read(data, 0, data.Length);
             return BinaryInformation.String.Converter.Convert(data);
@@ -171,6 +128,11 @@ namespace Enigma.IO
         public byte[] ReadBlob()
         {
             var length = Read(BinaryInformation.UInt32);
+            return ReadBlob(length);
+        }
+
+        public byte[] ReadBlob(uint length)
+        {
             var data = new byte[length];
             _stream.Read(data, 0, data.Length);
             return data;

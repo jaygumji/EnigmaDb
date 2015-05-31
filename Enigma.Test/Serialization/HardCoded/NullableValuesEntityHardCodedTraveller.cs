@@ -1,7 +1,7 @@
 ﻿using Enigma.Serialization;
 using Enigma.Test.Serialization.Fakes;
 
-namespace Enigma.Test.Serialization
+namespace Enigma.Test.Serialization.HardCoded
 {
     public class NullableValuesEntityHardCodedTraveller : IGraphTraveller<NullableValuesEntity>
     {

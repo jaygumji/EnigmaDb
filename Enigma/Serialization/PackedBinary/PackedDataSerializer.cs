@@ -19,13 +19,13 @@ namespace Enigma.Serialization.PackedBinary
 
         public T Deserialize(Stream stream)
         {
-            var visitor = new PackedDataReadVisitor(new BinaryDataReader(stream));
+            var visitor = new PackedDataReadVisitor(stream);
             return _engine.Deserialize<T>(visitor);
         }
 
         public void Serialize(Stream stream, T graph)
         {
-            var visitor = new PackedDataWriteVisitor(new BinaryDataWriter(stream));
+            var visitor = new PackedDataWriteVisitor(stream);
             _engine.Serialize(visitor, graph);
         }
 

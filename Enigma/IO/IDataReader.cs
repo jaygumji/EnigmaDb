@@ -18,7 +18,9 @@ namespace Enigma.IO
         TimeSpan ReadTimeSpan();
         DateTime ReadDateTime();
         String ReadString();
+        String ReadString(uint length);
         Guid ReadGuid();
         byte[] ReadBlob();
+        byte[] ReadBlob(uint length);
     }
 }

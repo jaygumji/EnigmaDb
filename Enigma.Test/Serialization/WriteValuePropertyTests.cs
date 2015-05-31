@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Enigma.Serialization;
-using Enigma.Test.Fakes;
-using Enigma.Test.Serialization.Graphs;
+using Enigma.Testing.Fakes.Entities;
+using Enigma.Testing.Fakes.Graphs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Enigma.Test.Serialization

@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Text;
-using Enigma.Test.Fakes;
+using Enigma.Testing.Fakes.Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Enigma.Test.Modelling

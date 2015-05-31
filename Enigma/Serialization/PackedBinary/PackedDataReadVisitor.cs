@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Enigma.Binary;
 using Enigma.IO;
 
@@ -6,13 +7,15 @@ namespace Enigma.Serialization.PackedBinary
 {
     public class PackedDataReadVisitor : IReadVisitor
     {
+        private readonly Stream _stream;
         private readonly BinaryDataReader _reader;
         private UInt32 _nextIndex;
         private bool _endOfLevel;
 
-        public PackedDataReadVisitor(BinaryDataReader reader)
+        public PackedDataReadVisitor(Stream stream)
         {
-            _reader = reader;
+            _stream = stream;
+            _reader = new BinaryDataReader(stream);
         }
 
         private static bool SkipDataIndex(uint dataIndex, uint index)
@@ -32,9 +35,9 @@ namespace Enigma.Serialization.PackedBinary
             UInt32 dataIndex;
             while (SkipDataIndex(dataIndex = _reader.ReadZ(), index)) {
                 var byteLength = _reader.ReadByte();
-                if (byteLength == BinaryPacker.Null) continue;
+                if (byteLength == BinaryZPacker.Null) continue;
 
-                if (byteLength != BinaryPacker.VariabelLength)
+                if (byteLength != BinaryZPacker.VariabelLength)
                     _reader.Skip(byteLength);
                 else {
                     var length = _reader.ReadUInt32();
@@ -60,8 +63,8 @@ namespace Enigma.Serialization.PackedBinary
                 return ValueState.NotFound;
 
             var byteLength = _reader.ReadByte();
-            if (byteLength == BinaryPacker.Null) return ValueState.Null;
-            if (byteLength != BinaryPacker.VariabelLength)
+            if (byteLength == BinaryZPacker.Null) return ValueState.Null;
+            if (byteLength != BinaryZPacker.VariabelLength)
                 throw new UnexpectedLengthException(args, byteLength);
 
             _reader.Skip(4);
@@ -91,14 +94,14 @@ namespace Enigma.Serialization.PackedBinary
                 return false;
             }
             var length = _reader.ReadByte();
-            if (length == BinaryPacker.Null) {
+            if (length == BinaryZPacker.Null) {
                 value = null;
                 return true;
             }
             if (length != BinaryInformation.Byte.FixedLength)
                 throw new UnexpectedLengthException(args, length);
 
-            value = _reader.ReadByte();
+            value = (Byte)_stream.ReadByte();
             return true;
         }
 
@@ -109,14 +112,11 @@ namespace Enigma.Serialization.PackedBinary
                 return false;
             }
             var length = _reader.ReadByte();
-            if (length == BinaryPacker.Null) {
+            if (length == BinaryZPacker.Null) {
                 value = null;
                 return true;
             }
-            if (length != BinaryInformation.Int16.FixedLength)
-                throw new UnexpectedLengthException(args, length);
-
-            value = _reader.ReadInt16();
+            value = (Int16)BinaryPV64Packer.UnpackS(_stream, length);
             return true;
         }
 
@@ -127,14 +127,11 @@ namespace Enigma.Serialization.PackedBinary
                 return false;
             }
             var length = _reader.ReadByte();
-            if (length == BinaryPacker.Null) {
+            if (length == BinaryZPacker.Null) {
                 value = null;
                 return true;
             }
-            if (length != BinaryInformation.Int32.FixedLength)
-                throw new UnexpectedLengthException(args, length);
-
-            value = _reader.ReadInt32();
+            value = (Int32)BinaryPV64Packer.UnpackS(_stream, length);
             return true;
         }
 
@@ -145,14 +142,11 @@ namespace Enigma.Serialization.PackedBinary
                 return false;
             }
             var length = _reader.ReadByte();
-            if (length == BinaryPacker.Null) {
+            if (length == BinaryZPacker.Null) {
                 value = null;
                 return true;
             }
-            if (length != BinaryInformation.Int64.FixedLength)
-                throw new UnexpectedLengthException(args, length);
-
-            value = _reader.ReadInt64();
+            value = BinaryPV64Packer.UnpackS(_stream, length);
             return true;
         }
 
@@ -163,14 +157,11 @@ namespace Enigma.Serialization.PackedBinary
                 return false;
             }
             var length = _reader.ReadByte();
-            if (length == BinaryPacker.Null) {
+            if (length == BinaryZPacker.Null) {
                 value = null;
                 return true;
             }
-            if (length != BinaryInformation.UInt16.FixedLength)
-                throw new UnexpectedLengthException(args, length);
-
-            value = _reader.ReadUInt16();
+            value = (UInt16)BinaryPV64Packer.UnpackU(_stream, length);
             return true;
         }
 
@@ -181,14 +172,11 @@ namespace Enigma.Serialization.PackedBinary
                 return false;
             }
             var length = _reader.ReadByte();
-            if (length == BinaryPacker.Null) {
+            if (length == BinaryZPacker.Null) {
                 value = null;
                 return true;
             }
-            if (length != BinaryInformation.UInt32.FixedLength)
-                throw new UnexpectedLengthException(args, length);
-
-            value = _reader.ReadUInt32();
+            value = (UInt32)BinaryPV64Packer.UnpackU(_stream, length);
             return true;
         }
 
@@ -199,14 +187,11 @@ namespace Enigma.Serialization.PackedBinary
                 return false;
             }
             var length = _reader.ReadByte();
-            if (length == BinaryPacker.Null) {
+            if (length == BinaryZPacker.Null) {
                 value = null;
                 return true;
             }
-            if (length != BinaryInformation.UInt64.FixedLength)
-                throw new UnexpectedLengthException(args, length);
-
-            value = _reader.ReadUInt64();
+            value = BinaryPV64Packer.UnpackU(_stream, length);
             return true;
         }
 
@@ -217,7 +202,7 @@ namespace Enigma.Serialization.PackedBinary
                 return false;
             }
             var length = _reader.ReadByte();
-            if (length == BinaryPacker.Null) {
+            if (length == BinaryZPacker.Null) {
                 value = null;
                 return true;
             }
@@ -235,7 +220,7 @@ namespace Enigma.Serialization.PackedBinary
                 return false;
             }
             var length = _reader.ReadByte();
-            if (length == BinaryPacker.Null) {
+            if (length == BinaryZPacker.Null) {
                 value = null;
                 return true;
             }
@@ -253,7 +238,7 @@ namespace Enigma.Serialization.PackedBinary
                 return false;
             }
             var length = _reader.ReadByte();
-            if (length == BinaryPacker.Null) {
+            if (length == BinaryZPacker.Null) {
                 value = null;
                 return true;
             }
@@ -271,7 +256,7 @@ namespace Enigma.Serialization.PackedBinary
                 return false;
             }
             var length = _reader.ReadByte();
-            if (length == BinaryPacker.Null) {
+            if (length == BinaryZPacker.Null) {
                 value = null;
                 return true;
             }
@@ -289,14 +274,11 @@ namespace Enigma.Serialization.PackedBinary
                 return false;
             }
             var length = _reader.ReadByte();
-            if (length == BinaryPacker.Null) {
+            if (length == BinaryZPacker.Null) {
                 value = null;
                 return true;
             }
-            if (length != BinaryInformation.TimeSpan.FixedLength)
-                throw new UnexpectedLengthException(args, length);
-
-            value = _reader.ReadTimeSpan();
+            value = new TimeSpan(BinaryPV64Packer.UnpackS(_stream, length));
             return true;
         }
 
@@ -307,14 +289,11 @@ namespace Enigma.Serialization.PackedBinary
                 return false;
             }
             var length = _reader.ReadByte();
-            if (length == BinaryPacker.Null) {
+            if (length == BinaryZPacker.Null) {
                 value = null;
                 return true;
             }
-            if (length != BinaryInformation.DateTime.FixedLength)
-                throw new UnexpectedLengthException(args, length);
-
-            value = _reader.ReadDateTime();
+            value = new DateTime(BinaryPV64Packer.UnpackS(_stream, length), DateTimeKind.Utc).ToLocalTime();
             return true;
         }
 
@@ -325,14 +304,14 @@ namespace Enigma.Serialization.PackedBinary
                 return false;
             }
             var length = _reader.ReadByte();
-            if (length == BinaryPacker.Null) {
+            if (length == BinaryZPacker.Null) {
                 value = null;
                 return true;
             }
-            if (length != BinaryPacker.VariabelLength)
-                throw new UnexpectedLengthException(args, length);
 
-            value = _reader.ReadString();
+            var lengthToRead = length == BinaryZPacker.VariabelLength ? _reader.ReadV() : length;
+
+            value = _reader.ReadString(lengthToRead);
             return true;
         }
 
@@ -343,7 +322,7 @@ namespace Enigma.Serialization.PackedBinary
                 return false;
             }
             var length = _reader.ReadByte();
-            if (length == BinaryPacker.Null) {
+            if (length == BinaryZPacker.Null) {
                 value = null;
                 return true;
             }
@@ -361,14 +340,14 @@ namespace Enigma.Serialization.PackedBinary
                 return false;
             }
             var length = _reader.ReadByte();
-            if (length == BinaryPacker.Null) {
+            if (length == BinaryZPacker.Null) {
                 value = null;
                 return true;
             }
-            if (length != BinaryPacker.VariabelLength)
-                throw new UnexpectedLengthException(args, length);
 
-            value = _reader.ReadBlob();
+            var lengthToRead = length == BinaryZPacker.VariabelLength ? _reader.ReadV() : length;
+
+            value = _reader.ReadBlob(lengthToRead);
             return true;
         }
     }

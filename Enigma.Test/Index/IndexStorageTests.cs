@@ -4,6 +4,7 @@ using Enigma.Store.Indexes;
 using Enigma.Store.Keys;
 using Enigma.Store.Memory;
 using Enigma.Test.TestDb;
+using Enigma.Testing.Fakes.Entities.Cars;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Enigma.Test.Index

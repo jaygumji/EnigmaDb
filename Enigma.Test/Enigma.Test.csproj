@@ -55,17 +55,14 @@
     <Compile Include="BlobComparerTests.cs" />
     <Compile Include="DualBinaryStoreTests.cs" />
     <Compile Include="Expressions\PropertySelectorTests.cs" />
-    <Compile Include="Fakes\ApplicationType.cs" />
-    <Compile Include="Fakes\Category.cs" />
-    <Compile Include="Fakes\DataBlock.cs" />
-    <Compile Include="Fakes\Identifier.cs" />
-    <Compile Include="Fakes\MyEntity.cs" />
-    <Compile Include="Fakes\Relation.cs" />
     <Compile Include="Index\ComparableIndexTests.cs" />
     <Compile Include="Index\IndexStorageTests.cs" />
     <Compile Include="Linq\IndexFilterTests.cs" />
     <Compile Include="Modelling\EntityBuilderTests.cs" />
-    <Compile Include="Serialization\Binary\BinaryPackerTests.cs" />
+    <Compile Include="Serialization\Binary\BinaryPV64PackerTests.cs" />
+    <Compile Include="Serialization\Binary\BinaryV64PackerTests.cs" />
+    <Compile Include="Serialization\Binary\BinaryZPackerTests.cs" />
+    <Compile Include="Serialization\Binary\BinaryV32PackerTests.cs" />
     <Compile Include="Serialization\Binary\PackedDataSerializerGraphTests.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -79,63 +76,12 @@
     <Compile Include="Serialization\Fakes\WriteStatistics.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Serialization\Graphs\CollectionOfCollectionGraph.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Serialization\Graphs\CollectionOfDictionaryGraph.cs" />
-    <Compile Include="Serialization\Graphs\DictionaryWithCollectionKeyAndValueGraph.cs" />
-    <Compile Include="Serialization\Graphs\DictionaryWithCollectionKeyGraph.cs" />
-    <Compile Include="Serialization\Graphs\DictionaryWithCollectionValueGraph.cs" />
-    <Compile Include="Serialization\Graphs\DictionaryWithDictionaryKeyAndValueGraph.cs" />
-    <Compile Include="Serialization\Graphs\DictionaryWithDictionaryKeyGraph.cs" />
-    <Compile Include="Serialization\Graphs\DictionaryWithDictionaryValueGraph.cs" />
-    <Compile Include="Serialization\Graphs\JaggedArrayGraph.cs" />
-    <Compile Include="Serialization\Graphs\MultidimensionalArrayGraph.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Serialization\HardCoded\CategoryHardCodedTraveller.cs" />
     <Compile Include="Serialization\HardCoded\DataBlockHardCodedTraveller.cs" />
     <Compile Include="Serialization\Fakes\ComplexDictionary.cs" />
     <Compile Include="Serialization\Fakes\FakeReadVisitor.cs" />
     <Compile Include="Serialization\Fakes\FakeWriteVisitor.cs" />
     <Compile Include="Serialization\Fakes\NullableValuesEntity.cs" />
-    <Compile Include="Serialization\Graphs\BlobGraph.cs" />
-    <Compile Include="Serialization\Graphs\BooleanGraph.cs" />
-    <Compile Include="Serialization\Graphs\CollectionGraph.cs" />
-    <Compile Include="Serialization\Graphs\CollectionOfComplexGraph.cs" />
-    <Compile Include="Serialization\Graphs\ComplexGraph.cs" />
-    <Compile Include="Serialization\Graphs\DateTimeGraph.cs" />
-    <Compile Include="Serialization\Graphs\DecimalGraph.cs" />
-    <Compile Include="Serialization\Graphs\DictionaryGraph.cs" />
-    <Compile Include="Serialization\Graphs\DictionaryWithComplexKeyAndValueGraph.cs" />
-    <Compile Include="Serialization\Graphs\DictionaryWithComplexKeyGraph.cs" />
-    <Compile Include="Serialization\Graphs\DictionaryWithComplexValueGraph.cs" />
-    <Compile Include="Serialization\Graphs\DoubleGraph.cs" />
-    <Compile Include="Serialization\Graphs\EnumGraph.cs" />
-    <Compile Include="Serialization\Graphs\GuidGraph.cs" />
-    <Compile Include="Serialization\Graphs\Int16Graph.cs" />
-    <Compile Include="Serialization\Graphs\Int32Graph.cs" />
-    <Compile Include="Serialization\Graphs\Int64Graph.cs" />
-    <Compile Include="Serialization\Graphs\NullableBooleanGraph.cs" />
-    <Compile Include="Serialization\Graphs\NullableDateTimeGraph.cs" />
-    <Compile Include="Serialization\Graphs\NullableDecimalGraph.cs" />
-    <Compile Include="Serialization\Graphs\NullableDoubleGraph.cs" />
-    <Compile Include="Serialization\Graphs\NullableEnumGraph.cs" />
-    <Compile Include="Serialization\Graphs\NullableGuidGraph.cs" />
-    <Compile Include="Serialization\Graphs\NullableInt16Graph.cs" />
-    <Compile Include="Serialization\Graphs\NullableInt32Graph.cs" />
-    <Compile Include="Serialization\Graphs\NullableInt64Graph.cs" />
-    <Compile Include="Serialization\Graphs\NullableSingleGraph.cs" />
-    <Compile Include="Serialization\Graphs\NullableTimeSpanGraph.cs" />
-    <Compile Include="Serialization\Graphs\NullableUInt16Graph.cs" />
-    <Compile Include="Serialization\Graphs\NullableUInt32Graph.cs" />
-    <Compile Include="Serialization\Graphs\NullableUInt64Graph.cs" />
-    <Compile Include="Serialization\Graphs\SingleGraph.cs" />
-    <Compile Include="Serialization\Graphs\StringGraph.cs" />
-    <Compile Include="Serialization\Graphs\TimeSpanGraph.cs" />
-    <Compile Include="Serialization\Graphs\UInt16Graph.cs" />
-    <Compile Include="Serialization\Graphs\UInt32Graph.cs" />
-    <Compile Include="Serialization\Graphs\UInt64Graph.cs" />
     <Compile Include="Serialization\HardCoded\MultidimensionalArrayGraphHardCodedTraveller.cs" />
     <Compile Include="Serialization\ReadNullableValuePropertyTests.cs" />
     <Compile Include="Serialization\ReadNullableValuePropertyWithNullTests.cs" />
@@ -153,17 +99,9 @@
     <Compile Include="Serialization\WriteValuePropertyTests.cs" />
     <Compile Include="Serialization\Binary\PackedDataWriteVisitorTests.cs" />
     <Compile Include="Store\StorageTests.cs" />
-    <Compile Include="TestDb\TheACars.cs" />
     <Compile Include="TestDb\Scenario.cs" />
     <Compile Include="ProtoBuf\ProtoBufBinaryConverterTest.cs" />
-    <Compile Include="TestDb\CarModel.cs" />
     <Compile Include="Linq\FilterTests.cs" />
-    <Compile Include="TestDb\Car.cs" />
-    <Compile Include="TestDb\CarBrand.cs" />
-    <Compile Include="TestDb\CarEngine.cs" />
-    <Compile Include="TestDb\Compartment.cs" />
-    <Compile Include="TestDb\Nationality.cs" />
-    <Compile Include="TestDb\RandomCars.cs" />
     <Compile Include="TestDb\TestDbContext.cs" />
     <Compile Include="Modelling\ModelSerializerTests.cs" />
     <Compile Include="Resource.cs" />
@@ -176,6 +114,10 @@
     <ProjectReference Include="..\Enigma.Db.Embedded\Enigma.Db.Embedded.csproj">
       <Project>{5911fbbb-1f84-4c04-b705-f3d89de942ea}</Project>
       <Name>Enigma.Db.Embedded</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Enigma.Testing\Enigma.Testing.csproj">
+      <Project>{d02fceb5-33c9-48fd-aa24-654745445c26}</Project>
+      <Name>Enigma.Testing</Name>
     </ProjectReference>
     <ProjectReference Include="..\Enigma\Enigma.csproj">
       <Project>{00c48ba2-32f9-45b2-9fa0-b689a4944954}</Project>

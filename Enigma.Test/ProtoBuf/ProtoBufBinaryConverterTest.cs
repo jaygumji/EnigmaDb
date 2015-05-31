@@ -1,5 +1,6 @@
 ﻿using Enigma.ProtocolBuffer;
 using Enigma.Test.TestDb;
+using Enigma.Testing.Fakes.Entities.Cars;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Enigma.Test.ProtoBuf
 {

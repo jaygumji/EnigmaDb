@@ -2,7 +2,7 @@
 <Model>
   <Entities>
     <Entity>
-      <Type>Enigma.Test.Fakes.MyEntity, Enigma.Test, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</Type>
+      <Type>Enigma.Testing.Fakes.Entities.MyEntity, Enigma.Testing, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</Type>
       <Name>MyEntity</Name>
       <KeyName>Id</KeyName>
       <PropertyIndexLength>3</PropertyIndexLength>

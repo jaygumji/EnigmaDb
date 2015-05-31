@@ -3,7 +3,8 @@ using System.Linq;
 using Enigma.IO;
 using Enigma.Serialization.PackedBinary;
 using Enigma.Serialization.Reflection.Emit;
-using Enigma.Test.Fakes;
+using Enigma.Test.Serialization.HardCoded;
+using Enigma.Testing.Fakes.Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Enigma.Test.Serialization.Binary
@@ -54,10 +55,9 @@ namespace Enigma.Test.Serialization.Binary
         [TestMethod]
         public void ReadHardCodedTravelTest()
         {
-            var bytes = DataBlock.SerializedFilled();
+            var bytes = SerializationTestContext.GetFilledDataBlockBlob();
             var stream = new MemoryStream(bytes);
-            var reader = new BinaryDataReader(stream);
-            var visitor = new PackedDataReadVisitor(reader);
+            var visitor = new PackedDataReadVisitor(stream);
 
             var traveller = DataBlockHardCodedTraveller.Create();
 
@@ -71,10 +71,9 @@ namespace Enigma.Test.Serialization.Binary
         [TestMethod]
         public void ReadDynamicTravelTest()
         {
-            var bytes = DataBlock.SerializedFilled();
+            var bytes = SerializationTestContext.GetFilledDataBlockBlob();
             var stream = new MemoryStream(bytes);
-            var reader = new BinaryDataReader(stream);
-            var visitor = new PackedDataReadVisitor(reader);
+            var visitor = new PackedDataReadVisitor(stream);
 
             var context = new DynamicTravellerContext();
             var traveller = context.GetInstance<DataBlock>();

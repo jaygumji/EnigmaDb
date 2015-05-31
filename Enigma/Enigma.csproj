@@ -49,6 +49,9 @@
     <Compile Include="Arguments.cs" />
     <Compile Include="Binary\Algorithm\BinarySearch.cs" />
     <Compile Include="Binary\BinaryInformation.cs" />
+    <Compile Include="Binary\BinaryPV64Packer.cs" />
+    <Compile Include="Binary\BinaryV32Packer.cs" />
+    <Compile Include="Binary\BinaryV64Packer.cs" />
     <Compile Include="Binary\BufferOverflowException.cs" />
     <Compile Include="Binary\Converters\BinaryConverterInt16.cs" />
     <Compile Include="Binary\Converters\BinaryConverterInt32.cs" />
@@ -175,7 +178,7 @@
     <Compile Include="Reflection\Emit\ILCodeVariableGenerator.cs" />
     <Compile Include="Reflection\Emit\ILEnumerateCode.cs" />
     <Compile Include="Reflection\Emit\ILExpressed.cs" />
-    <Compile Include="Binary\BinaryPacker.cs" />
+    <Compile Include="Binary\BinaryZPacker.cs" />
     <Compile Include="Reflection\Emit\AssemblyBuilder.cs" />
     <Compile Include="Reflection\Emit\ClassBuilder.cs" />
     <Compile Include="Reflection\Emit\ILGenerationMethodHandler.cs" />

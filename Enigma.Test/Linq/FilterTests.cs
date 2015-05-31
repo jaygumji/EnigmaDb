@@ -1,5 +1,6 @@
 ﻿using System;
 using Enigma.Test.TestDb;
+using Enigma.Testing.Fakes.Entities.Cars;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;

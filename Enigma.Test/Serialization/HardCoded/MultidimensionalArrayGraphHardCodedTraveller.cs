@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using Enigma.Serialization;
-using Enigma.Test.Serialization.Graphs;
+using Enigma.Testing.Fakes.Graphs;
 
-namespace Enigma.Test.Serialization
+namespace Enigma.Test.Serialization.HardCoded
 {
     public class MultidimensionalArrayGraphHardCodedTraveller : IGraphTraveller<MultidimensionalArrayGraph>
     {

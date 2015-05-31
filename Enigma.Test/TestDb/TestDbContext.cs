@@ -3,6 +3,7 @@ using Enigma.Db.Embedded;
 using Enigma.Entities;
 using System;
 using System.IO;
+using Enigma.Testing.Fakes.Entities.Cars;
 
 namespace Enigma.Test.TestDb
 {

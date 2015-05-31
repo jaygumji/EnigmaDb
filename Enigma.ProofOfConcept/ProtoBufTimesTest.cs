@@ -1,6 +1,6 @@
 using System;
 using System.Diagnostics;
-using Enigma.ProofOfConcept.Entities;
+using Enigma.Testing.Fakes.Entities;
 
 namespace Enigma.ProofOfConcept
 {
@@ -8,23 +8,26 @@ namespace Enigma.ProofOfConcept
     {
         public void Invoke()
         {
-            var graph = BigGraph.Filled();
+            var graph = DataBlock.Filled();
 
             var watch = new Stopwatch();
             watch.Start();
             Console.WriteLine("Initializing ProtoBuf.NET serialization test...");
-            var protobuf = new ProtocolBuffer.ProtocolBufferBinaryConverter<BigGraph>();
+            var protobuf = new ProtocolBuffer.ProtocolBufferBinaryConverter<DataBlock>();
             var length = protobuf.Convert(graph).Length;
 
-            Console.WriteLine(watch.Elapsed + " >> Initialization completed, size of data: " + length);
-
-            Console.WriteLine(watch.Elapsed + " >> Running 10000 times...");
+            var initializationTime = watch.Elapsed;
 
             for (var i = 0; i < 10000; i++) {
                 protobuf.Convert(graph);
             }
 
-            Console.WriteLine(watch.Elapsed + " >> ProtoBuf.NET serialization test completed");
+            var serializationTime = watch.Elapsed.Subtract(initializationTime);
+
+            Console.WriteLine("Enigma serialization test completed");
+            Console.WriteLine("Size of data: " + length);
+            Console.WriteLine("Initialization time: " + initializationTime);
+            Console.WriteLine("Serialization time: " + serializationTime);
         }
     }
 }

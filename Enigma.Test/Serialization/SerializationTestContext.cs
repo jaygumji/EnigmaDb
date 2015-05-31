@@ -1,11 +1,13 @@
 ﻿using System.IO;
+using System.Linq;
 using Enigma.IO;
 using Enigma.Serialization;
 using Enigma.Serialization.PackedBinary;
 using Enigma.Serialization.Reflection;
 using Enigma.Serialization.Reflection.Emit;
 using Enigma.Test.Serialization.Fakes;
-using Enigma.Test.Serialization.Graphs;
+using Enigma.Test.Serialization.HardCoded;
+using Enigma.Testing.Fakes.Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Enigma.Test.Serialization
@@ -28,8 +30,7 @@ namespace Enigma.Test.Serialization
         public byte[] Pack<T>(T graph)
         {
             var stream = new MemoryStream();
-            var writer = new BinaryDataWriter(stream);
-            var visitor = new PackedDataWriteVisitor(writer);
+            var visitor = new PackedDataWriteVisitor(stream);
 
             var traveller = CreateTraveller<T>();
             traveller.Travel(visitor, graph);
@@ -116,5 +117,27 @@ namespace Enigma.Test.Serialization
 
             return actual;
         }
+
+        public static string GetFilledDataBlockHexString()
+        {
+            var bytes = GetFilledDataBlockBlob();
+            Assert.IsNotNull(bytes);
+            Assert.IsTrue(bytes.Length > 0);
+            var hex = "0x" + string.Join("", bytes.Select(b => b.ToString("X")));
+            Assert.IsNotNull(hex);
+            return hex;
+        }
+
+        public static byte[] GetFilledDataBlockBlob()
+        {
+            var stream = new MemoryStream();
+            var visitor = new PackedDataWriteVisitor(stream);
+            var traveller = DataBlockHardCodedTraveller.Create();
+            traveller.Travel(visitor, DataBlock.Filled());
+
+            var bytes = stream.ToArray();
+            return bytes;
+        }
+
     }
 }

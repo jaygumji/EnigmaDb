@@ -1,7 +1,7 @@
 using Enigma.Serialization;
-using Enigma.Test.Fakes;
+using Enigma.Testing.Fakes.Entities;
 
-namespace Enigma.Test.Serialization
+namespace Enigma.Test.Serialization.HardCoded
 {
     public class IdentifierHardCodedTraveller : IGraphTraveller<Identifier>
     {

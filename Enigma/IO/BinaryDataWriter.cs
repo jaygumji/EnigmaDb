@@ -2,14 +2,12 @@ using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using Enigma.Binary;
-using Enigma.Serialization;
 
 namespace Enigma.IO
 {
     public class BinaryDataWriter : IDataWriter
     {
         private readonly Stream _stream;
-        private const UInt32 ZMaxValue = 0x3FFFFFFF;
 
         public BinaryDataWriter(Stream stream)
         {
@@ -19,7 +17,7 @@ namespace Enigma.IO
         public WriteReservation Reserve()
         {
             var position = _stream.Position;
-            Write((UInt32) 0);
+            _stream.Write(new byte[4], 0, 4);
             return new WriteReservation(position);
         }
 
@@ -43,7 +41,7 @@ namespace Enigma.IO
         /// <param name="value">The value to pack</param>
         public void WriteZ(UInt32 value)
         {
-            BinaryPacker.PackZ(_stream, value);
+            BinaryZPacker.Pack(_stream, value);
         }
 
         /// <summary>
@@ -52,32 +50,7 @@ namespace Enigma.IO
         /// <param name="value">The value to pack</param>
         public void WriteV(UInt32 value)
         {
-            byte length;
-            if (value <= 0x1F) length = 0;
-            else if (value <= 0x1FFF) length = 1;
-            else if (value <= 0x1FFFFF) length = 2;
-            else if (value <= 0x1FFFFFFF) length = 3;
-            else length = 4;
-
-            var b = (byte)(value << 27 >> 24);
-            b = (byte)(b | length);
-            _stream.WriteByte(b);
-
-            if (length == 0) return;
-            b = (byte)(value << 19 >> 24);
-            _stream.WriteByte(b);
-
-            if (length == 1) return;
-            b = (byte)(value << 11 >> 24);
-            _stream.WriteByte(b);
-
-            if (length == 2) return;
-            b = (byte)(value << 3 >> 24);
-            _stream.WriteByte(b);
-
-            if (length == 3) return;
-            b = (byte)(value >> 29);
-            _stream.WriteByte(b);
+            BinaryV32Packer.PackU(_stream, value);
         }
 
         /// <summary>
@@ -86,37 +59,7 @@ namespace Enigma.IO
         /// <param name="nullableValue">The value to pack</param>
         public void WriteNV(UInt32? nullableValue)
         {
-            byte length;
-            if (!nullableValue.HasValue) {
-                _stream.WriteByte(7);
-                return;
-            }
-            var value = nullableValue.Value;
-            if (value <= 0x1F) length = 0;
-            else if (value <= 0x1FFF) length = 1;
-            else if (value <= 0x1FFFFF) length = 2;
-            else if (value <= 0x1FFFFFFF) length = 3;
-            else length = 4;
-
-            var b = (byte)(value << 27 >> 24);
-            b = (byte)(b | length);
-            _stream.WriteByte(b);
-
-            if (length == 0) return;
-            b = (byte)(value << 19 >> 24);
-            _stream.WriteByte(b);
-
-            if (length == 1) return;
-            b = (byte)(value << 11 >> 24);
-            _stream.WriteByte(b);
-
-            if (length == 2) return;
-            b = (byte)(value << 3 >> 24);
-            _stream.WriteByte(b);
-
-            if (length == 3) return;
-            b = (byte)(value >> 29);
-            _stream.WriteByte(b);
+            BinaryV32Packer.PackU(_stream, nullableValue);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -196,7 +139,6 @@ namespace Enigma.IO
             if (value == null)
                 throw new ArgumentNullException("value");
 
-            Write((UInt32)value.Length);
             Write(BinaryInformation.String, value);
         }
 
@@ -210,7 +152,6 @@ namespace Enigma.IO
             if (value == null)
                 throw new ArgumentNullException("value");
 
-            Write((UInt32)value.Length);
             _stream.Write(value, 0, value.Length);
         }
 

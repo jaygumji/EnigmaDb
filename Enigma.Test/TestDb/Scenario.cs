@@ -1,4 +1,5 @@
 ﻿using System;
+using Enigma.Testing.Fakes.Entities.Cars;
 
 namespace Enigma.Test.TestDb
 {

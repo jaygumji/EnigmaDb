@@ -1,18 +1,21 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Enigma.Binary;
 using Enigma.IO;
 
 namespace Enigma.Serialization.PackedBinary
 {
-    public class PackedDataWriteVisitor : IWriteVisitor
+    public sealed class PackedDataWriteVisitor : IWriteVisitor
     {
+        private readonly Stream _stream;
         private readonly BinaryDataWriter _writer;
-        private readonly Stack<WriteReservation> _reservations; 
+        private readonly Stack<WriteReservation> _reservations;
 
-        public PackedDataWriteVisitor(BinaryDataWriter writer)
+        public PackedDataWriteVisitor(Stream stream)
         {
-            _writer = writer;
+            _stream = stream;
+            _writer = new BinaryDataWriter(stream);
             _reservations = new Stack<WriteReservation>();
         }
 
@@ -21,16 +24,15 @@ namespace Enigma.Serialization.PackedBinary
             if (args.Type == LevelType.Root) return;
 
             if (args.Metadata.Index > 0)
-                _writer.WriteZ(args.Metadata.Index);
+                BinaryZPacker.Pack(_stream, args.Metadata.Index);
 
-            if (level != null) {
-                _writer.Write(BinaryPacker.VariabelLength);
-
-                // Create a reservation to write the length of the entry
-                _reservations.Push(_writer.Reserve());
+            if (level == null) {
+                _stream.WriteByte(BinaryZPacker.Null);
+                return;
             }
-            else
-                _writer.Write(BinaryPacker.Null);
+
+            _stream.WriteByte(BinaryZPacker.VariabelLength);
+            _reservations.Push(_writer.Reserve());
         }
 
         public void Leave(object level, VisitArgs args)
@@ -38,234 +40,261 @@ namespace Enigma.Serialization.PackedBinary
             if (args.Type == LevelType.Root) return;
 
             if (level != null) {
-                _writer.WriteZ(0);
-                // Updates the reservation with the length of this entry
-                _writer.Write(_reservations.Pop());
+                var reservation = _reservations.Pop();
+                _writer.Write(reservation);
+                BinaryZPacker.Pack(_stream, 0);
             }
         }
 
         public void VisitValue(byte? value, VisitArgs args)
         {
             if (args.Metadata.Index > 0)
-                _writer.WriteZ(args.Metadata.Index);
+                BinaryZPacker.Pack(_stream, args.Metadata.Index);
 
             if (value == null) {
-                _writer.Write(BinaryPacker.Null);
+                _stream.WriteByte(BinaryZPacker.Null);
                 return;
             }
 
-            _writer.Write((Byte)BinaryInformation.Byte.FixedLength);
-            _writer.Write(value.Value);
+            _stream.WriteByte((Byte)BinaryInformation.Byte.FixedLength);
+            _stream.WriteByte(value.Value);
         }
 
         public void VisitValue(short? value, VisitArgs args)
         {
             if (args.Metadata.Index > 0)
-                _writer.WriteZ(args.Metadata.Index);
+                BinaryZPacker.Pack(_stream, args.Metadata.Index);
 
             if (value == null) {
-                _writer.Write(BinaryPacker.Null);
+                _stream.WriteByte(BinaryZPacker.Null);
                 return;
             }
 
-            _writer.Write((Byte)BinaryInformation.Int16.FixedLength);
-            _writer.Write(value.Value);
+            var length = BinaryPV64Packer.GetSLength(value.Value);
+            _stream.WriteByte(length);
+            BinaryPV64Packer.PackS(_stream, value.Value, length);
         }
 
         public void VisitValue(int? value, VisitArgs args)
         {
             if (args.Metadata.Index > 0)
-                _writer.WriteZ(args.Metadata.Index);
+                BinaryZPacker.Pack(_stream, args.Metadata.Index);
 
             if (value == null) {
-                _writer.Write(BinaryPacker.Null);
+                _stream.WriteByte(BinaryZPacker.Null);
                 return;
             }
 
-            _writer.Write((Byte)BinaryInformation.Int32.FixedLength);
-            _writer.Write(value.Value);
+            var length = BinaryPV64Packer.GetSLength(value.Value);
+            _stream.WriteByte(length);
+            BinaryPV64Packer.PackS(_stream, value.Value, length);
         }
 
         public void VisitValue(long? value, VisitArgs args)
         {
             if (args.Metadata.Index > 0)
-                _writer.WriteZ(args.Metadata.Index);
+                BinaryZPacker.Pack(_stream, args.Metadata.Index);
 
             if (value == null) {
-                _writer.Write(BinaryPacker.Null);
+                _stream.WriteByte(BinaryZPacker.Null);
                 return;
             }
 
-            _writer.Write((Byte)BinaryInformation.Int64.FixedLength);
-            _writer.Write(value.Value);
+            var length = BinaryPV64Packer.GetSLength(value.Value);
+            _stream.WriteByte(length);
+            BinaryPV64Packer.PackS(_stream, value.Value, length);
         }
 
         public void VisitValue(ushort? value, VisitArgs args)
         {
             if (args.Metadata.Index > 0)
-                _writer.WriteZ(args.Metadata.Index);
+                BinaryZPacker.Pack(_stream, args.Metadata.Index);
 
             if (value == null) {
-                _writer.Write(BinaryPacker.Null);
+                _stream.WriteByte(BinaryZPacker.Null);
                 return;
             }
 
-            _writer.Write((Byte)BinaryInformation.UInt16.FixedLength);
-            _writer.Write(value.Value);
+            var length = BinaryPV64Packer.GetULength(value.Value);
+            _stream.WriteByte(length);
+            BinaryPV64Packer.PackU(_stream, value.Value, length);
         }
 
         public void VisitValue(uint? value, VisitArgs args)
         {
             if (args.Metadata.Index > 0)
-                _writer.WriteZ(args.Metadata.Index);
+                BinaryZPacker.Pack(_stream, args.Metadata.Index);
 
             if (value == null) {
-                _writer.Write(BinaryPacker.Null);
+                _stream.WriteByte(BinaryZPacker.Null);
                 return;
             }
 
-            _writer.Write((Byte)BinaryInformation.UInt32.FixedLength);
-            _writer.Write(value.Value);
+            var length = BinaryPV64Packer.GetULength(value.Value);
+            _stream.WriteByte(length);
+            BinaryPV64Packer.PackU(_stream, value.Value, length);
         }
 
         public void VisitValue(ulong? value, VisitArgs args)
         {
             if (args.Metadata.Index > 0)
-                _writer.WriteZ(args.Metadata.Index);
+                BinaryZPacker.Pack(_stream, args.Metadata.Index);
 
             if (value == null) {
-                _writer.Write(BinaryPacker.Null);
+                _stream.WriteByte(BinaryZPacker.Null);
                 return;
             }
 
-            _writer.Write((Byte)BinaryInformation.UInt64.FixedLength);
-            _writer.Write(value.Value);
+            var length = BinaryPV64Packer.GetULength(value.Value);
+            _stream.WriteByte(length);
+            BinaryPV64Packer.PackU(_stream, value.Value, length);
         }
 
         public void VisitValue(bool? value, VisitArgs args)
         {
             if (args.Metadata.Index > 0)
-                _writer.WriteZ(args.Metadata.Index);
+                BinaryZPacker.Pack(_stream, args.Metadata.Index);
 
             if (value == null) {
-                _writer.Write(BinaryPacker.Null);
+                _stream.WriteByte(BinaryZPacker.Null);
                 return;
             }
 
-            _writer.Write((Byte)BinaryInformation.Boolean.FixedLength);
-            _writer.Write(value.Value);
+            _stream.WriteByte((Byte)BinaryInformation.Boolean.FixedLength);
+            var bytes = BinaryInformation.Boolean.Converter.Convert(value.Value);
+            _stream.Write(bytes, 0, bytes.Length);
         }
 
         public void VisitValue(float? value, VisitArgs args)
         {
             if (args.Metadata.Index > 0)
-                _writer.WriteZ(args.Metadata.Index);
+                BinaryZPacker.Pack(_stream, args.Metadata.Index);
 
             if (value == null) {
-                _writer.Write(BinaryPacker.Null);
+                _stream.WriteByte(BinaryZPacker.Null);
                 return;
             }
 
-            _writer.Write((Byte)BinaryInformation.Single.FixedLength);
-            _writer.Write(value.Value);
+            _stream.WriteByte((Byte)BinaryInformation.Single.FixedLength);
+            var bytes = BinaryInformation.Single.Converter.Convert(value.Value);
+            _stream.Write(bytes, 0, bytes.Length);
         }
 
         public void VisitValue(double? value, VisitArgs args)
         {
             if (args.Metadata.Index > 0)
-                _writer.WriteZ(args.Metadata.Index);
+                BinaryZPacker.Pack(_stream, args.Metadata.Index);
 
             if (value == null) {
-                _writer.Write(BinaryPacker.Null);
+                _stream.WriteByte(BinaryZPacker.Null);
                 return;
             }
 
-            _writer.Write((Byte)BinaryInformation.Double.FixedLength);
-            _writer.Write(value.Value);
+            _stream.WriteByte((Byte)BinaryInformation.Double.FixedLength);
+            var bytes = BinaryInformation.Double.Converter.Convert(value.Value);
+            _stream.Write(bytes, 0, bytes.Length);
         }
 
         public void VisitValue(decimal? value, VisitArgs args)
         {
             if (args.Metadata.Index > 0)
-                _writer.WriteZ(args.Metadata.Index);
+                BinaryZPacker.Pack(_stream, args.Metadata.Index);
 
             if (value == null) {
-                _writer.Write(BinaryPacker.Null);
+                _stream.WriteByte(BinaryZPacker.Null);
                 return;
             }
 
-            _writer.Write((Byte)BinaryInformation.Decimal.FixedLength);
-            _writer.Write(value.Value);
+            _stream.WriteByte((Byte)BinaryInformation.Decimal.FixedLength);
+            var bytes = BinaryInformation.Decimal.Converter.Convert(value.Value);
+            _stream.Write(bytes, 0, bytes.Length);
         }
 
         public void VisitValue(TimeSpan? value, VisitArgs args)
         {
             if (args.Metadata.Index > 0)
-                _writer.WriteZ(args.Metadata.Index);
+                BinaryZPacker.Pack(_stream, args.Metadata.Index);
 
             if (value == null) {
-                _writer.Write(BinaryPacker.Null);
+                _stream.WriteByte(BinaryZPacker.Null);
                 return;
             }
 
-            _writer.Write((Byte)BinaryInformation.TimeSpan.FixedLength);
-            _writer.Write(value.Value);
+            var length = BinaryPV64Packer.GetSLength(value.Value.Ticks);
+            _stream.WriteByte(length);
+            BinaryPV64Packer.PackS(_stream, value.Value.Ticks, length);
         }
 
         public void VisitValue(DateTime? value, VisitArgs args)
         {
             if (args.Metadata.Index > 0)
-                _writer.WriteZ(args.Metadata.Index);
-            
+                BinaryZPacker.Pack(_stream, args.Metadata.Index);
+
             if (value == null) {
-                _writer.Write(BinaryPacker.Null);
+                _stream.WriteByte(BinaryZPacker.Null);
                 return;
             }
 
-            _writer.Write((Byte)BinaryInformation.DateTime.FixedLength);
-            _writer.Write(value.Value);
+            if (value.Value.Kind != DateTimeKind.Utc)
+                value = value.Value.ToUniversalTime();
+
+            var length = BinaryPV64Packer.GetSLength(value.Value.Ticks);
+            _stream.WriteByte(length);
+            BinaryPV64Packer.PackS(_stream, value.Value.Ticks, length);
         }
 
         public void VisitValue(string value, VisitArgs args)
         {
             if (args.Metadata.Index > 0)
-                _writer.WriteZ(args.Metadata.Index);
+                BinaryZPacker.Pack(_stream, args.Metadata.Index);
 
             if (value == null) {
-                _writer.Write(BinaryPacker.Null);
+                _stream.WriteByte(BinaryZPacker.Null);
                 return;
             }
 
-            _writer.Write(BinaryPacker.VariabelLength);
-            _writer.Write(value);
+            if (value.Length < BinaryZPacker.VariabelLength)
+                _stream.WriteByte((Byte)value.Length);
+            else {
+                _stream.WriteByte(BinaryZPacker.VariabelLength);
+                BinaryV32Packer.PackU(_stream, (uint)value.Length);
+            }
+            var bytes = BinaryInformation.String.Converter.Convert(value);
+            _stream.Write(bytes, 0, bytes.Length);
         }
 
         public void VisitValue(Guid? value, VisitArgs args)
         {
             if (args.Metadata.Index > 0)
-                _writer.WriteZ(args.Metadata.Index);
+                BinaryZPacker.Pack(_stream, args.Metadata.Index);
 
             if (value == null) {
-                _writer.Write(BinaryPacker.Null);
+                _stream.WriteByte(BinaryZPacker.Null);
                 return;
             }
 
-            _writer.Write((Byte)BinaryInformation.Guid.FixedLength);
-            _writer.Write(value.Value);
+            _stream.WriteByte((Byte)BinaryInformation.Guid.FixedLength);
+            var bytes = BinaryInformation.Guid.Converter.Convert(value.Value);
+            _stream.Write(bytes, 0, bytes.Length);
         }
 
         public void VisitValue(byte[] value, VisitArgs args)
         {
             if (args.Metadata.Index > 0)
-                _writer.WriteZ(args.Metadata.Index);
+                BinaryZPacker.Pack(_stream, args.Metadata.Index);
 
             if (value == null) {
-                _writer.Write(BinaryPacker.Null);
+                _stream.WriteByte(BinaryZPacker.Null);
                 return;
             }
 
-            _writer.Write(BinaryPacker.VariabelLength);
-            _writer.Write(value);
+            if (value.Length < BinaryZPacker.VariabelLength)
+                _stream.WriteByte((Byte) value.Length);
+            else {
+                _stream.WriteByte(BinaryZPacker.VariabelLength);
+                BinaryV32Packer.PackU(_stream, (uint)value.Length);
+            }
+            _stream.Write(value, 0, value.Length);
         }
 
     }

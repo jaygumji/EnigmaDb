@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Enigma.Test.Fakes;
-using Enigma.Test.Serialization.Graphs;
+using Enigma.Testing.Fakes.Entities;
+using Enigma.Testing.Fakes.Graphs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Enigma.Test.Serialization.Binary
