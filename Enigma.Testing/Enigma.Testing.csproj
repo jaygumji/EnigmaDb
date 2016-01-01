@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D02FCEB5-33C9-48FD-AA24-654745445C26}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Enigma.Testing</RootNamespace>
+    <AssemblyName>Enigma.Testing</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Fakes\Entities\ApplicationType.cs" />
+    <Compile Include="Fakes\Entities\Cars\Car.cs" />
+    <Compile Include="Fakes\Entities\Cars\CarBrand.cs" />
+    <Compile Include="Fakes\Entities\Cars\CarEngine.cs" />
+    <Compile Include="Fakes\Entities\Cars\CarModel.cs" />
+    <Compile Include="Fakes\Entities\Cars\Compartment.cs" />
+    <Compile Include="Fakes\Entities\Cars\Nationality.cs" />
+    <Compile Include="Fakes\Entities\Cars\RandomCars.cs" />
+    <Compile Include="Fakes\Entities\Cars\TheACars.cs" />
+    <Compile Include="Fakes\Entities\Category.cs" />
+    <Compile Include="Fakes\Entities\DataBlock.cs" />
+    <Compile Include="Fakes\Graphs\BlobGraph.cs" />
+    <Compile Include="Fakes\Graphs\BooleanGraph.cs" />
+    <Compile Include="Fakes\Graphs\CollectionGraph.cs" />
+    <Compile Include="Fakes\Graphs\CollectionOfCollectionGraph.cs" />
+    <Compile Include="Fakes\Graphs\CollectionOfComplexGraph.cs" />
+    <Compile Include="Fakes\Graphs\CollectionOfDictionaryGraph.cs" />
+    <Compile Include="Fakes\Graphs\ComplexGraph.cs" />
+    <Compile Include="Fakes\Graphs\DateTimeGraph.cs" />
+    <Compile Include="Fakes\Graphs\DecimalGraph.cs" />
+    <Compile Include="Fakes\Graphs\DictionaryGraph.cs" />
+    <Compile Include="Fakes\Graphs\DictionaryWithCollectionKeyAndValueGraph.cs" />
+    <Compile Include="Fakes\Graphs\DictionaryWithCollectionKeyGraph.cs" />
+    <Compile Include="Fakes\Graphs\DictionaryWithCollectionValueGraph.cs" />
+    <Compile Include="Fakes\Graphs\DictionaryWithComplexKeyAndValueGraph.cs" />
+    <Compile Include="Fakes\Graphs\DictionaryWithComplexKeyGraph.cs" />
+    <Compile Include="Fakes\Graphs\DictionaryWithComplexValueGraph.cs" />
+    <Compile Include="Fakes\Graphs\DictionaryWithDictionaryKeyAndValueGraph.cs" />
+    <Compile Include="Fakes\Graphs\DictionaryWithDictionaryKeyGraph.cs" />
+    <Compile Include="Fakes\Graphs\DictionaryWithDictionaryValueGraph.cs" />
+    <Compile Include="Fakes\Graphs\DoubleGraph.cs" />
+    <Compile Include="Fakes\Graphs\EnumGraph.cs" />
+    <Compile Include="Fakes\Graphs\GuidGraph.cs" />
+    <Compile Include="Fakes\Graphs\Int16Graph.cs" />
+    <Compile Include="Fakes\Graphs\Int32Graph.cs" />
+    <Compile Include="Fakes\Graphs\Int64Graph.cs" />
+    <Compile Include="Fakes\Graphs\JaggedArrayGraph.cs" />
+    <Compile Include="Fakes\Graphs\MultidimensionalArrayGraph.cs" />
+    <Compile Include="Fakes\Graphs\NullableBooleanGraph.cs" />
+    <Compile Include="Fakes\Graphs\NullableDateTimeGraph.cs" />
+    <Compile Include="Fakes\Graphs\NullableDecimalGraph.cs" />
+    <Compile Include="Fakes\Graphs\NullableDoubleGraph.cs" />
+    <Compile Include="Fakes\Graphs\NullableEnumGraph.cs" />
+    <Compile Include="Fakes\Graphs\NullableGuidGraph.cs" />
+    <Compile Include="Fakes\Graphs\NullableInt16Graph.cs" />
+    <Compile Include="Fakes\Graphs\NullableInt32Graph.cs" />
+    <Compile Include="Fakes\Graphs\NullableInt64Graph.cs" />
+    <Compile Include="Fakes\Graphs\NullableSingleGraph.cs" />
+    <Compile Include="Fakes\Graphs\NullableTimeSpanGraph.cs" />
+    <Compile Include="Fakes\Graphs\NullableUInt16Graph.cs" />
+    <Compile Include="Fakes\Graphs\NullableUInt32Graph.cs" />
+    <Compile Include="Fakes\Graphs\NullableUInt64Graph.cs" />
+    <Compile Include="Fakes\Graphs\SingleGraph.cs" />
+    <Compile Include="Fakes\Graphs\StringGraph.cs" />
+    <Compile Include="Fakes\Graphs\TimeSpanGraph.cs" />
+    <Compile Include="Fakes\Graphs\UInt16Graph.cs" />
+    <Compile Include="Fakes\Graphs\UInt32Graph.cs" />
+    <Compile Include="Fakes\Graphs\UInt64Graph.cs" />
+    <Compile Include="Fakes\Entities\Identifier.cs" />
+    <Compile Include="Fakes\Entities\MyEntity.cs" />
+    <Compile Include="Fakes\Entities\Relation.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Enigma\Enigma.csproj">
+      <Project>{00C48BA2-32F9-45B2-9FA0-B689A4944954}</Project>
+      <Name>Enigma</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

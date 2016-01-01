@@ -70,10 +70,6 @@
       <Project>{5911fbbb-1f84-4c04-b705-f3d89de942ea}</Project>
       <Name>Enigma.Db.Embedded</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Enigma.Testing\Enigma.Testing.csproj">
-      <Project>{D02FCEB5-33C9-48FD-AA24-654745445C26}</Project>
-      <Name>Enigma.Testing</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Enigma\Enigma.csproj">
       <Project>{00c48ba2-32f9-45b2-9fa0-b689a4944954}</Project>
       <Name>Enigma</Name>
